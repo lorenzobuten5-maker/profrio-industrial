@@ -241,14 +241,28 @@
         <!-- Message area -->
         <div id="auth-message" role="alert" aria-live="polite"></div>
 
+        <!-- Registration Success Card -->
+        <div id="register-success-card" class="register-success-card">
+          <div class="success-icon-circle">✅</div>
+          <div class="success-title">¡Cuenta creada exitosamente!</div>
+          <div class="success-subtitle">
+            Tu cuenta ha sido registrada. Ahora puedes iniciar sesión con:
+          </div>
+          <div class="success-email-badge" id="success-email-display">—</div>
+          <button class="btn btn-primary" id="btn-success-login" style="width:100%;margin-top:0.5rem;">
+            Ir a Iniciar Sesión →
+          </button>
+          <div class="success-redirect-note">Serás redirigido automáticamente en unos segundos...</div>
+        </div>
+
       </div><!-- /auth-card -->
     </div><!-- /auth-right -->
   </div><!-- /auth-container -->
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/security.js?v=2"></script>
-  <script src="js/supabase-config.js?v=10"></script>
-  <script src="js/auth.js?v=10"></script>
-  <script src="js/login-ui.js?v=1"></script>
+  <script src="js/supabase-config.js?v=11"></script>
+  <script src="js/auth.js?v=11"></script>
+  <script src="js/login-ui.js?v=2"></script>
 </body>
 </html>

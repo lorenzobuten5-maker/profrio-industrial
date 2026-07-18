@@ -136,7 +136,7 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
       .eq('rol', rol);
       
     if (countErr) throw countErr;
-    if (rol === 'jefe' && count >= MAX_JEFES) throw new Error("Límite de jefes alcanzado");
+    if (rol === 'jefe'    && count >= MAX_JEFES)     throw new Error("Límite de jefes alcanzado");
     if (rol === 'empleado' && count >= MAX_EMPLEADOS) throw new Error("Límite de empleados alcanzado");
     
     const { data, error } = await window.supabaseClient.auth.signUp({
@@ -144,31 +144,54 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
     });
     if (error) throw error;
     
-    // Show success inline instead of alert
-    const msgEl = document.getElementById('auth-message');
-    if (msgEl) {
-      msgEl.textContent = '✅ Registro exitoso. Ahora puedes iniciar sesión.';
-      msgEl.className = 'msg-success';
-    }
-    // Reset button
+    // Reset register button
     const regBtn = document.getElementById('btn-register');
-    if (regBtn && regBtn._originalText) {
-      regBtn.innerHTML = regBtn._originalText;
-      regBtn.disabled = false;
+    if (regBtn) { regBtn.disabled = false; regBtn.innerHTML = regBtn._originalText || 'Crear Cuenta'; }
+
+    // Hide register form, show success card
+    const registerBox = document.getElementById('register-box');
+    if (registerBox) registerBox.style.display = 'none';
+
+    const successCard = document.getElementById('register-success-card');
+    const emailDisplay = document.getElementById('success-email-display');
+    if (emailDisplay) emailDisplay.textContent = email;
+    if (successCard) successCard.classList.add('visible');
+
+    // Clear any old messages
+    const msgEl = document.getElementById('auth-message');
+    if (msgEl) { msgEl.textContent = ''; msgEl.className = ''; }
+
+    // Wire the "Ir a Iniciar Sesión" button
+    const btnSuccessLogin = document.getElementById('btn-success-login');
+    if (btnSuccessLogin) {
+      btnSuccessLogin.onclick = () => {
+        if (successCard) successCard.classList.remove('visible');
+        const loginBox = document.getElementById('login-box');
+        if (loginBox) loginBox.style.display = 'block';
+        // Pre-fill the email on the login form
+        const loginEmail = document.getElementById('input-login-email');
+        if (loginEmail) loginEmail.value = email;
+      };
     }
-    // Switch to login after short delay
-    setTimeout(() => {
-      document.getElementById('btn-to-login')?.click();
-    }, 1800);
+
+    // Auto-redirect countdown (3 seconds)
+    let countdown = 3;
+    const noteEl = document.querySelector('.success-redirect-note');
+    const timer = setInterval(() => {
+      countdown--;
+      if (noteEl) noteEl.textContent = `Redirigiendo al login en ${countdown}...`;
+      if (countdown <= 0) {
+        clearInterval(timer);
+        btnSuccessLogin?.click();
+      }
+    }, 1000);
+
   } catch (err) {
     const msgEl = document.getElementById('auth-message');
     if (msgEl) { msgEl.textContent = err.message; msgEl.className = ''; }
-    // Reset button
+    // Reset register button
     const regBtn = document.getElementById('btn-register');
-    if (regBtn && regBtn._originalText) {
-      regBtn.innerHTML = regBtn._originalText;
-      regBtn.disabled = false;
-    }
+    if (regBtn) { regBtn.disabled = false; regBtn.innerHTML = regBtn._originalText || 'Crear Cuenta'; }
   }
 }
 

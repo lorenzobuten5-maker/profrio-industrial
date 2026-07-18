@@ -1,7 +1,10 @@
 /**
  * login-ui.js — ProFrio Industrial
  * Handles: show/hide password, password strength meter,
- *          requirements hints, form transitions, loading states.
+ *          requirements hints, loading states, field validation feedback.
+ *
+ * NOTE: auth.js handles the actual form submit events.
+ *       This file ONLY enhances the UI, never prevents default on forms.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -14,18 +17,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById(inputId);
     if (!btn || !input) return;
 
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       const isPassword = input.type === 'password';
       input.type = isPassword ? 'text' : 'password';
       btn.classList.toggle('showing', isPassword);
       btn.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
-
-      // Keep focus on input for accessibility
       input.focus();
     });
 
-    // Prevent double-tap zoom on iOS
-    btn.addEventListener('touchend', (e) => { e.preventDefault(); btn.click(); });
+    // iOS: prevent double-tap zoom
+    btn.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const isPassword = input.type === 'password';
+      input.type = isPassword ? 'text' : 'password';
+      btn.classList.toggle('showing', isPassword);
+    });
   }
 
   setupEyeToggle('eye-login',    'input-login-password');
@@ -47,54 +55,48 @@ document.addEventListener('DOMContentLoaded', () => {
   const hintSpecial = document.getElementById('hint-special');
 
   const LEVELS = [
-    { label: 'Muy débil',   cls: 's1', bars: 1 },
-    { label: 'Débil',       cls: 's2', bars: 2 },
-    { label: 'Moderada',    cls: 's3', bars: 3 },
-    { label: 'Fuerte 💪',   cls: 's4', bars: 4 },
+    { label: 'Muy débil',  cls: 's1', bars: 1 },
+    { label: 'Débil',      cls: 's2', bars: 2 },
+    { label: 'Moderada',   cls: 's3', bars: 3 },
+    { label: 'Fuerte 💪',  cls: 's4', bars: 4 },
   ];
 
-  function checkStrength(password) {
+  function checkStrength(pw) {
     const rules = {
-      length:  password.length >= 8,
-      upper:   /[A-Z]/.test(password),
-      number:  /[0-9]/.test(password),
-      special: /[^A-Za-z0-9]/.test(password),
+      length:  pw.length >= 8,
+      upper:   /[A-Z]/.test(pw),
+      number:  /[0-9]/.test(pw),
+      special: /[^A-Za-z0-9]/.test(pw),
     };
-    const score = Object.values(rules).filter(Boolean).length;
-    return { score, rules };
+    return { score: Object.values(rules).filter(Boolean).length, rules };
   }
 
   function updateHint(el, met) {
-    if (!el) return;
-    el.classList.toggle('met', met);
+    if (el) el.classList.toggle('met', met);
   }
 
-  function updateStrengthMeter(password) {
-    if (!password) {
+  function updateStrengthMeter(pw) {
+    if (!pw) {
       if (strengthMeter) strengthMeter.style.display = 'none';
-      if (hintsBox) hintsBox.style.display = 'none';
+      if (hintsBox)      hintsBox.style.display      = 'none';
       return;
     }
-
     if (strengthMeter) strengthMeter.style.display = 'block';
-    if (hintsBox) hintsBox.style.display = 'grid';
+    if (hintsBox)      hintsBox.style.display      = 'grid';
 
-    const { score, rules } = checkStrength(password);
+    const { score, rules } = checkStrength(pw);
     const level = LEVELS[Math.max(0, score - 1)];
 
-    // Update bars
     sbars.forEach((bar, i) => {
       bar.className = 'strength-bar';
       if (i < level.bars) bar.classList.add(`active-${level.bars}`);
     });
 
-    // Update label
     if (strengthLabel) {
       strengthLabel.textContent = level.label;
-      strengthLabel.className = `strength-label ${level.cls}`;
+      strengthLabel.className   = `strength-label ${level.cls}`;
     }
 
-    // Update hints
     updateHint(hintLength,  rules.length);
     updateHint(hintUpper,   rules.upper);
     updateHint(hintNumber,  rules.number);
@@ -103,71 +105,106 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (regPassInput) {
     regPassInput.addEventListener('input', () => updateStrengthMeter(regPassInput.value));
-    regPassInput.addEventListener('focus', () => {
-      if (regPassInput.value.length > 0) {
-        if (strengthMeter) strengthMeter.style.display = 'block';
-        if (hintsBox) hintsBox.style.display = 'grid';
-      }
-    });
-    regPassInput.addEventListener('blur', () => {
-      // Keep visible so user sees result
-    });
   }
 
   /* ────────────────────────────────────────────
-     3. REAL-TIME EMAIL VALIDATION FEEDBACK
+     3. REAL-TIME EMAIL VALIDATION
      ──────────────────────────────────────────── */
-  function setupEmailValidation(inputId) {
+  function setupEmailValidation(inputId, helpId) {
     const input = document.getElementById(inputId);
     if (!input) return;
-    let touched = false;
 
-    input.addEventListener('blur', () => { touched = true; validate(); });
-    input.addEventListener('input', () => { if (touched) validate(); });
+    // Create helper text element
+    let help = document.getElementById(helpId);
+    if (!help) {
+      help = document.createElement('div');
+      help.id = helpId;
+      help.className = 'field-hint';
+      input.parentNode.appendChild(help);
+    }
+
+    let touched = false;
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     function validate() {
-      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.value.trim());
-      input.classList.toggle('input-valid', valid && input.value.length > 0);
-      input.classList.toggle('input-error', !valid && input.value.length > 0);
+      const val = input.value.trim();
+      if (!val) {
+        input.classList.remove('input-valid', 'input-error');
+        help.textContent = '';
+        return;
+      }
+      const valid = emailRe.test(val);
+      input.classList.toggle('input-valid', valid);
+      input.classList.toggle('input-error', !valid);
+      help.textContent  = valid ? '' : '✗ Ingresa un correo válido (ej: nombre@dominio.com)';
+      help.className    = `field-hint ${valid ? '' : 'field-hint-error'}`;
     }
+
+    input.addEventListener('blur',  () => { touched = true; validate(); });
+    input.addEventListener('input', () => { if (touched) validate(); });
   }
 
-  setupEmailValidation('input-login-email');
-  setupEmailValidation('input-reg-email');
+  setupEmailValidation('input-login-email',  'login-email-hint');
+  setupEmailValidation('input-reg-email',    'reg-email-hint');
 
   /* ────────────────────────────────────────────
-     4. FORM TOGGLE (login ↔ register)
+     4. NOMBRE VALIDATION
      ──────────────────────────────────────────── */
-  const loginBox    = document.getElementById('login-box');
-  const registerBox = document.getElementById('register-box');
-  const authMsg     = document.getElementById('auth-message');
+  const nombreInput = document.getElementById('input-reg-nombre');
+  if (nombreInput) {
+    let touched = false;
+    let help = document.createElement('div');
+    help.className = 'field-hint';
+    help.id = 'reg-nombre-hint';
+    nombreInput.parentNode.appendChild(help);
 
-  function showLogin() {
-    if (!loginBox || !registerBox) return;
-    registerBox.style.display = 'none';
-    loginBox.style.display    = 'block';
-    if (authMsg) authMsg.textContent = '';
-    // Reset strength meter
-    updateStrengthMeter('');
-    // Scroll to top of card on mobile
-    loginBox.closest('.auth-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.getElementById('input-login-email')?.focus();
+    function validateNombre() {
+      const val = nombreInput.value.trim();
+      if (!val) { nombreInput.classList.remove('input-valid','input-error'); help.textContent=''; return; }
+      const valid = val.length >= 3;
+      nombreInput.classList.toggle('input-valid', valid);
+      nombreInput.classList.toggle('input-error', !valid);
+      help.textContent = valid ? '' : '✗ Ingresa al menos 3 caracteres';
+      help.className = `field-hint ${valid ? '' : 'field-hint-error'}`;
+    }
+
+    nombreInput.addEventListener('blur', () => { touched = true; validateNombre(); });
+    nombreInput.addEventListener('input', () => { if (touched) validateNombre(); });
   }
-
-  function showRegister() {
-    if (!loginBox || !registerBox) return;
-    loginBox.style.display    = 'none';
-    registerBox.style.display = 'block';
-    if (authMsg) authMsg.textContent = '';
-    registerBox.closest('.auth-card')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    document.getElementById('input-reg-nombre')?.focus();
-  }
-
-  document.getElementById('btn-to-register')?.addEventListener('click', showRegister);
-  document.getElementById('btn-to-login')?.addEventListener('click', showLogin);
 
   /* ────────────────────────────────────────────
-     5. ADMIN CODE SECTION TOGGLE
+     5. LOADING STATE — triggered by form submit
+        auth.js handles the actual submit,
+        we just add the visual loading state
+     ──────────────────────────────────────────── */
+  function setupFormLoading(formId, btnId, originalText) {
+    const form = document.getElementById(formId);
+    const btn  = document.getElementById(btnId);
+    if (!form || !btn) return;
+
+    form.addEventListener('submit', () => {
+      // Small delay to let auth.js run first (it calls e.preventDefault())
+      btn.disabled = true;
+      btn._originalText = originalText;
+      btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.5rem;">
+        <svg style="animation:spin 0.8s linear infinite;width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+        </svg>
+        Procesando...
+      </span>`;
+      // Always restore after 6s max as safety net
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+      }, 6000);
+    });
+  }
+
+  setupFormLoading('loginForm',    'btn-login',    'Iniciar Sesión');
+  setupFormLoading('registerForm', 'btn-register', 'Crear Cuenta');
+
+  /* ────────────────────────────────────────────
+     6. ADMIN CODE SECTION TOGGLE
      ──────────────────────────────────────────── */
   const rolSelect        = document.getElementById('input-reg-rol');
   const adminCodeSection = document.getElementById('admin-code-section');
@@ -177,68 +214,64 @@ document.addEventListener('DOMContentLoaded', () => {
       const isJefe = rolSelect.value === 'jefe';
       adminCodeSection.style.display = isJefe ? 'block' : 'none';
       if (!isJefe) {
-        const adminInput = document.getElementById('input-admin-code');
-        if (adminInput) adminInput.value = '';
+        const ac = document.getElementById('input-admin-code');
+        if (ac) ac.value = '';
       }
     });
   }
 
   /* ────────────────────────────────────────────
-     6. LOADING STATE ON FORM SUBMIT
+     7. FORM TOGGLE (login ↔ register)
      ──────────────────────────────────────────── */
-  function setLoadingState(btnId, isLoading) {
-    const btn = document.getElementById(btnId);
-    if (!btn) return;
-    btn.disabled = isLoading;
-    if (isLoading) {
-      btn._originalText = btn.textContent;
-      btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.5rem;">
-        <svg style="animation:spin 1s linear infinite;width:16px;height:16px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-        </svg>
-        Procesando...
-      </span>`;
-    } else {
-      btn.innerHTML = btn._originalText || btn.textContent;
-    }
+  const loginBox    = document.getElementById('login-box');
+  const registerBox = document.getElementById('register-box');
+  const authMsg     = document.getElementById('auth-message');
+
+  function clearMsg() {
+    if (authMsg) { authMsg.textContent = ''; authMsg.className = ''; }
   }
 
-  document.getElementById('loginForm')?.addEventListener('submit', () => {
-    setLoadingState('btn-login', true);
-    // Auth.js handles the real submission; reset after 5s fallback
-    setTimeout(() => setLoadingState('btn-login', false), 5000);
-  });
+  function showLogin() {
+    if (!loginBox || !registerBox) return;
+    registerBox.style.display = 'none';
+    loginBox.style.display    = 'block';
+    clearMsg();
+    updateStrengthMeter('');
+    document.getElementById('input-login-email')?.focus();
+  }
 
-  document.getElementById('registerForm')?.addEventListener('submit', () => {
-    setLoadingState('btn-register', true);
-    setTimeout(() => setLoadingState('btn-register', false), 5000);
-  });
+  function showRegister() {
+    if (!loginBox || !registerBox) return;
+    loginBox.style.display    = 'none';
+    registerBox.style.display = 'block';
+    clearMsg();
+    document.getElementById('input-reg-nombre')?.focus();
+  }
+
+  document.getElementById('btn-to-register')?.addEventListener('click', showRegister);
+  document.getElementById('btn-to-login')?.addEventListener('click', showLogin);
 
   /* ────────────────────────────────────────────
-     7. ENTER KEY NAVIGATION BETWEEN FIELDS
+     8. ENTER KEY NAVIGATION BETWEEN FIELDS
      ──────────────────────────────────────────── */
-  function handleEnterNav(inputId, nextInputId) {
-    const input = document.getElementById(inputId);
-    const next  = document.getElementById(nextInputId);
-    if (!input || !next) return;
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        next.focus();
-      }
+  function enterNav(fromId, toId) {
+    const from = document.getElementById(fromId);
+    const to   = document.getElementById(toId);
+    if (!from || !to) return;
+    from.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); to.focus(); }
     });
   }
-
-  handleEnterNav('input-reg-nombre', 'input-reg-email');
-  handleEnterNav('input-reg-email',  'input-reg-password');
+  enterNav('input-reg-nombre',   'input-reg-email');
+  enterNav('input-reg-email',    'input-reg-password');
 
   /* ────────────────────────────────────────────
-     8. AUTO-CLEAR AUTH MESSAGE ON INPUT
+     9. AUTO-CLEAR MSG ON TYPING
      ──────────────────────────────────────────── */
-  ['input-login-email', 'input-login-password', 'input-reg-nombre',
-   'input-reg-email', 'input-reg-password'].forEach(id => {
+  ['input-login-email','input-login-password',
+   'input-reg-nombre','input-reg-email','input-reg-password'].forEach(id => {
     document.getElementById(id)?.addEventListener('input', () => {
-      if (authMsg && authMsg.textContent) authMsg.textContent = '';
+      if (authMsg && authMsg.textContent) clearMsg();
     });
   });
 
