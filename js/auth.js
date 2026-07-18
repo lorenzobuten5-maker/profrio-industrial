@@ -81,19 +81,6 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
     });
     if (error) throw error;
     
-    const user = data.user;
-    if (user) {
-      const { error: profileErr } = await window.supabaseClient.from('profiles').insert({
-        id: user.id, nombre, email, rol, estado: 'activo'
-      });
-      if (profileErr) throw profileErr;
-      
-      const { error: presErr } = await window.supabaseClient.from('presencia').insert({
-        id: user.id, online: false
-      });
-      if (presErr) throw presErr;
-    }
-    
     alert("Registro exitoso. Ahora puedes iniciar sesión.");
     document.getElementById('btn-to-login')?.click();
   } catch (err) {
