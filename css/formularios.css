@@ -267,3 +267,120 @@
   cursor: pointer;
 }
 
+/* Responsive Mobile Rules */
+@media (max-width: 768px) {
+  .form-wrapper {
+    padding: 1.5rem 1rem;
+    margin: 1rem 0.5rem;
+    box-shadow: var(--shadow-md);
+    width: auto;
+  }
+  
+  .form-grid.grid-2, .form-grid.grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  
+  .input-line {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+  .input-line label {
+    margin-bottom: 2px;
+  }
+  .input-line input[type="text"], .input-line input[type="number"] {
+    width: 100% !important;
+    border-bottom: 1px solid var(--primary-300);
+  }
+  
+  .form-grid.grid-2 > div, .form-grid.grid-3 > div {
+    grid-column: span 1 !important;
+  }
+  
+  /* Signatures stack vertically */
+  .signatures {
+    flex-direction: column;
+    gap: 2.5rem;
+    align-items: center;
+    margin-top: 2.5rem;
+  }
+  .sig-box {
+    width: 90%;
+  }
+  
+  /* Tables content and padding */
+  .data-table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .data-table th, .data-table td {
+    padding: 0.5rem 0.35rem;
+    font-size: 0.85rem;
+  }
+  
+  /* Fixed spacing for layout boxes */
+  .section-box {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    margin: -0.75rem -0.75rem 0.75rem -0.75rem;
+    padding: 0.4rem 0.5rem;
+  }
+  
+  /* Buttons Toolbar */
+  .action-toolbar {
+    padding: 0.75rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+    position: static;
+  }
+  .toolbar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .toolbar-actions .btn {
+    width: 100%;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+    border-radius: var(--radius-sm);
+  }
+  
+  /* Form Header for print / mobile view */
+  .form-header-print {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+  .form-number-box {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .photo-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .photo-buttons .btn {
+    width: 100%;
+  }
+  
+  .photo-section {
+    grid-column: span 1 !important;
+  }
+  
+  .flex.gap-4.mt-4.justify-center {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem !important;
+  }
+}
+
+

@@ -30,7 +30,10 @@
 
   <main class="main-wrapper">
     <header class="top-header">
-      <div class="page-title" style="margin:0;">Panel de Empleado</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button id="btn-toggle-sidebar" class="sidebar-toggle-btn">☰</button>
+        <div class="page-title" style="margin:0;">Panel de Empleado</div>
+      </div>
       <div class="user-info">
         <span id="header-user-name">Cargando...</span>
         <button id="btn-ir-perfil" class="user-avatar" style="border:none; cursor:pointer;" title="Ir al Perfil">👤</button>
@@ -72,6 +75,21 @@
   <script src="js/online-status.js"></script>
   <script>
     setTimeout(() => { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(()=>document.getElementById('loading-overlay').style.display='none', 500); }, 500);
+    
+    // Sidebar toggle logic
+    const btnToggle = document.getElementById('btn-toggle-sidebar');
+    const sidebar = document.querySelector('.sidebar');
+    if (btnToggle && sidebar) {
+      btnToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.toggle('open');
+      });
+      document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) {
+          sidebar.classList.remove('open');
+        }
+      });
+    }
   </script>
 </body>
 </html>

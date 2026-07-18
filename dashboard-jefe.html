@@ -25,7 +25,10 @@
 
   <main class="main-wrapper">
     <header class="top-header">
-      <div class="page-title" style="margin:0;">Panel Administrativo</div>
+      <div style="display:flex; align-items:center; gap:10px;">
+        <button id="btn-toggle-sidebar" class="sidebar-toggle-btn">☰</button>
+        <div class="page-title" style="margin:0;">Panel Administrativo</div>
+      </div>
       <div class="user-info">
         <span id="header-user-name">Jefe ProFrio</span>
         <div class="user-avatar">👑</div>
@@ -112,6 +115,21 @@
         document.getElementById(`panel-${tab}`).classList.add('active');
       });
     });
+
+    // Sidebar toggle logic
+    const btnToggle = document.getElementById('btn-toggle-sidebar');
+    const sidebar = document.querySelector('.sidebar');
+    if (btnToggle && sidebar) {
+      btnToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sidebar.classList.toggle('open');
+      });
+      document.addEventListener('click', (e) => {
+        if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) {
+          sidebar.classList.remove('open');
+        }
+      });
+    }
   </script>
 </body>
 </html>
