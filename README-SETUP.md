@@ -99,6 +99,43 @@ CREATE TABLE formularios_materiales (
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(usuario_id, numero)
 );
+
+-- ==========================================
+-- 4.1. FUNCIÓN DE AYUDA Y POLÍTICAS RLS (Row Level Security)
+-- ==========================================
+
+-- Función para verificar si un usuario es jefe/administrador
+CREATE OR REPLACE FUNCTION public.es_jefe()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND rol = 'jefe'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Habilitar RLS en todas las tablas
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.presencia ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.formularios_intervencion ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.formularios_materiales ENABLE ROW LEVEL SECURITY;
+
+-- Políticas para Profiles
+CREATE POLICY "Permitir lectura pública de perfiles" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Permitir registro de perfiles propios" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id);
+CREATE POLICY "Permitir actualización a dueños y jefes" ON public.profiles FOR UPDATE USING (auth.uid() = id OR public.es_jefe());
+CREATE POLICY "Permitir eliminación a jefes" ON public.profiles FOR DELETE USING (public.es_jefe());
+
+-- Políticas para Presencia
+CREATE POLICY "Permitir lectura de presencia" ON public.presencia FOR SELECT USING (true);
+CREATE POLICY "Permitir gestión de presencia propia" ON public.presencia FOR ALL USING (auth.uid() = id);
+
+-- Políticas para Formularios de Intervención
+CREATE POLICY "Gestión de intervenciones de empleado" ON public.formularios_intervencion FOR ALL USING (auth.uid() = usuario_id OR public.es_jefe());
+
+-- Políticas para Formularios de Materiales
+CREATE POLICY "Gestión de materiales de empleado" ON public.formularios_materiales FOR ALL USING (auth.uid() = usuario_id OR public.es_jefe());
 ```
 
 ## 5. Código secreto de admin
