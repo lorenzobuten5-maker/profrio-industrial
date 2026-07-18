@@ -1,7 +1,7 @@
 {
   "appId": "com.profrio.industrial",
   "appName": "ProFrio Industrial",
-  "webDir": ".",
+  "webDir": "www",
   "server": {
     "androidScheme": "https"
   },

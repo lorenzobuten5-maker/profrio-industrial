@@ -4,9 +4,10 @@
   "description": "Sistema de gestión de formularios ProFrio Industrial",
   "main": "index.html",
   "scripts": {
-    "build": "npx cap sync",
-    "ios": "npx cap run ios",
-    "open-ios": "npx cap open ios"
+    "build": "echo 'Static app - no build required'",
+    "cap-sync": "mkdir -p www && cp -r index.html dashboard-empleado.html dashboard-jefe.html perfil.html formulario-intervencion.html formulario-materiales.html css js www && npx cap sync",
+    "ios": "npm run cap-sync && npx cap run ios",
+    "open-ios": "npm run cap-sync && npx cap open ios"
   },
   "dependencies": {
     "@capacitor/core": "^6.0.0",
