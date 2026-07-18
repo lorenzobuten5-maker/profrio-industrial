@@ -89,7 +89,10 @@ async function handleLogin(email, password) {
     const lockMsg = window.loginRateLimiter.isLocked();
     if (lockMsg) {
       const msgEl = document.getElementById('auth-message');
-      if (msgEl) { msgEl.textContent = lockMsg; msgEl.style.color = 'var(--danger)'; }
+      if (msgEl) {
+        msgEl.textContent = lockMsg;
+        msgEl.className = 'visible';
+      }
       if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Iniciar Sesión'; }
       return;
     }
@@ -128,11 +131,14 @@ async function handleLogin(email, password) {
     window.location.href = profile.rol === 'jefe' ? 'dashboard-jefe.html' : 'dashboard-empleado.html';
   } catch (err) {
     const msgEl = document.getElementById('auth-message');
-    if (msgEl) { msgEl.textContent = err.message; msgEl.className = ''; }
+    if (msgEl) {
+      msgEl.textContent = err.message;
+      msgEl.className = 'visible';
+    }
     // Reset login button loading state
     const loginBtn = document.getElementById('btn-login');
-    if (loginBtn && loginBtn._originalText) {
-      loginBtn.innerHTML = loginBtn._originalText;
+    if (loginBtn) {
+      loginBtn.innerHTML = 'Iniciar Sesión';
       loginBtn.disabled = false;
     }
   }
@@ -157,14 +163,27 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
       throw new Error("Código de administrador inválido");
     }
     
-    const { count, error: countErr } = await window.supabaseClient
-      .from('profiles')
-      .select('*', { count: 'exact', head: true })
-      .eq('rol', rol);
-      
-    if (countErr) throw countErr;
-    if (rol === 'jefe'    && count >= MAX_JEFES)     throw new Error("Límite de jefes alcanzado");
-    if (rol === 'empleado' && count >= MAX_EMPLEADOS) throw new Error("Límite de empleados alcanzado");
+    // Safety limit check (catches RLS errors if anonymous selection is blocked)
+    let limitReached = false;
+    try {
+      const { count, error: countErr } = await window.supabaseClient
+        .from('profiles')
+        .select('*', { count: 'exact', head: true })
+        .eq('rol', rol);
+        
+      if (countErr) {
+        console.warn("RLS block reading profiles count, skipping local count verification.", countErr);
+      } else {
+        if (rol === 'jefe'    && count >= MAX_JEFES)     limitReached = true;
+        if (rol === 'empleado' && count >= MAX_EMPLEADOS) limitReached = true;
+      }
+    } catch (e) {
+      console.warn("Could not check role limits, proceeding with registration.", e);
+    }
+    
+    if (limitReached) {
+      throw new Error(`Límite de cuentas para el rol '${rol === 'jefe' ? 'Jefe' : 'Empleado'}' alcanzado.`);
+    }
     
     const { data, error } = await window.supabaseClient.auth.signUp({
       email, password, options: { data: { nombre, rol } }
@@ -173,7 +192,7 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
     
     // Reset register button
     const regBtn = document.getElementById('btn-register');
-    if (regBtn) { regBtn.disabled = false; regBtn.innerHTML = regBtn._originalText || 'Crear Cuenta'; }
+    if (regBtn) { regBtn.disabled = false; regBtn.innerHTML = 'Crear Cuenta'; }
 
     // Hide register form, show success card
     const registerBox = document.getElementById('register-box');
@@ -195,14 +214,13 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
         if (successCard) successCard.classList.remove('visible');
         const loginBox = document.getElementById('login-box');
         if (loginBox) loginBox.style.display = 'block';
-        // Pre-fill the email on the login form
         const loginEmail = document.getElementById('input-login-email');
         if (loginEmail) loginEmail.value = email;
       };
     }
 
-    // Auto-redirect countdown (3 seconds)
-    let countdown = 3;
+    // Auto-redirect countdown (4 seconds)
+    let countdown = 4;
     const noteEl = document.querySelector('.success-redirect-note');
     const timer = setInterval(() => {
       countdown--;
@@ -215,10 +233,13 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
 
   } catch (err) {
     const msgEl = document.getElementById('auth-message');
-    if (msgEl) { msgEl.textContent = err.message; msgEl.className = ''; }
+    if (msgEl) {
+      msgEl.textContent = err.message;
+      msgEl.className = 'visible';
+    }
     // Reset register button
     const regBtn = document.getElementById('btn-register');
-    if (regBtn) { regBtn.disabled = false; regBtn.innerHTML = regBtn._originalText || 'Crear Cuenta'; }
+    if (regBtn) { regBtn.disabled = false; regBtn.innerHTML = 'Crear Cuenta'; }
   }
 }
 
