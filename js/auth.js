@@ -71,12 +71,26 @@ async function initAuth() {
 }
 
 async function handleLogin(email, password) {
+  // Set login button loading state
+  const loginBtn = document.getElementById('btn-login');
+  if (loginBtn) {
+    loginBtn.disabled = true;
+    loginBtn._originalText = 'Iniciar Sesión';
+    loginBtn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.5rem;">
+      <svg style="animation:spin 0.8s linear infinite;width:16px;height:16px;flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      Procesando...
+    </span>`;
+  }
+
   // Rate limit check
   if (window.loginRateLimiter) {
     const lockMsg = window.loginRateLimiter.isLocked();
     if (lockMsg) {
       const msgEl = document.getElementById('auth-message');
       if (msgEl) { msgEl.textContent = lockMsg; msgEl.style.color = 'var(--danger)'; }
+      if (loginBtn) { loginBtn.disabled = false; loginBtn.innerHTML = 'Iniciar Sesión'; }
       return;
     }
   }
@@ -125,6 +139,19 @@ async function handleLogin(email, password) {
 }
 
 async function handleRegister(nombre, email, password, rol, adminCode) {
+  // Set register button loading state
+  const regBtn = document.getElementById('btn-register');
+  if (regBtn) {
+    regBtn.disabled = true;
+    regBtn._originalText = 'Crear Cuenta';
+    regBtn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.5rem;">
+      <svg style="animation:spin 0.8s linear infinite;width:16px;height:16px;flex-shrink:0;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      Procesando...
+    </span>`;
+  }
+
   try {
     if (rol === 'jefe' && adminCode !== ADMIN_SECRET_CODE) {
       throw new Error("Código de administrador inválido");

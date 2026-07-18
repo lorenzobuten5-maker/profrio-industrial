@@ -114,7 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const input = document.getElementById(inputId);
     if (!input) return;
 
-    // Create helper text element
     let help = document.getElementById(helpId);
     if (!help) {
       help = document.createElement('div');
@@ -123,25 +122,58 @@ document.addEventListener('DOMContentLoaded', () => {
       input.parentNode.appendChild(help);
     }
 
-    let touched = false;
     const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
     function validate() {
-      const val = input.value.trim();
+      const val = input.value;
       if (!val) {
         input.classList.remove('input-valid', 'input-error');
         help.textContent = '';
         return;
       }
-      const valid = emailRe.test(val);
+
+      if (/\s/.test(val)) {
+        input.classList.remove('input-valid');
+        input.classList.add('input-error');
+        help.textContent = '✗ El correo no debe contener espacios';
+        help.className = 'field-hint field-hint-error';
+        return;
+      }
+
+      if (!val.includes('@')) {
+        input.classList.remove('input-valid');
+        input.classList.add('input-error');
+        help.textContent = '✗ Falta el símbolo @ en el correo';
+        help.className = 'field-hint field-hint-error';
+        return;
+      }
+
+      const parts = val.split('@');
+      if (parts.length > 2) {
+        input.classList.remove('input-valid');
+        input.classList.add('input-error');
+        help.textContent = '✗ El correo solo debe tener un símbolo @';
+        help.className = 'field-hint field-hint-error';
+        return;
+      }
+
+      if (parts[1] && !parts[1].includes('.')) {
+        input.classList.remove('input-valid');
+        input.classList.add('input-error');
+        help.textContent = '✗ Falta el dominio (ej: .com, .es) después del @';
+        help.className = 'field-hint field-hint-error';
+        return;
+      }
+
+      const valid = emailRe.test(val.trim());
       input.classList.toggle('input-valid', valid);
       input.classList.toggle('input-error', !valid);
-      help.textContent  = valid ? '' : '✗ Ingresa un correo válido (ej: nombre@dominio.com)';
-      help.className    = `field-hint ${valid ? '' : 'field-hint-error'}`;
+      help.textContent = valid ? '✓ Correo válido' : '✗ Completa el formato (ej: usuario@dominio.com)';
+      help.className = `field-hint ${valid ? 'field-hint-ok' : 'field-hint-error'}`;
     }
 
-    input.addEventListener('blur',  () => { touched = true; validate(); });
-    input.addEventListener('input', () => { if (touched) validate(); });
+    input.addEventListener('input', validate);
+    input.addEventListener('blur', validate);
   }
 
   setupEmailValidation('input-login-email',  'login-email-hint');
@@ -152,56 +184,39 @@ document.addEventListener('DOMContentLoaded', () => {
      ──────────────────────────────────────────── */
   const nombreInput = document.getElementById('input-reg-nombre');
   if (nombreInput) {
-    let touched = false;
     let help = document.createElement('div');
     help.className = 'field-hint';
     help.id = 'reg-nombre-hint';
     nombreInput.parentNode.appendChild(help);
 
     function validateNombre() {
-      const val = nombreInput.value.trim();
-      if (!val) { nombreInput.classList.remove('input-valid','input-error'); help.textContent=''; return; }
-      const valid = val.length >= 3;
+      const val = nombreInput.value;
+      if (!val) {
+        nombreInput.classList.remove('input-valid', 'input-error');
+        help.textContent = '';
+        return;
+      }
+
+      // Check for invalid characters (numbers, special characters)
+      const invalidChars = /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g;
+      if (invalidChars.test(val)) {
+        nombreInput.classList.remove('input-valid');
+        nombreInput.classList.add('input-error');
+        help.textContent = '✗ El nombre solo debe contener letras y espacios';
+        help.className = 'field-hint field-hint-error';
+        return;
+      }
+
+      const valid = val.trim().length >= 3;
       nombreInput.classList.toggle('input-valid', valid);
       nombreInput.classList.toggle('input-error', !valid);
-      help.textContent = valid ? '' : '✗ Ingresa al menos 3 caracteres';
-      help.className = `field-hint ${valid ? '' : 'field-hint-error'}`;
+      help.textContent = valid ? '✓ Nombre válido' : '✗ El nombre debe tener al menos 3 letras';
+      help.className = `field-hint ${valid ? 'field-hint-ok' : 'field-hint-error'}`;
     }
 
-    nombreInput.addEventListener('blur', () => { touched = true; validateNombre(); });
-    nombreInput.addEventListener('input', () => { if (touched) validateNombre(); });
+    nombreInput.addEventListener('input', validateNombre);
+    nombreInput.addEventListener('blur', validateNombre);
   }
-
-  /* ────────────────────────────────────────────
-     5. LOADING STATE — triggered by form submit
-        auth.js handles the actual submit,
-        we just add the visual loading state
-     ──────────────────────────────────────────── */
-  function setupFormLoading(formId, btnId, originalText) {
-    const form = document.getElementById(formId);
-    const btn  = document.getElementById(btnId);
-    if (!form || !btn) return;
-
-    form.addEventListener('submit', () => {
-      // Small delay to let auth.js run first (it calls e.preventDefault())
-      btn.disabled = true;
-      btn._originalText = originalText;
-      btn.innerHTML = `<span style="display:inline-flex;align-items:center;gap:0.5rem;">
-        <svg style="animation:spin 0.8s linear infinite;width:16px;height:16px;flex-shrink:0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-          <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-        </svg>
-        Procesando...
-      </span>`;
-      // Always restore after 6s max as safety net
-      setTimeout(() => {
-        btn.disabled = false;
-        btn.innerHTML = originalText;
-      }, 6000);
-    });
-  }
-
-  setupFormLoading('loginForm',    'btn-login',    'Iniciar Sesión');
-  setupFormLoading('registerForm', 'btn-register', 'Crear Cuenta');
 
   /* ────────────────────────────────────────────
      6. ADMIN CODE SECTION TOGGLE
