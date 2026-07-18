@@ -83,7 +83,7 @@ async function cargarUsuarios() {
     const { data, error } = await window.supabaseClient
       .from('profiles')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('nombre');
     if (error) throw error;
 
     const tbody = document.getElementById('users-table-body');
@@ -98,7 +98,7 @@ async function cargarUsuarios() {
     data.forEach(user => {
       const tr = document.createElement('tr');
       const isBloqueado = user.estado === 'bloqueado' || user.estado === 'baneado';
-      const fechaReg = user.created_at ? new Date(user.created_at).toLocaleDateString('es-DO') : '—';
+      const fechaReg = '—';
 
       let estadoHTML = '';
       if (user.estado === 'activo') {
