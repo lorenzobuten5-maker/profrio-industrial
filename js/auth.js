@@ -149,7 +149,29 @@ window.getCurrentProfile = getCurrentProfile;
 window.guardRoute = guardRoute;
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('btn-login')) {
-    initAuth();
+  const loginForm = document.getElementById('loginForm');
+  if (loginForm) {
+    loginForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('input-login-email').value;
+      const password = document.getElementById('input-login-password').value;
+      handleLogin(email, password);
+    });
   }
+
+  const registerForm = document.getElementById('registerForm');
+  if (registerForm) {
+    registerForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('input-reg-nombre').value;
+      const email = document.getElementById('input-reg-email').value;
+      const password = document.getElementById('input-reg-password').value;
+      const rol = document.getElementById('input-reg-rol').value;
+      const adminCode = document.getElementById('input-admin-code')?.value || '';
+      handleRegister(nombre, email, password, rol, adminCode);
+    });
+  }
+
+  // Verificar sesión al cargar
+  initAuth();
 });
