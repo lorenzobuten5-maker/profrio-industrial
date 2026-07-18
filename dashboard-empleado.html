@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Empleado — ProFrio Industrial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+  
+  <div id="loading-overlay">
+    <div class="spinner"></div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span>❄️</span> ProFrio
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard-empleado.html" class="active">🏠 Dashboard</a>
+      <a href="formulario-intervencion.html">📋 Nueva Intervención</a>
+      <a href="formulario-materiales.html">📦 Solicitud Materiales</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:white;">Cerrar Sesión</button>
+    </div>
+  </aside>
+
+  <main class="main-wrapper">
+    <header class="top-header">
+      <div class="page-title" style="margin:0;">Panel de Empleado</div>
+      <div class="user-info">
+        <span id="header-user-name">Cargando...</span>
+        <button id="btn-ir-perfil" class="user-avatar" style="border:none; cursor:pointer;" title="Ir al Perfil">👤</button>
+      </div>
+    </header>
+
+    <div class="content-area">
+      <h2 class="page-title">¿Qué deseas hacer hoy?</h2>
+      
+      <div class="action-cards">
+        <a href="formulario-intervencion.html" id="btn-nueva-intervencion" class="action-card">
+          <div class="action-icon">📋</div>
+          <h3>Hoja de Intervención</h3>
+          <p>Crear un nuevo reporte de servicio técnico o mantenimiento.</p>
+        </a>
+        
+        <a href="formulario-materiales.html" id="btn-nueva-materiales" class="action-card">
+          <div class="action-icon">📦</div>
+          <h3>Solicitud de Materiales</h3>
+          <p>Solicitar piezas o insumos al almacén de ProFrio.</p>
+        </a>
+      </div>
+
+      <div class="list-container">
+        <div class="list-header">
+          <h3>Formularios Recientes</h3>
+          <a href="perfil.html" style="font-size: 0.9rem; color: var(--primary-600); text-decoration: none; font-weight:600;">Ver todos →</a>
+        </div>
+        <div id="recent-forms-list">
+          <div style="padding: 2rem; text-align: center; color: var(--gray-400);">Cargando historial...</div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/online-status.js"></script>
+  <script>
+    setTimeout(() => { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(()=>document.getElementById('loading-overlay').style.display='none', 500); }, 500);
+  </script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicitud de Materiales</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/formularios.css">
+</head>
+<body>
+
+  <div id="save-status"></div>
+
+  <div class="action-toolbar">
+    <button id="btn-back" class="btn btn-secondary">← Volver</button>
+    <div class="toolbar-actions">
+      <button id="btn-guardar" class="btn btn-success">💾 Guardar</button>
+      <button id="btn-imprimir" class="btn btn-secondary">🖨️ Imprimir</button>
+      <button id="btn-pdf" class="btn btn-primary">📄 PDF</button>
+      <button id="btn-email" class="btn btn-outline">✉️ Email</button>
+    </div>
+  </div>
+
+  <div class="form-wrapper">
+    <form id="form-materiales">
+      
+      <div class="form-header-print">
+        <div>
+          <div class="form-logo">❄️ ProFrio Industrial</div>
+          <div class="form-company-info">
+            ProFrio Industrial E.I.R.L.<br>
+            Santo Domingo, D.N.<br>
+            profrio.industrial@gmail.com<br>
+            RNC 1-31754431-2<br>
+            Tel: 829-727-0103
+          </div>
+        </div>
+        <div style="text-align:right;">
+          <div class="form-number-box mb-4">
+            No. <span id="form-numero">00000</span>
+          </div>
+          <div style="display:flex; align-items:center; gap:5px; border:1px solid #000; padding:5px;">
+            <b>FECHA:</b>
+            <input type="text" id="inp-fecha-dia" style="width:30px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="DD"> /
+            <input type="text" id="inp-fecha-mes" style="width:30px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="MM"> /
+            <input type="text" id="inp-fecha-anio" style="width:40px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="AAAA">
+          </div>
+        </div>
+      </div>
+
+      <h2 class="form-title">SOLICITUD DE MATERIALES Y SUMINISTROS DE ALMACÉN</h2>
+
+      <div class="section-box">
+        <div class="form-grid grid-2">
+          <div class="input-line" style="grid-column: span 2;">
+            <label>Cliente:</label>
+            <input type="text" id="inp-cliente">
+          </div>
+          <div class="input-line" style="grid-column: span 2;">
+            <label>Dirección:</label>
+            <input type="text" id="inp-direccion">
+          </div>
+          <div class="input-line">
+            <label>Tel.:</label>
+            <input type="text" id="inp-telefono">
+          </div>
+        </div>
+      </div>
+
+      <table class="data-table" id="materials-table">
+        <thead>
+          <tr>
+            <th style="width:10%;">CANT.</th>
+            <th style="width:50%;">DESCRIPCIÓN</th>
+            <th style="width:20%;">PRECIO UNITARIO</th>
+            <th style="width:20%;">TOTAL</th>
+          </tr>
+        </thead>
+        <tbody id="items-tbody">
+          <tr>
+            <td><input type="number" class="item-cant"></td>
+            <td><input type="text" class="item-desc"></td>
+            <td><input type="number" class="item-precio"></td>
+            <td><input type="number" class="item-total" readonly></td>
+          </tr>
+          <tr>
+            <td><input type="number" class="item-cant"></td>
+            <td><input type="text" class="item-desc"></td>
+            <td><input type="number" class="item-precio"></td>
+            <td><input type="number" class="item-total" readonly></td>
+          </tr>
+          <tr>
+            <td><input type="number" class="item-cant"></td>
+            <td><input type="text" class="item-desc"></td>
+            <td><input type="number" class="item-precio"></td>
+            <td><input type="number" class="item-total" readonly></td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="flex justify-between items-center mb-6">
+        <button type="button" id="btn-add-item" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.75rem;">+ Agregar fila</button>
+        <div style="font-size: 1.25rem; font-weight: bold;">
+          TOTAL: $ <span id="total-display">0.00</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 2rem; margin-bottom: 1.5rem;">
+        <div class="textarea-container">
+          <label>OBSERVACIONES:</label>
+          <textarea id="ta-observaciones" style="width: 100%; min-height: 80px; padding: 8px; border: 1px solid #000;"></textarea>
+        </div>
+      </div>
+
+      <div class="photo-section">
+        <label>📷 FOTOS Y CAPTURAS EN OBSERVACIONES:</label>
+        <div class="photo-buttons">
+          <button type="button" id="btn-camera" class="btn btn-secondary">📷 Tirar Foto</button>
+          <button type="button" id="btn-upload" class="btn btn-secondary">📁 Subir de Galería</button>
+          <input type="file" id="inp-camera" accept="image/*" capture="environment" style="display:none;">
+          <input type="file" id="inp-upload" accept="image/*" multiple style="display:none;">
+        </div>
+        <div class="photos-grid" id="photos-preview"></div>
+      </div>
+
+      <div class="signatures">
+        <div class="sig-box">
+          <div class="sig-line"></div>
+          <input type="text" id="inp-despachado" placeholder="DESPACHADO POR">
+        </div>
+        <div class="sig-box">
+          <div class="sig-line"></div>
+          <input type="text" id="inp-recibido" placeholder="RECIBIDO CONFORME">
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Email Modal -->
+  <div id="email-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Enviar por Email</h3>
+      <div class="form-group mt-4">
+        <label for="email-destino" class="form-label">Correo del destinatario:</label>
+        <input type="email" id="email-destino" class="form-input" placeholder="cliente@correo.com">
+      </div>
+      <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px;">
+        <button id="btn-cancel-email" class="btn btn-secondary">Cancelar</button>
+        <button id="btn-enviar-email" class="btn btn-primary">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox Modal for Photo Preview -->
+  <div id="lightbox-modal" class="lightbox-modal">
+    <span class="lightbox-close" id="lightbox-close">&times;</span>
+    <img class="lightbox-content" id="lightbox-img" src="" alt="Vista previa">
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/online-status.js"></script>
+  <script>
+    document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
+    document.getElementById('btn-imprimir').addEventListener('click', () => { window.print(); });
+    
+    // Add row logic (Visual only for now, the JS will handle logic but good to have)
+    document.getElementById('btn-add-item').addEventListener('click', () => {
+      const tbody = document.getElementById('items-tbody');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><input type="number" class="item-cant"></td>
+        <td><input type="text" class="item-desc"></td>
+        <td><input type="number" class="item-precio"></td>
+        <td><input type="number" class="item-total" readonly></td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+    // Email Modal UI Logic
+    document.getElementById('btn-email').addEventListener('click', (e) => { e.preventDefault(); document.getElementById('email-modal').classList.add('active'); });
+    document.getElementById('btn-cancel-email').addEventListener('click', () => { document.getElementById('email-modal').classList.remove('active'); });
+  </script>
+</body>
+</html>

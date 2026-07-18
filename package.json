@@ -1,0 +1,16 @@
+{
+  "name": "profrio-industrial",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de formularios ProFrio Industrial",
+  "main": "index.html",
+  "scripts": {
+    "build": "npx cap sync",
+    "ios": "npx cap run ios",
+    "open-ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/cli": "^6.0.0"
+  }
+}

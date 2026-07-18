@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ProFrio Industrial — Acceso</title>
+  <meta name="description" content="Sistema de gestión de formularios para ProFrio Industrial E.I.R.L.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+  <div id="auth-container">
+    <div class="auth-left">
+      <div class="brand-wrapper">
+        <div class="brand-logo">
+          <span>❄️</span> ProFrio
+        </div>
+        <div class="brand-slogan">Soluciones en Refrigeración Industrial y Comercial</div>
+      </div>
+    </div>
+    
+    <div class="auth-right">
+      <div class="auth-card">
+        
+        <!-- Login Box -->
+        <div id="login-box">
+          <div class="auth-header">
+            <h2>Bienvenido</h2>
+            <p>Ingresa tus credenciales para continuar</p>
+          </div>
+          <form id="loginForm">
+            <div class="form-group">
+              <label class="form-label" for="input-login-email">Correo Electrónico</label>
+              <input type="email" id="input-login-email" class="form-input" required placeholder="tu@correo.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="input-login-password">Contraseña</label>
+              <input type="password" id="input-login-password" class="form-input" required placeholder="••••••••">
+            </div>
+            <button type="submit" id="btn-login" class="btn btn-primary w-full">Iniciar Sesión</button>
+          </form>
+          <div class="auth-footer">
+            ¿No tienes cuenta? <button id="btn-to-register" type="button">Regístrate aquí</button>
+          </div>
+        </div>
+
+        <!-- Register Box -->
+        <div id="register-box" style="display: none;">
+          <div class="auth-header">
+            <h2>Crear Cuenta</h2>
+            <p>Regístrate en el sistema ProFrio</p>
+          </div>
+          <form id="registerForm">
+            <div class="form-group">
+              <label class="form-label" for="input-reg-nombre">Nombre Completo</label>
+              <input type="text" id="input-reg-nombre" class="form-input" required placeholder="Juan Pérez">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="input-reg-email">Correo Electrónico</label>
+              <input type="email" id="input-reg-email" class="form-input" required placeholder="tu@correo.com">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="input-reg-password">Contraseña</label>
+              <input type="password" id="input-reg-password" class="form-input" required placeholder="••••••••">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="input-reg-rol">Rol</label>
+              <select id="input-reg-rol" class="form-input" required>
+                <option value="empleado">Empleado</option>
+                <option value="jefe">Jefe / Administrador</option>
+              </select>
+            </div>
+            <div class="form-group" id="admin-code-section" style="display: none;">
+              <label class="form-label" for="input-admin-code">Código de Administrador</label>
+              <input type="password" id="input-admin-code" class="form-input" placeholder="Código secreto">
+            </div>
+            <button type="submit" id="btn-register" class="btn btn-primary w-full">Registrarse</button>
+          </form>
+          <div class="auth-footer">
+            ¿Ya tienes cuenta? <button id="btn-to-login" type="button">Inicia sesión</button>
+          </div>
+        </div>
+
+        <div id="auth-message"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Toggle logic for UI
+    document.getElementById('btn-to-register').addEventListener('click', () => {
+      document.getElementById('login-box').style.display = 'none';
+      document.getElementById('register-box').style.display = 'block';
+      document.getElementById('auth-message').textContent = '';
+    });
+    document.getElementById('btn-to-login').addEventListener('click', () => {
+      document.getElementById('register-box').style.display = 'none';
+      document.getElementById('login-box').style.display = 'block';
+      document.getElementById('auth-message').textContent = '';
+    });
+    document.getElementById('input-reg-rol').addEventListener('change', (e) => {
+      document.getElementById('admin-code-section').style.display = e.target.value === 'jefe' ? 'block' : 'none';
+    });
+  </script>
+</body>
+</html>

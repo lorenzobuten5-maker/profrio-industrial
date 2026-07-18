@@ -1,0 +1,14 @@
+{
+  "appId": "com.profrio.industrial",
+  "appName": "ProFrio Industrial",
+  "webDir": ".",
+  "server": {
+    "androidScheme": "https"
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 3000,
+      "backgroundColor": "#0C2340"
+    }
+  }
+}

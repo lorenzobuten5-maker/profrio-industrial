@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Jefe — ProFrio Industrial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body>
+
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <span>❄️</span> ProFrio Admin
+    </div>
+    <nav class="sidebar-nav">
+      <a href="dashboard-jefe.html" class="active">🛡️ Administración</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:white;">Cerrar Sesión</button>
+    </div>
+  </aside>
+
+  <main class="main-wrapper">
+    <header class="top-header">
+      <div class="page-title" style="margin:0;">Panel Administrativo</div>
+      <div class="user-info">
+        <span id="header-user-name">Jefe ProFrio</span>
+        <div class="user-avatar">👑</div>
+      </div>
+    </header>
+
+    <div class="content-area">
+      
+      <div class="tabs-container">
+        <button id="tab-usuarios" class="tab-btn active">Gestión de Usuarios</button>
+        <button id="tab-online" class="tab-btn">En Línea Ahora</button>
+        <button id="tab-formularios" class="tab-btn">Formularios</button>
+      </div>
+
+      <!-- Panel Usuarios -->
+      <div id="panel-usuarios" class="tab-panel active">
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Fecha Registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="users-table-body">
+              <!-- JS fills this -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Panel Online -->
+      <div id="panel-online" class="tab-panel">
+        <div id="online-users-list" class="online-list">
+          <!-- JS fills this -->
+        </div>
+      </div>
+
+      <!-- Panel Formularios -->
+      <div id="panel-formularios" class="tab-panel">
+        <div id="forms-stats-container">
+          <!-- JS fills this -->
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Modal Ban -->
+  <div id="ban-modal" class="modal-overlay">
+    <div class="modal-content">
+      <h3>Banear Usuario</h3>
+      <p>Usuario: <span id="ban-modal-username">...</span></p>
+      <div class="form-group mt-4">
+        <label for="ban-duration-days" class="form-label">Días de baneo:</label>
+        <input type="number" id="ban-duration-days" class="form-input" min="1" value="7">
+      </div>
+      <div class="modal-actions">
+        <button id="btn-cancel-ban" class="btn btn-secondary">Cancelar</button>
+        <button id="btn-confirm-ban" class="btn btn-danger">Banear</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/online-status.js"></script>
+  <script src="js/admin.js"></script>
+  <script>
+    // Tab switching logic
+    const tabs = ['usuarios', 'online', 'formularios'];
+    tabs.forEach(tab => {
+      document.getElementById(`tab-${tab}`).addEventListener('click', (e) => {
+        tabs.forEach(t => {
+          document.getElementById(`tab-${t}`).classList.remove('active');
+          document.getElementById(`panel-${t}`).classList.remove('active');
+        });
+        e.target.classList.add('active');
+        document.getElementById(`panel-${tab}`).classList.add('active');
+      });
+    });
+  </script>
+</body>
+</html>

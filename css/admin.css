@@ -1,0 +1,134 @@
+/* Admin Dashboard Specific Styles */
+
+/* Tabs */
+.tabs-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--gray-200);
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-600);
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s;
+}
+
+.tab-btn::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; width: 100%; height: 3px;
+  background: var(--primary-600);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.tab-btn:hover { color: var(--primary-900); }
+.tab-btn.active { color: var(--primary-900); }
+.tab-btn.active::after { transform: scaleX(1); }
+
+/* Tab Panels */
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.tab-panel.active {
+  display: block;
+}
+
+/* Admin Tables */
+.admin-table-container {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background: var(--primary-50);
+  color: var(--primary-900);
+  text-align: left;
+  padding: 1rem 1.5rem;
+  font-weight: 600;
+  border-bottom: 2px solid var(--gray-200);
+}
+
+.admin-table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid var(--gray-100);
+  vertical-align: middle;
+}
+
+.admin-table tr:hover { background: var(--off-white); }
+
+/* Action Buttons in Table */
+.table-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+.btn-icon {
+  width: 32px; height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  border: none; cursor: pointer; color: white;
+  transition: transform 0.2s;
+}
+.btn-icon:hover { transform: scale(1.1); }
+.btn-block { background: var(--warning); }
+.btn-ban { background: var(--primary-600); }
+.btn-delete { background: var(--danger); }
+
+/* Online Status List */
+.online-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.online-card {
+  background: var(--white);
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.status-dot {
+  width: 12px; height: 12px;
+  background: var(--success);
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.2);
+  animation: pulse 2s infinite;
+}
+
+.user-info h4 { margin: 0; font-size: 1rem; }
+.user-info p { margin: 0; font-size: 0.8rem; color: var(--gray-400); }
+
+/* Forms Stats */
+#forms-stats-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+.stat-card {
+  background: var(--white); padding: 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);
+}
+
+/* Ban Modal Fixes */
+#ban-modal .modal-content { text-align: center; }
+#ban-modal h3 { margin-bottom: 1rem; }
+#ban-modal-username { color: var(--danger); font-weight: bold; }
+.modal-actions { display: flex; justify-content: center; gap: 1rem; margin-top: 1.5rem; }
