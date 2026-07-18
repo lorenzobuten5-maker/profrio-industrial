@@ -260,8 +260,33 @@ async function getCurrentUser() {
 async function getCurrentProfile() {
   const user = await getCurrentUser();
   if (!user) return null;
-  const { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
-  if (error) return null;
+  
+  let { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
+  
+  if (error || !data) {
+    console.warn("Perfil no encontrado en base de datos. Auto-creando desde metadatos...");
+    const nombre = user.user_metadata?.nombre || user.email.split('@')[0];
+    const rol = user.user_metadata?.rol || 'empleado';
+    
+    const { data: newProfile, error: insertError } = await window.supabaseClient
+      .from('profiles')
+      .insert({
+        id: user.id,
+        nombre: nombre,
+        email: user.email,
+        rol: rol,
+        estado: 'activo'
+      })
+      .select()
+      .single();
+      
+    if (insertError) {
+      console.error("Error al auto-crear perfil:", insertError);
+      return null;
+    }
+    data = newProfile;
+  }
+  
   return data;
 }
 

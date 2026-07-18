@@ -28,6 +28,11 @@ CREATE POLICY "profiles_update_own"
   ON profiles FOR UPDATE
   USING (auth.uid() = id);
 
+-- El usuario puede insertar su propio perfil (autocuidado en el registro/login)
+CREATE POLICY "profiles_insert_own"
+  ON profiles FOR INSERT
+  WITH CHECK (auth.uid() = id);
+
 -- El jefe puede actualizar cualquier perfil (banear, bloquear)
 CREATE POLICY "profiles_update_jefe"
   ON profiles FOR UPDATE
