@@ -6,41 +6,65 @@ let todosLosFormularios = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (window.guardRoute) await window.guardRoute(['empleado', 'jefe']);
-  
-  const profile = await window.getCurrentProfile?.();
-  if (!profile) return;
-  
+
+  // Determine which profile to show
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetUid = urlParams.get('uid');     // admin viewing another user
+  const myProfile = await window.getCurrentProfile?.();
+  if (!myProfile) return;
+
+  // If uid param is present, load that user (only jefe can do this)
+  let profile = myProfile;
+  let isAdminView = false;
+  if (targetUid && myProfile.rol === 'jefe' && targetUid !== myProfile.id) {
+    try {
+      const { data, error } = await window.supabaseClient
+        .from('profiles')
+        .select('*')
+        .eq('id', targetUid)
+        .single();
+      if (!error && data) { profile = data; isAdminView = true; }
+    } catch (_) {}
+  }
+
+  // Populate header
   const initialsEl = document.getElementById('avatar-initials');
   if (initialsEl) initialsEl.textContent = (profile.nombre || 'U').substring(0, 2).toUpperCase();
-  
-  const nameEl = document.getElementById('profile-name');
-  if (nameEl) nameEl.textContent = profile.nombre;
-  
-  const emailEl = document.getElementById('profile-email');
-  if (emailEl) emailEl.textContent = profile.email;
-  
+  document.getElementById('profile-name')  && (document.getElementById('profile-name').textContent  = profile.nombre);
+  document.getElementById('profile-email') && (document.getElementById('profile-email').textContent = profile.email);
   const roleEl = document.getElementById('profile-role');
-  if (roleEl) roleEl.textContent = profile.rol;
-  
+  if (roleEl) roleEl.textContent = profile.rol === 'jefe' ? '👑 Jefe' : '👷 Empleado';
+
+  // Admin view banner
+  if (isAdminView) {
+    const banner = document.createElement('div');
+    banner.style.cssText = 'background:var(--primary-50);border:1px solid var(--primary-200);border-radius:var(--radius-md);padding:0.6rem 1rem;margin-bottom:1rem;font-size:0.85rem;color:var(--primary-800);display:flex;align-items:center;gap:0.5rem;';
+    banner.innerHTML = `🛡️ <strong>Vista de Administrador</strong> — Viendo perfil de ${profile.nombre}`;
+    document.querySelector('main.container')?.insertBefore(banner, document.querySelector('.card'));
+  }
+
+  // Back button
   const btnBack = document.getElementById('btn-back');
   if (btnBack) btnBack.addEventListener('click', () => {
-    window.location.href = profile.rol === 'jefe' ? 'dashboard-jefe.html' : 'dashboard-empleado.html';
+    if (isAdminView) {
+      window.location.href = 'dashboard-jefe.html';
+    } else {
+      window.location.href = myProfile.rol === 'jefe' ? 'dashboard-jefe.html' : 'dashboard-empleado.html';
+    }
   });
-  
+
   const btnLogout = document.getElementById('btn-logout');
   if (btnLogout) btnLogout.addEventListener('click', () => window.handleLogout?.());
-  
+
   await cargarFormularios(profile.id);
-  
+
   const searchInput = document.getElementById('search-input');
   const btnSearch = document.getElementById('btn-search');
   if (btnSearch && searchInput) {
     btnSearch.addEventListener('click', () => aplicarFiltros());
-    searchInput.addEventListener('keyup', (e) => {
-      if (e.key === 'Enter') aplicarFiltros();
-    });
+    searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') aplicarFiltros(); });
   }
-  
+
   document.getElementById('filter-all')?.addEventListener('click', () => setFiltroTipo('todos'));
   document.getElementById('filter-intervencion')?.addEventListener('click', () => setFiltroTipo('intervencion'));
   document.getElementById('filter-materiales')?.addEventListener('click', () => setFiltroTipo('materiales'));

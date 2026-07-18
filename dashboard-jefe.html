@@ -3,17 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Jefe — ProFrio Industrial</title>
+  <title>Panel Administrativo — ProFrio Industrial</title>
+  <meta name="description" content="Panel de administración de ProFrio Industrial E.I.R.L.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=5">
-  <link rel="stylesheet" href="css/dashboard.css?v=5">
-  <link rel="stylesheet" href="css/admin.css?v=5">
+  <link rel="stylesheet" href="css/global.css?v=6">
+  <link rel="stylesheet" href="css/dashboard.css?v=6">
+  <link rel="stylesheet" href="css/admin.css?v=6">
   <style>
-    /* Prevent page-wide horizontal scroll */
+    /* ── Overflow prevention ── */
     html, body { overflow-x: hidden; max-width: 100vw; }
     .main-wrapper { overflow-x: hidden; }
 
-    /* Tabs — horizontal scrollable strip on mobile */
+    /* ── Tabs strip ── */
     .tabs-container {
       display: flex;
       gap: 0;
@@ -29,9 +30,28 @@
       padding: 0.75rem 1.1rem;
       font-size: 0.9rem;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
-    /* Admin table responsive scroll */
+    /* ── Online badge ── */
+    .online-badge {
+      display: none;
+      background: var(--success);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 700;
+      min-width: 18px;
+      height: 18px;
+      border-radius: 99px;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      animation: pulse 2s infinite;
+    }
+
+    /* ── Admin table ── */
     .admin-table-wrapper {
       width: 100%;
       overflow-x: auto;
@@ -44,14 +64,87 @@
       box-shadow: none;
       border-radius: 0;
     }
-    .admin-table { min-width: 600px; }
-    .admin-table th, .admin-table td {
-      padding: 0.75rem 1rem;
-      font-size: 0.85rem;
+    .admin-table { min-width: 620px; }
+    .admin-table th, .admin-table td { padding: 0.75rem 1rem; font-size: 0.85rem; }
+
+    /* ── User avatar small ── */
+    .user-avatar-sm {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
     }
+
+    /* ── Online section ── */
+    .online-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1rem;
+    }
+    .online-header h3 { font-size: 1.1rem; }
+    .online-realtime-dot {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.8rem; color: var(--success); font-weight: 600;
+    }
+    .online-realtime-dot span { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
+
+    .online-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .online-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex; align-items: center; gap: 1rem;
+      border-left: 3px solid var(--success);
+    }
+    .online-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; flex-shrink: 0;
+    }
+    .online-card-info { flex: 1; min-width: 0; }
+    .online-card-info strong { display: block; font-size: 0.95rem; color: var(--primary-900); }
+    .online-email { display: block; font-size: 0.78rem; color: var(--gray-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .online-meta { display: flex; gap: 0.75rem; margin-top: 0.25rem; flex-wrap: wrap; }
+    .online-rol { font-size: 0.75rem; color: var(--primary-600); font-weight: 600; }
+    .online-time { font-size: 0.75rem; color: var(--gray-400); }
+    .online-empty { text-align: center; padding: 3rem 1rem; color: var(--gray-400); }
+
+    /* ── Forms stats cards ── */
+    #forms-stats-container { display: flex; flex-direction: column; gap: 1rem; }
+    .forms-stat-card {
+      background: var(--white);
+      border-radius: var(--radius-md);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow-sm);
+      display: flex; align-items: center; gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .forms-stat-avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
+      color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; font-weight: 700; flex-shrink: 0;
+    }
+    .forms-stat-info { flex: 1; min-width: 100px; }
+    .forms-stat-info strong { display: block; font-size: 0.95rem; color: var(--primary-900); }
+    .forms-stat-email { font-size: 0.78rem; color: var(--gray-600); }
+    .forms-stat-counts { display: flex; gap: 1rem; }
+    .forms-stat-count { text-align: center; }
+    .count-number { display: block; font-size: 1.5rem; font-weight: 800; color: var(--primary-600); line-height: 1; }
+    .count-label { font-size: 0.7rem; color: var(--gray-600); font-weight: 500; }
+    .btn-ver-perfil { flex-shrink: 0; font-size: 0.85rem; padding: 0.5rem 1rem; text-decoration: none; }
 
     @media (max-width: 768px) {
       .content-area { padding: 1rem 0.75rem; }
+      .forms-stat-card { gap: 0.75rem; }
+      .btn-ver-perfil { width: 100%; text-align: center; }
     }
   </style>
 </head>
@@ -82,14 +175,18 @@
     </header>
 
     <div class="content-area">
-      
+
+      <!-- Tabs -->
       <div class="tabs-container">
-        <button id="tab-usuarios" class="tab-btn active">Gestión de Usuarios</button>
-        <button id="tab-online" class="tab-btn">En Línea Ahora</button>
-        <button id="tab-formularios" class="tab-btn">Formularios</button>
+        <button id="tab-usuarios" class="tab-btn active">👥 Usuarios</button>
+        <button id="tab-online" class="tab-btn">
+          🟢 En Línea
+          <span id="online-count-badge" class="online-badge">0</span>
+        </button>
+        <button id="tab-formularios" class="tab-btn">📋 Formularios</button>
       </div>
 
-      <!-- Panel Usuarios -->
+      <!-- Panel: Usuarios -->
       <div id="panel-usuarios" class="tab-panel active">
         <div class="admin-table-wrapper">
           <div class="admin-table-container">
@@ -100,43 +197,48 @@
                   <th>Email</th>
                   <th>Rol</th>
                   <th>Estado</th>
-                  <th>Fecha Registro</th>
+                  <th>Registro</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
               <tbody id="users-table-body">
-                <!-- JS fills this -->
+                <tr><td colspan="6" style="text-align:center;padding:2rem;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
 
-      <!-- Panel Online -->
-      <div id="panel-online" class="tab-panel">
+      <!-- Panel: En Línea -->
+      <div id="panel-online" class="tab-panel" style="display:none;">
+        <div class="online-header">
+          <h3>Usuarios conectados</h3>
+          <div class="online-realtime-dot"><span></span> Tiempo real</div>
+        </div>
         <div id="online-users-list" class="online-list">
-          <!-- JS fills this -->
+          <div class="online-empty"><div class="spinner" style="margin:0 auto;"></div></div>
         </div>
       </div>
 
-      <!-- Panel Formularios -->
-      <div id="panel-formularios" class="tab-panel">
+      <!-- Panel: Formularios -->
+      <div id="panel-formularios" class="tab-panel" style="display:none;">
+        <h3 style="margin-bottom:1rem;color:var(--primary-900);">Formularios por empleado</h3>
         <div id="forms-stats-container">
-          <!-- JS fills this -->
+          <div style="text-align:center;padding:2rem;"><div class="spinner" style="margin:0 auto;"></div></div>
         </div>
       </div>
 
     </div>
   </main>
 
-  <!-- Modal Ban -->
+  <!-- Modal: Ban -->
   <div id="ban-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3>Banear Usuario</h3>
-      <p>Usuario: <span id="ban-modal-username">...</span></p>
-      <div class="form-group mt-4">
+      <h3 style="margin-bottom:0.5rem;">🚫 Banear Usuario</h3>
+      <p style="color:var(--gray-600);margin-bottom:1.25rem;">Usuario: <strong id="ban-modal-username" style="color:var(--danger);">...</strong></p>
+      <div class="form-group">
         <label for="ban-duration-days" class="form-label">Días de baneo:</label>
-        <input type="number" id="ban-duration-days" class="form-input" min="1" value="7">
+        <input type="number" id="ban-duration-days" class="form-input" min="1" max="365" value="7">
       </div>
       <div class="modal-actions">
         <button id="btn-cancel-ban" class="btn btn-secondary">Cancelar</button>
@@ -145,39 +247,23 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=4"></script>
-  <script src="js/auth.js?v=4"></script>
-  <script src="js/online-status.js?v=4"></script>
-  <script src="js/admin.js?v=4"></script>
-  <script>
-    // Tab switching logic
-    const tabs = ['usuarios', 'online', 'formularios'];
-    tabs.forEach(tab => {
-      document.getElementById(`tab-${tab}`).addEventListener('click', (e) => {
-        tabs.forEach(t => {
-          document.getElementById(`tab-${t}`).classList.remove('active');
-          document.getElementById(`panel-${t}`).classList.remove('active');
-        });
-        e.target.classList.add('active');
-        document.getElementById(`panel-${tab}`).classList.add('active');
-      });
-    });
+  <!-- Modal: Delete -->
+  <div id="delete-modal" class="modal-overlay">
+    <div class="modal-content" style="text-align:center;">
+      <div style="font-size:2.5rem;margin-bottom:0.75rem;">⚠️</div>
+      <h3 style="margin-bottom:0.5rem;">Eliminar Usuario</h3>
+      <p style="color:var(--gray-600);margin-bottom:1.5rem;">¿Estás seguro de eliminar a <strong id="delete-modal-username" style="color:var(--danger);">...</strong>? Esta acción es <strong>irreversible</strong>.</p>
+      <div class="modal-actions">
+        <button id="btn-cancel-delete" class="btn btn-secondary">Cancelar</button>
+        <button id="btn-confirm-delete" class="btn btn-danger">Sí, eliminar</button>
+      </div>
+    </div>
+  </div>
 
-    // Sidebar toggle logic
-    const btnToggle = document.getElementById('btn-toggle-sidebar');
-    const sidebar = document.querySelector('.sidebar');
-    if (btnToggle && sidebar) {
-      btnToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sidebar.classList.toggle('open');
-      });
-      document.addEventListener('click', (e) => {
-        if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) {
-          sidebar.classList.remove('open');
-        }
-      });
-    }
-  </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase-config.js?v=6"></script>
+  <script src="js/auth.js?v=6"></script>
+  <script src="js/online-status.js?v=6"></script>
+  <script src="js/admin.js?v=6"></script>
 </body>
 </html>
