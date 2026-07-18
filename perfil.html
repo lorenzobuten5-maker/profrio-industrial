@@ -5,33 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mi Perfil — ProFrio</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=4">
-  <link rel="stylesheet" href="css/dashboard.css?v=4">
+  <link rel="stylesheet" href="css/global.css?v=5">
+  <link rel="stylesheet" href="css/dashboard.css?v=5">
   <style>
     .profile-header { display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; }
     .avatar-large { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--primary-600), var(--primary-400)); color: white; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; flex-shrink: 0; box-shadow: var(--shadow-md); }
-    .stats-row { display: flex; gap: 1rem; }
+    
+    /* Stats */
+    .stats-row { display: flex; gap: 1rem; margin-top: 1rem; }
     .stat-card { flex: 1; background: var(--off-white); border-radius: var(--radius-md); padding: 1rem; border: 1px solid var(--gray-200); text-align: center; }
     .stat-card h3 { font-size: 0.8rem; color: var(--gray-600); font-weight: 600; margin-bottom: 0.25rem; }
-    .stat-card p { font-size: 2rem; font-weight: 800; color: var(--primary-600); margin: 0; }
-    .filters { display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; }
-    .filters button { flex: 1; min-width: 90px; padding: 0.5rem 0.75rem; }
-    .search-row { display: flex; gap: 0.5rem; margin-bottom: 1.25rem; }
+    .stat-card p { font-size: 2rem; font-weight: 800; color: var(--primary-600); margin: 0; line-height: 1; }
+
+    /* Forms section */
+    .forms-toolbar { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.25rem; }
+    .filter-row { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .filter-row .btn { flex: 1; min-width: 0; font-size: 0.85rem; padding: 0.5rem 0.75rem; white-space: nowrap; }
+    .search-row { display: flex; gap: 0.5rem; }
     .search-row input { flex: 1; min-width: 0; }
-    .form-item { display: flex; justify-content: space-between; align-items: center; padding: 0.9rem 1rem; border-bottom: 1px solid var(--gray-100); gap: 0.75rem; }
+    .search-row .btn { flex-shrink: 0; }
+
+    /* Form list items */
+    .form-item { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 0; border-bottom: 1px solid var(--gray-100); gap: 0.75rem; }
     .form-item:last-child { border-bottom: none; }
-    .form-item-info strong { display: block; font-size: 0.9rem; color: var(--primary-900); }
+    .form-item-info { flex: 1; min-width: 0; }
+    .form-item-info strong { display: block; font-size: 0.9rem; color: var(--primary-900); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .form-item-info small { color: var(--gray-600); font-size: 0.8rem; }
-    .badge-tipo { display: inline-block; padding: 0.15rem 0.6rem; border-radius: 99px; font-size: 0.72rem; font-weight: 700; margin-left: 0.4rem; }
+    .badge-tipo { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 99px; font-size: 0.7rem; font-weight: 700; margin-left: 0.4rem; vertical-align: middle; }
     .badge-tipo.intervencion { background: var(--primary-50); color: var(--primary-700); }
     .badge-tipo.materiales { background: #f0fdf4; color: #15803d; }
 
-    @media (max-width: 768px) {
+    @media (max-width: 480px) {
+      main.container { padding: 0.75rem; }
       .profile-header { flex-direction: column; text-align: center; }
       .avatar-large { margin: 0 auto; }
-      .filters { flex-direction: row; }
-      .filters button { font-size: 0.82rem; padding: 0.4rem 0.5rem; }
-      main.container { padding: 1rem 0.75rem; }
     }
   </style>
 </head>
@@ -65,15 +72,15 @@
     </div>
 
     <div class="card">
-      <h2 class="mb-4">Mis Formularios</h2>
-      <div class="flex justify-between items-center mb-4">
-        <div class="filters">
-          <button id="filter-all" class="btn btn-primary" style="padding: 0.5rem 1rem;">Todos</button>
-          <button id="filter-intervencion" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Intervenciones</button>
-          <button id="filter-materiales" class="btn btn-secondary" style="padding: 0.5rem 1rem;">Materiales</button>
+      <h2 style="margin-bottom:1rem;">Mis Formularios</h2>
+      <div class="forms-toolbar">
+        <div class="filter-row">
+          <button id="filter-all" class="btn btn-primary">Todos</button>
+          <button id="filter-intervencion" class="btn btn-secondary">Intervenciones</button>
+          <button id="filter-materiales" class="btn btn-secondary">Materiales</button>
         </div>
-        <div class="flex gap-2">
-          <input type="text" id="search-input" class="form-input" placeholder="Buscar cliente o número..." style="width:250px;">
+        <div class="search-row">
+          <input type="text" id="search-input" class="form-input" placeholder="Buscar cliente o número...">
           <button id="btn-search" class="btn btn-secondary">🔍</button>
         </div>
       </div>
@@ -81,17 +88,17 @@
       <div id="forms-loading" style="text-align:center; padding: 2rem;">
         <div class="spinner" style="margin: 0 auto;"></div>
       </div>
-      <div id="forms-list" class="flex-col gap-2">
+      <div id="forms-list">
         <!-- JS fills this -->
       </div>
     </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=4"></script>
-  <script src="js/auth.js?v=4"></script>
-  <script src="js/online-status.js?v=4"></script>
-  <script src="js/perfil.js?v=4"></script>
+  <script src="js/supabase-config.js?v=5"></script>
+  <script src="js/auth.js?v=5"></script>
+  <script src="js/online-status.js?v=5"></script>
+  <script src="js/perfil.js?v=5"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
   </script>

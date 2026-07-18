@@ -117,22 +117,22 @@ function renderizarFormularios(formularios) {
   listEl.innerHTML = '';
   
   if (formularios.length === 0) {
-    listEl.innerHTML = '<li>No se encontraron formularios.</li>';
+    listEl.innerHTML = '<p style="color:var(--gray-600);text-align:center;padding:1.5rem 0;">No se encontraron formularios.</p>';
     return;
   }
   
   formularios.forEach(f => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <div>
-        <strong>#${f.numero}</strong> - ${f._tipo === 'intervencion' ? 'Intervención' : 'Materiales'}
-        <br>
-        <small>Cliente: ${f.cliente || 'N/A'} | Fecha: ${f._fecha}</small>
+    const div = document.createElement('div');
+    div.className = 'form-item';
+    const tipoLabel = f._tipo === 'intervencion' ? 'Intervención' : 'Materiales';
+    const badgeClass = f._tipo === 'intervencion' ? 'intervencion' : 'materiales';
+    div.innerHTML = `
+      <div class="form-item-info">
+        <strong>#${f.numero}<span class="badge-tipo ${badgeClass}">${tipoLabel}</span></strong>
+        <small>${f.cliente || 'Sin cliente'} &bull; ${f._fecha}</small>
       </div>
-      <div>
-        <a href="formulario-${f._tipo}.html?id=${f.id}" class="btn-ver">Ver</a>
-      </div>
+      <a href="formulario-${f._tipo}.html?id=${f.id}" class="btn btn-secondary" style="flex-shrink:0;padding:0.4rem 0.9rem;font-size:0.82rem;">Ver</a>
     `;
-    listEl.appendChild(li);
+    listEl.appendChild(div);
   });
 }
