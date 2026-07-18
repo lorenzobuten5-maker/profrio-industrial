@@ -4,7 +4,7 @@
   "description": "Sistema de gestión de formularios ProFrio Industrial",
   "main": "index.html",
   "scripts": {
-    "build": "echo 'Static app - no build required'",
+    "build": "mkdir -p dist && cp -r index.html dashboard-empleado.html dashboard-jefe.html perfil.html formulario-intervencion.html formulario-materiales.html css js dist",
     "cap-sync": "mkdir -p www && cp -r index.html dashboard-empleado.html dashboard-jefe.html perfil.html formulario-intervencion.html formulario-materiales.html css js www && npx cap sync",
     "ios": "npm run cap-sync && npx cap run ios",
     "open-ios": "npm run cap-sync && npx cap open ios"
