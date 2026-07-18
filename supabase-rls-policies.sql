@@ -14,15 +14,11 @@ CREATE POLICY "profiles_select_own"
   ON profiles FOR SELECT
   USING (auth.uid() = id);
 
+-- Evita la recursión infinita en la misma tabla usando los metadatos del JWT
 DROP POLICY IF EXISTS "profiles_select_jefe" ON profiles;
 CREATE POLICY "profiles_select_jefe"
   ON profiles FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND rol = 'jefe'
-    )
-  );
+  USING ( (auth.jwt() -> 'user_metadata' ->> 'rol') = 'jefe' );
 
 DROP POLICY IF EXISTS "profiles_update_own" ON profiles;
 CREATE POLICY "profiles_update_own"
@@ -37,12 +33,7 @@ CREATE POLICY "profiles_insert_own"
 DROP POLICY IF EXISTS "profiles_update_jefe" ON profiles;
 CREATE POLICY "profiles_update_jefe"
   ON profiles FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND rol = 'jefe'
-    )
-  );
+  USING ( (auth.jwt() -> 'user_metadata' ->> 'rol') = 'jefe' );
 
 -- ─────────────────────────────────────────
 -- 2. TABLA: presencia
@@ -57,12 +48,7 @@ CREATE POLICY "presencia_select_own"
 DROP POLICY IF EXISTS "presencia_select_jefe" ON presencia;
 CREATE POLICY "presencia_select_jefe"
   ON presencia FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND rol = 'jefe'
-    )
-  );
+  USING ( (auth.jwt() -> 'user_metadata' ->> 'rol') = 'jefe' );
 
 DROP POLICY IF EXISTS "presencia_insert_own" ON presencia;
 CREATE POLICY "presencia_insert_own"
@@ -87,12 +73,7 @@ CREATE POLICY "fi_select_own"
 DROP POLICY IF EXISTS "fi_select_jefe" ON formularios_intervencion;
 CREATE POLICY "fi_select_jefe"
   ON formularios_intervencion FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND rol = 'jefe'
-    )
-  );
+  USING ( (auth.jwt() -> 'user_metadata' ->> 'rol') = 'jefe' );
 
 DROP POLICY IF EXISTS "fi_insert_own" ON formularios_intervencion;
 CREATE POLICY "fi_insert_own"
@@ -107,12 +88,7 @@ CREATE POLICY "fi_update_own"
 DROP POLICY IF EXISTS "fi_delete_jefe" ON formularios_intervencion;
 CREATE POLICY "fi_delete_jefe"
   ON formularios_intervencion FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND rol = 'jefe'
-    )
-  );
+  USING ( (auth.jwt() -> 'user_metadata' ->> 'rol') = 'jefe' );
 
 -- ─────────────────────────────────────────
 -- 4. TABLA: formularios_materiales
@@ -127,12 +103,7 @@ CREATE POLICY "fm_select_own"
 DROP POLICY IF EXISTS "fm_select_jefe" ON formularios_materiales;
 CREATE POLICY "fm_select_jefe"
   ON formularios_materiales FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND rol = 'jefe'
-    )
-  );
+  USING ( (auth.jwt() -> 'user_metadata' ->> 'rol') = 'jefe' );
 
 DROP POLICY IF EXISTS "fm_insert_own" ON formularios_materiales;
 CREATE POLICY "fm_insert_own"
@@ -147,9 +118,4 @@ CREATE POLICY "fm_update_own"
 DROP POLICY IF EXISTS "fm_delete_jefe" ON formularios_materiales;
 CREATE POLICY "fm_delete_jefe"
   ON formularios_materiales FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles
-      WHERE id = auth.uid() AND rol = 'jefe'
-    )
-  );
+  USING ( (auth.jwt() -> 'user_metadata' ->> 'rol') = 'jefe' );
