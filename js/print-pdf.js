@@ -248,9 +248,34 @@ function generatePDFIntervencion() {
   doc.setLineWidth(0.5); doc.setDrawColor(0);
   doc.line(12, y + 12, 12 + sigW, y + 12);
   doc.line(12 + colW, y + 12, 12 + colW + sigW, y + 12);
-  doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-  doc.text(getVal('inp-firma-interviniente') || 'FIRMA INTERVINIENTE', 12 + sigW / 2, y + 16, { align: 'center' });
-  doc.text(getVal('inp-firma-cliente') || 'FIRMA CLIENTE (CON SELLO)', 12 + colW + sigW / 2, y + 16, { align: 'center' });
+  doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(0, 0, 0);
+
+  const firmaInt = getVal('inp-firma-interviniente');
+  const firmaCli = getVal('inp-firma-cliente');
+
+  // Draw interviniente signature if it's a base64 image, otherwise fall back to text
+  if (firmaInt && firmaInt.startsWith('data:image')) {
+    try {
+      doc.addImage(firmaInt, 'PNG', 12 + (sigW - 35) / 2, y + 1, 35, 10);
+    } catch (e) {
+      console.error('Error drawing technician signature:', e);
+    }
+    doc.text('FIRMA INTERVINIENTE', 12 + sigW / 2, y + 16, { align: 'center' });
+  } else {
+    doc.text(firmaInt || 'FIRMA INTERVINIENTE', 12 + sigW / 2, y + 16, { align: 'center' });
+  }
+
+  // Draw client signature if it's a base64 image, otherwise fall back to text
+  if (firmaCli && firmaCli.startsWith('data:image')) {
+    try {
+      doc.addImage(firmaCli, 'PNG', 12 + colW + (sigW - 35) / 2, y + 1, 35, 10);
+    } catch (e) {
+      console.error('Error drawing client signature:', e);
+    }
+    doc.text('FIRMA CLIENTE (CON SELLO)', 12 + colW + sigW / 2, y + 16, { align: 'center' });
+  } else {
+    doc.text(firmaCli || 'FIRMA CLIENTE (CON SELLO)', 12 + colW + sigW / 2, y + 16, { align: 'center' });
+  }
 
   const cliente = getVal('inp-cliente') || 'Cliente';
   doc.save(`Intervencion_No${num}_${cliente}.pdf`);

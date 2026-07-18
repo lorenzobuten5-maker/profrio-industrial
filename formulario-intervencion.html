@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Hoja de Intervención</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=7">
-  <link rel="stylesheet" href="css/formularios.css?v=7">
+  <link rel="stylesheet" href="css/global.css?v=8">
+  <link rel="stylesheet" href="css/formularios.css?v=8">
 </head>
 <body>
 
@@ -192,12 +192,20 @@
 
       <div class="signatures">
         <div class="sig-box">
-          <div class="sig-line"></div>
-          <input type="text" id="inp-firma-interviniente" placeholder="FIRMA INTERVINIENTE">
+          <label class="sig-label">FIRMA INTERVINIENTE</label>
+          <div class="canvas-container">
+            <canvas id="canvas-firma-interviniente" class="sig-canvas" width="300" height="120"></canvas>
+            <button type="button" class="btn-clear-canvas" id="btn-clear-interviniente">Limpiar Firma</button>
+          </div>
+          <input type="hidden" id="inp-firma-interviniente">
         </div>
         <div class="sig-box">
-          <div class="sig-line"></div>
-          <input type="text" id="inp-firma-cliente" placeholder="FIRMA CLIENTE (CON SU SELLO)">
+          <label class="sig-label">FIRMA CLIENTE (CON SU SELLO)</label>
+          <div class="canvas-container">
+            <canvas id="canvas-firma-cliente" class="sig-canvas" width="300" height="120"></canvas>
+            <button type="button" class="btn-clear-canvas" id="btn-clear-cliente">Limpiar Firma</button>
+          </div>
+          <input type="hidden" id="inp-firma-cliente">
         </div>
       </div>
 
@@ -228,12 +236,12 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/supabase-config.js?v=7"></script>
-  <script src="js/auth.js?v=7"></script>
-  <script src="js/online-status.js?v=7"></script>
-  <script src="js/formulario-intervencion.js?v=7"></script>
-  <script src="js/print-pdf.js?v=7"></script>
-  <script src="js/email.js?v=7"></script>
+  <script src="js/supabase-config.js?v=8"></script>
+  <script src="js/auth.js?v=8"></script>
+  <script src="js/online-status.js?v=8"></script>
+  <script src="js/formulario-intervencion.js?v=8"></script>
+  <script src="js/print-pdf.js?v=8"></script>
+  <script src="js/email.js?v=8"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
   </script>

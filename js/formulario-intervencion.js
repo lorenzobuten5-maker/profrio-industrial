@@ -12,6 +12,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   initPhotos();
   
+  // Initialize signature pads
+  initSignaturePad('canvas-firma-interviniente', 'inp-firma-interviniente', 'btn-clear-interviniente');
+  initSignaturePad('canvas-firma-cliente', 'inp-firma-cliente', 'btn-clear-cliente');
+  
   const urlParams = new URLSearchParams(window.location.search);
   const formId = urlParams.get('id');
   
@@ -161,6 +165,10 @@ async function cargarFormularioExistente(id) {
     if (data.tipo_servicio === 'Electricidad' && document.getElementById('radio-electricidad')) document.getElementById('radio-electricidad').checked = true;
     if (data.tipo_servicio === 'Frio Comercial' && document.getElementById('radio-frio-comercial')) document.getElementById('radio-frio-comercial').checked = true;
     if (data.tipo_servicio === 'Frio Industrial' && document.getElementById('radio-frio-industrial')) document.getElementById('radio-frio-industrial').checked = true;
+    
+    // Load signatures onto the canvases
+    document.getElementById('canvas-firma-interviniente')?.loadSignature?.(data.firma_interviniente);
+    document.getElementById('canvas-firma-cliente')?.loadSignature?.(data.firma_cliente);
     
   } catch (err) {
     console.error('Error cargando formulario:', err);
@@ -360,3 +368,90 @@ function renderPhotos() {
 }
 
 window.recolectarDatosIntervencion = recolectarDatos;
+
+/* ──────────────────────────────────────────
+   CANVAS SIGNATURE DRAW HELPER
+   ────────────────────────────────────────── */
+function initSignaturePad(canvasId, inputId, clearBtnId) {
+  const canvas = document.getElementById(canvasId);
+  const input = document.getElementById(inputId);
+  const clearBtn = document.getElementById(clearBtnId);
+  if (!canvas || !input) return;
+
+  const ctx = canvas.getContext('2d');
+  ctx.strokeStyle = '#0C2340'; // Matches primary dark
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+
+  let drawing = false;
+  let lastPos = { x: 0, y: 0 };
+
+  function getPos(e) {
+    const rect = canvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: ((clientX - rect.left) / rect.width) * canvas.width,
+      y: ((clientY - rect.top) / rect.height) * canvas.height
+    };
+  }
+
+  function startDrawing(e) {
+    drawing = true;
+    lastPos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastPos.x, lastPos.y);
+    ctx.lineTo(lastPos.x, lastPos.y);
+    ctx.stroke();
+  }
+
+  function draw(e) {
+    if (!drawing) return;
+    e.preventDefault(); // prevent touch scroll
+    const newPos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(lastPos.x, lastPos.y);
+    ctx.lineTo(newPos.x, newPos.y);
+    ctx.stroke();
+    lastPos = newPos;
+    input.value = canvas.toDataURL();
+  }
+
+  function stopDrawing() {
+    drawing = false;
+  }
+
+  // Mouse
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  canvas.addEventListener('mouseup', stopDrawing);
+  canvas.addEventListener('mouseleave', stopDrawing);
+
+  // Touch
+  canvas.addEventListener('touchstart', startDrawing, { passive: false });
+  canvas.addEventListener('touchmove', draw, { passive: false });
+  canvas.addEventListener('touchend', stopDrawing);
+
+  // Clear
+  clearBtn?.addEventListener('click', () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    input.value = '';
+  });
+
+  // Load Base64 onto canvas
+  canvas.loadSignature = (base64Data) => {
+    if (!base64Data || !base64Data.startsWith('data:image')) {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      input.value = '';
+      return;
+    }
+    const img = new Image();
+    img.onload = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      input.value = base64Data;
+    };
+    img.src = base64Data;
+  };
+}

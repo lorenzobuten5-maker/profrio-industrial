@@ -131,22 +131,67 @@
   border: 1px solid #000; padding: 0.5rem; resize: vertical;
 }
 
-/* Signatures */
+/* Signatures Canvas Styling */
 .signatures {
   display: flex;
-  justify-content: space-around;
-  margin-top: 3rem;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
 }
 .sig-box {
-  text-align: center;
-  width: 40%;
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-.sig-line {
-  border-bottom: 1px solid #000;
-  height: 40px;
+.sig-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--primary-900);
   margin-bottom: 0.5rem;
+  text-align: center;
+  width: 100%;
 }
-.sig-box input { border: none; text-align: center; width: 100%; background: transparent; }
+.canvas-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sig-canvas {
+  width: 100%;
+  height: 120px;
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+  background: #ffffff;
+}
+.btn-clear-canvas {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: none;
+  border-top: 1.5px solid var(--gray-200);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.btn-clear-canvas:hover {
+  background: var(--danger);
+  color: white;
+}
 
 /* Status */
 #save-status {
@@ -246,10 +291,12 @@
   .chk-group, .radio-group { font-size: 6.8pt !important; }
 
   /* Signatures */
-  .signatures { margin-top: 3mm !important; gap: 4mm !important; }
-  .sig-box { flex: 1 !important; }
-  .sig-line { margin-bottom: 1mm !important; }
-  .sig-box input { font-size: 6.8pt !important; }
+  .signatures { margin-top: 2mm !important; gap: 4mm !important; }
+  .sig-box { flex: 1 !important; min-width: 0 !important; }
+  .sig-label { font-size: 6.8pt !important; margin-bottom: 1mm !important; }
+  .canvas-container { border: none !important; box-shadow: none !important; max-width: 100% !important; background: transparent !important; }
+  .btn-clear-canvas { display: none !important; }
+  .sig-canvas { border-bottom: 0.5pt solid #000 !important; height: 12mm !important; background: transparent !important; }
 }
 
 /* Photo capture section */
