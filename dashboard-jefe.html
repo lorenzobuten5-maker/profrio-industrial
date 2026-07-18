@@ -6,9 +6,9 @@
   <title>Panel Administrativo — ProFrio Industrial</title>
   <meta name="description" content="Panel de administración de ProFrio Industrial E.I.R.L.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=6">
-  <link rel="stylesheet" href="css/dashboard.css?v=6">
-  <link rel="stylesheet" href="css/admin.css?v=6">
+  <link rel="stylesheet" href="css/global.css?v=7">
+  <link rel="stylesheet" href="css/dashboard.css?v=7">
+  <link rel="stylesheet" href="css/admin.css?v=7">
   <style>
     /* ── Overflow prevention ── */
     html, body { overflow-x: hidden; max-width: 100vw; }
@@ -97,6 +97,15 @@
       box-shadow: var(--shadow-sm);
       display: flex; align-items: center; gap: 1rem;
       border-left: 3px solid var(--success);
+    }
+    .online-card.offline {
+      border-left: 3px solid var(--gray-400);
+      opacity: 0.75;
+    }
+    .status-dot.offline {
+      background: var(--gray-400) !important;
+      box-shadow: none !important;
+      animation: none !important;
     }
     .online-avatar {
       width: 42px; height: 42px;
@@ -261,9 +270,9 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/supabase-config.js?v=6"></script>
-  <script src="js/auth.js?v=6"></script>
-  <script src="js/online-status.js?v=6"></script>
-  <script src="js/admin.js?v=6"></script>
+  <script src="js/supabase-config.js?v=7"></script>
+  <script src="js/auth.js?v=7"></script>
+  <script src="js/online-status.js?v=7"></script>
+  <script src="js/admin.js?v=7"></script>
 </body>
 </html>

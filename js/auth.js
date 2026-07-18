@@ -60,6 +60,11 @@ async function initAuth() {
     const btnPerfil = document.getElementById('btn-ir-perfil');
     if (btnPerfil) btnPerfil.addEventListener('click', () => { window.location.href = 'perfil.html'; });
 
+    // Set user online on load
+    if (window.setOnline) {
+      await window.setOnline(profile.id);
+    }
+
     // Store profile globally for other scripts
     window.currentProfile = profile;
   }

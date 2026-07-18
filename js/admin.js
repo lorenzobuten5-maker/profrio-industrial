@@ -253,8 +253,7 @@ async function cargarUsuariosOnline() {
   try {
     const { data, error } = await window.supabaseClient
       .from('presencia')
-      .select('id, online, ultima_conexion, profiles(nombre, email, rol)')
-      .eq('online', true);
+      .select('id, online, ultima_conexion, ultima_desconexion, profiles(nombre, email, rol)');
 
     if (error) throw error;
 
@@ -263,37 +262,55 @@ async function cargarUsuariosOnline() {
     if (!listEl) return;
 
     const users = data || [];
+    const onlineUsers = users.filter(u => u.online).sort((a, b) => new Date(b.ultima_conexion) - new Date(a.ultima_conexion));
+    const offlineUsers = users.filter(u => !u.online).sort((a, b) => new Date(b.ultima_desconexion) - new Date(a.ultima_desconexion));
+    const sortedUsers = [...onlineUsers, ...offlineUsers];
 
-    // Update tab badge
+    // Update tab badge with count of online users only
     if (countBadge) {
-      countBadge.textContent = users.length;
-      countBadge.style.display = users.length > 0 ? 'inline-flex' : 'none';
+      countBadge.textContent = onlineUsers.length;
+      countBadge.style.display = onlineUsers.length > 0 ? 'inline-flex' : 'none';
     }
 
     listEl.innerHTML = '';
 
-    if (users.length === 0) {
+    if (sortedUsers.length === 0) {
       listEl.innerHTML = `
         <div class="online-empty">
           <div style="font-size:2.5rem;margin-bottom:0.5rem;">💤</div>
-          <p>Nadie está en línea en este momento.</p>
+          <p>Nadie está registrado o en línea.</p>
         </div>`;
       return;
     }
 
-    users.forEach(u => {
+    sortedUsers.forEach(u => {
       const prof = u.profiles || {};
       const nombre = prof.nombre || 'Desconocido';
       const email  = prof.email  || '';
       const rol    = prof.rol    || 'empleado';
       const initials = nombre.substring(0, 2).toUpperCase();
-      const connectedAt = u.ultima_conexion
-        ? new Date(u.ultima_conexion).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' })
-        : '—';
+      
+      const isUserOnline = u.online;
+      const cardClass = isUserOnline ? 'online-card online' : 'online-card offline';
+      const dotClass = isUserOnline ? 'status-dot online' : 'status-dot offline';
+      
+      let presenceText = '';
+      if (isUserOnline) {
+        const connectedTime = u.ultima_conexion
+          ? new Date(u.ultima_conexion).toLocaleTimeString('es-DO', { hour: '2-digit', minute: '2-digit' })
+          : '—';
+        presenceText = `🟢 En línea • Conectado desde las ${connectedTime}`;
+      } else {
+        const disconnectedTime = u.ultima_desconexion
+          ? new Date(u.ultima_desconexion).toLocaleString('es-DO', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })
+          : '—';
+        presenceText = `⚪ Fuera de línea • Última desconexión: ${disconnectedTime}`;
+      }
+      
       const rolLabel = rol === 'jefe' ? '👑 Jefe' : '👷 Empleado';
 
       const card = document.createElement('div');
-      card.className = 'online-card';
+      card.className = cardClass;
       card.innerHTML = `
         <div class="online-avatar">${initials}</div>
         <div class="online-card-info">
@@ -301,10 +318,10 @@ async function cargarUsuariosOnline() {
           <span class="online-email">${email}</span>
           <div class="online-meta">
             <span class="online-rol">${rolLabel}</span>
-            <span class="online-time">⏱ Desde las ${connectedAt}</span>
+            <span class="online-time">${presenceText}</span>
           </div>
         </div>
-        <div class="status-dot"></div>
+        <div class="${dotClass}"></div>
       `;
       listEl.appendChild(card);
     });
