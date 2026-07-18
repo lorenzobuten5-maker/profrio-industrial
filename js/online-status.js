@@ -61,6 +61,22 @@ window.addEventListener('beforeunload', async () => {
   }
 });
 
+// Heartbeat presence ping loop (every 20 seconds)
+setInterval(async () => {
+  try {
+    if (window.supabaseClient && window.getCurrentUser) {
+      const user = await window.getCurrentUser();
+      if (user) {
+        await window.supabaseClient
+          .from('presencia')
+          .upsert({ id: user.id, online: true, ultima_conexion: new Date().toISOString() });
+      }
+    }
+  } catch (err) {
+    console.error("Error in presence heartbeat:", err);
+  }
+}, 20000);
+
 window.setOnline = setOnline;
 window.setOffline = setOffline;
 window.subscribeToPresencia = subscribeToPresencia;

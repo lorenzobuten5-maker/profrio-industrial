@@ -247,6 +247,11 @@ function iniciarPresenciaRealtime() {
       })
       .subscribe();
   }
+
+  // Poll presence status every 15 seconds to catch expired heartbeats
+  setInterval(() => {
+    cargarUsuariosOnline();
+  }, 15000);
 }
 
 async function cargarUsuariosOnline() {
@@ -262,8 +267,26 @@ async function cargarUsuariosOnline() {
     if (!listEl) return;
 
     const users = data || [];
-    const onlineUsers = users.filter(u => u.online).sort((a, b) => new Date(b.ultima_conexion) - new Date(a.ultima_conexion));
-    const offlineUsers = users.filter(u => !u.online).sort((a, b) => new Date(b.ultima_desconexion) - new Date(a.ultima_desconexion));
+    const threshold = 75000; // 75 seconds timeout tolerance
+
+    // A user is online only if u.online is true AND last connection/ping was within the threshold
+    const onlineUsers = users.filter(u => {
+      if (!u.online || !u.ultima_conexion) return false;
+      const timeDiff = new Date() - new Date(u.ultima_conexion);
+      return timeDiff < threshold;
+    }).sort((a, b) => new Date(b.ultima_conexion) - new Date(a.ultima_conexion));
+
+    // A user is offline if u.online is false OR their ping has expired (timed out)
+    const offlineUsers = users.filter(u => {
+      if (!u.online || !u.ultima_conexion) return true;
+      const timeDiff = new Date() - new Date(u.ultima_conexion);
+      return timeDiff >= threshold;
+    }).sort((a, b) => {
+      const timeA = a.online ? new Date(a.ultima_conexion) : new Date(a.ultima_desconexion || 0);
+      const timeB = b.online ? new Date(b.ultima_conexion) : new Date(b.ultima_desconexion || 0);
+      return timeB - timeA;
+    });
+
     const sortedUsers = [...onlineUsers, ...offlineUsers];
 
     // Update tab badge with count of online users only
@@ -290,7 +313,7 @@ async function cargarUsuariosOnline() {
       const rol    = prof.rol    || 'empleado';
       const initials = nombre.substring(0, 2).toUpperCase();
       
-      const isUserOnline = u.online;
+      const isUserOnline = u.online && u.ultima_conexion && (new Date() - new Date(u.ultima_conexion) < threshold);
       const cardClass = isUserOnline ? 'online-card online' : 'online-card offline';
       const dotClass = isUserOnline ? 'status-dot online' : 'status-dot offline';
       
@@ -301,10 +324,17 @@ async function cargarUsuariosOnline() {
           : '—';
         presenceText = `🟢 En línea • Conectado desde las ${connectedTime}`;
       } else {
-        const disconnectedTime = u.ultima_desconexion
-          ? new Date(u.ultima_desconexion).toLocaleString('es-DO', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })
-          : '—';
-        presenceText = `⚪ Fuera de línea • Última desconexión: ${disconnectedTime}`;
+        if (!u.online) {
+          const disconnectedTime = u.ultima_desconexion
+            ? new Date(u.ultima_desconexion).toLocaleString('es-DO', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })
+            : '—';
+          presenceText = `⚪ Fuera de línea • Última desconexión: ${disconnectedTime}`;
+        } else {
+          const lastSeen = u.ultima_conexion
+            ? new Date(u.ultima_conexion).toLocaleString('es-DO', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', hour12: true })
+            : '—';
+          presenceText = `⚪ Fuera de línea • Última vez visto: ${lastSeen}`;
+        }
       }
       
       const rolLabel = rol === 'jefe' ? '👑 Jefe' : '👷 Empleado';
