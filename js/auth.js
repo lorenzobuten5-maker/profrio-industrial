@@ -263,28 +263,33 @@ async function getCurrentProfile() {
   
   let { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
   
-  if (error || !data) {
-    console.warn("Perfil no encontrado en base de datos. Auto-creando desde metadatos...");
-    const nombre = user.user_metadata?.nombre || user.email.split('@')[0];
-    const rol = user.user_metadata?.rol || 'empleado';
-    
-    const { data: newProfile, error: insertError } = await window.supabaseClient
-      .from('profiles')
-      .insert({
-        id: user.id,
-        nombre: nombre,
-        email: user.email,
-        rol: rol,
-        estado: 'activo'
-      })
-      .select()
-      .single();
+  if (error) {
+    // Only attempt auto-creation if the row is literally not found (PGRST116)
+    if (error.code === 'PGRST116') {
+      console.warn("Perfil no encontrado en base de datos. Auto-creando desde metadatos...");
+      const nombre = user.user_metadata?.nombre || user.email.split('@')[0];
+      const rol = user.user_metadata?.rol || 'empleado';
       
-    if (insertError) {
-      console.error("Error al auto-crear perfil:", insertError);
-      return null;
+      const { data: newProfile, error: insertError } = await window.supabaseClient
+        .from('profiles')
+        .insert({
+          id: user.id,
+          nombre: nombre,
+          email: user.email,
+          rol: rol,
+          estado: 'activo'
+        })
+        .select()
+        .single();
+        
+      if (insertError) {
+        throw new Error(`Error de registro en base de datos: ${insertError.message} (Código: ${insertError.code})`);
+      }
+      data = newProfile;
+    } else {
+      // It's some other database error (e.g. RLS block or syntax error)
+      throw new Error(`Error de base de datos al leer perfil: ${error.message} (Código: ${error.code})`);
     }
-    data = newProfile;
   }
   
   return data;
