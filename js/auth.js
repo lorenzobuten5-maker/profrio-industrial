@@ -114,8 +114,13 @@ async function handleLogin(email, password) {
     window.location.href = profile.rol === 'jefe' ? 'dashboard-jefe.html' : 'dashboard-empleado.html';
   } catch (err) {
     const msgEl = document.getElementById('auth-message');
-    if(msgEl) msgEl.textContent = err.message;
-    else alert(err.message);
+    if (msgEl) { msgEl.textContent = err.message; msgEl.className = ''; }
+    // Reset login button loading state
+    const loginBtn = document.getElementById('btn-login');
+    if (loginBtn && loginBtn._originalText) {
+      loginBtn.innerHTML = loginBtn._originalText;
+      loginBtn.disabled = false;
+    }
   }
 }
 
@@ -139,12 +144,31 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
     });
     if (error) throw error;
     
-    alert("Registro exitoso. Ahora puedes iniciar sesión.");
-    document.getElementById('btn-to-login')?.click();
+    // Show success inline instead of alert
+    const msgEl = document.getElementById('auth-message');
+    if (msgEl) {
+      msgEl.textContent = '✅ Registro exitoso. Ahora puedes iniciar sesión.';
+      msgEl.className = 'msg-success';
+    }
+    // Reset button
+    const regBtn = document.getElementById('btn-register');
+    if (regBtn && regBtn._originalText) {
+      regBtn.innerHTML = regBtn._originalText;
+      regBtn.disabled = false;
+    }
+    // Switch to login after short delay
+    setTimeout(() => {
+      document.getElementById('btn-to-login')?.click();
+    }, 1800);
   } catch (err) {
     const msgEl = document.getElementById('auth-message');
-    if(msgEl) msgEl.textContent = err.message;
-    else alert(err.message);
+    if (msgEl) { msgEl.textContent = err.message; msgEl.className = ''; }
+    // Reset button
+    const regBtn = document.getElementById('btn-register');
+    if (regBtn && regBtn._originalText) {
+      regBtn.innerHTML = regBtn._originalText;
+      regBtn.disabled = false;
+    }
   }
 }
 

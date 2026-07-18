@@ -1,0 +1,352 @@
+/* ═══════════════════════════════════════════════════════════
+   responsive.css — ProFrio Industrial
+   Global responsive fixes for ALL pages except login.
+   Breakpoints: 320 | 480 | 600 | 768 | 900 | 1024 | 1280+
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Base fixes for all devices ── */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+img, video, svg {
+  max-width: 100%;
+}
+
+/* Prevent horizontal scroll on any page */
+body { overflow-x: hidden; }
+
+/* Improve touch targets globally */
+button, [type="button"], [type="submit"], a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Input zoom prevention on iOS (font-size must be >= 16px on focus) */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="date"],
+select,
+textarea {
+  font-size: max(16px, 1rem);
+}
+
+/* ── Sidebar overlay for mobile ── */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(12,35,64,0.5);
+  z-index: 99;
+  backdrop-filter: blur(2px);
+}
+.sidebar-backdrop.visible { display: block; }
+
+/* ── Top header mobile improvements ── */
+.top-header .page-title {
+  font-size: clamp(1rem, 2.5vw, 1.5rem);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50vw;
+}
+
+/* ── Toast mobile fix ── */
+@media (max-width: 599px) {
+  .toast {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.88rem;
+  }
+}
+
+/* ══════════════════════════════════
+   TABLET (768px – 1023px)
+   ══════════════════════════════════ */
+@media (max-width: 1023px) {
+
+  /* Dashboard grids */
+  .action-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 1.25rem;
+  }
+
+  /* Admin tables — horizontal scroll */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .table-responsive table {
+    min-width: 640px;
+  }
+
+  /* Form grids collapse */
+  .form-grid-2,
+  .form-row {
+    grid-template-columns: 1fr !important;
+    flex-direction: column;
+  }
+
+  /* Online users grid */
+  .online-users-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Formulario pages */
+  .formulario-container {
+    padding: 1.25rem !important;
+  }
+}
+
+/* ══════════════════════════════════
+   MOBILE (max 767px)
+   ══════════════════════════════════ */
+@media (max-width: 767px) {
+
+  /* Sidebar */
+  .sidebar {
+    width: 260px !important;
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s cubic-bezier(.4,0,.2,1) !important;
+    z-index: 200 !important;
+  }
+  .sidebar.open {
+    transform: translateX(0) !important;
+    box-shadow: var(--shadow-xl) !important;
+  }
+  .main-wrapper {
+    margin-left: 0 !important;
+  }
+  .sidebar-toggle-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Header */
+  .top-header {
+    padding: 0 1rem !important;
+    height: 60px !important;
+  }
+  .top-header .page-title {
+    font-size: 1.05rem !important;
+    max-width: 45vw;
+  }
+  .user-info span:not(.user-avatar) {
+    display: none; /* Hide name text, keep avatar */
+  }
+
+  /* Content */
+  .content-area {
+    padding: 1rem !important;
+  }
+
+  /* Action cards: single column */
+  .action-cards {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  .action-card {
+    padding: 1.25rem !important;
+    flex-direction: row !important;
+    text-align: left !important;
+    gap: 1rem;
+  }
+  .action-card .action-icon {
+    width: 48px !important;
+    height: 48px !important;
+    font-size: 1.5rem !important;
+    margin-bottom: 0 !important;
+    flex-shrink: 0;
+  }
+  .action-card h3 { font-size: 1rem !important; margin-bottom: 0.25rem !important; }
+  .action-card p { font-size: 0.82rem !important; }
+
+  /* Cards */
+  .card { padding: 1.25rem !important; }
+
+  /* Admin tabs */
+  .tabs-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 0.4rem;
+    flex-wrap: nowrap !important;
+    padding-bottom: 0.25rem;
+  }
+  .tab-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 0.55rem 1rem !important;
+    font-size: 0.82rem !important;
+  }
+
+  /* Tables: horizontal scroll */
+  .table-wrapper,
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radius-md);
+  }
+  .users-table,
+  table {
+    min-width: 600px;
+  }
+
+  /* Modals full-screen on mobile */
+  .modal-content {
+    width: 95% !important;
+    max-width: 100% !important;
+    margin: 1rem !important;
+    padding: 1.5rem !important;
+  }
+
+  /* Online users list cards */
+  .online-card {
+    flex-direction: column !important;
+    gap: 0.5rem !important;
+    text-align: center !important;
+  }
+
+  /* Historial formularios */
+  .history-card {
+    flex-direction: column !important;
+    gap: 0.75rem !important;
+    align-items: flex-start !important;
+  }
+  .card-right-info {
+    flex-direction: row !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+  }
+
+  /* Formulario pages signature */
+  .signature-canvas {
+    width: 100% !important;
+    min-height: 150px;
+  }
+}
+
+/* ══════════════════════════════════
+   SMALL MOBILE (max 479px)
+   ══════════════════════════════════ */
+@media (max-width: 479px) {
+
+  /* Page title */
+  .page-title { font-size: 1.2rem !important; }
+
+  /* Form sections */
+  .form-section {
+    padding: 1rem !important;
+  }
+
+  /* Buttons full width on small screens */
+  .btn-group {
+    flex-direction: column !important;
+  }
+  .btn-group .btn { width: 100% !important; }
+
+  /* Table actions: show only icons */
+  .btn-text-hide { display: none !important; }
+
+  /* Top header even tighter */
+  .top-header {
+    padding: 0 0.75rem !important;
+    gap: 0.5rem;
+  }
+
+  .content-area { padding: 0.75rem !important; }
+
+  /* Historial filter bar: stack vertically */
+  .filter-bar {
+    flex-direction: column !important;
+    gap: 0.6rem !important;
+  }
+  .filter-bar input,
+  .filter-bar select {
+    width: 100% !important;
+  }
+
+  /* Pills: scrollable row */
+  .pills-row {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    flex-wrap: nowrap !important;
+    gap: 0.4rem !important;
+  }
+  .pills-row .pill { flex-shrink: 0; }
+}
+
+/* ══════════════════════════════════
+   VERY SMALL (max 374px)
+   ══════════════════════════════════ */
+@media (max-width: 374px) {
+  body { font-size: 14px; }
+  .top-header { height: 56px !important; }
+  .tab-btn { font-size: 0.75rem !important; padding: 0.45rem 0.75rem !important; }
+  .content-area { padding: 0.6rem !important; }
+}
+
+/* ══════════════════════════════════
+   LANDSCAPE PHONE
+   ══════════════════════════════════ */
+@media (max-height: 500px) and (orientation: landscape) {
+  .sidebar {
+    overflow-y: auto;
+  }
+  .content-area {
+    padding: 0.75rem !important;
+  }
+  .action-cards {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* ══════════════════════════════════
+   LARGE DESKTOP (1280px+)
+   ══════════════════════════════════ */
+@media (min-width: 1280px) {
+  .content-area {
+    padding: 2.5rem !important;
+  }
+  .action-cards {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* ══════════════════════════════════
+   TOUCH-SPECIFIC IMPROVEMENTS
+   ══════════════════════════════════ */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  .btn {
+    min-height: 44px;
+  }
+  .tab-btn {
+    min-height: 40px;
+  }
+  .sidebar-nav a,
+  .sidebar-nav button {
+    min-height: 48px;
+  }
+  /* No hover effects that don't reset on touch */
+  .card:hover { transform: none !important; }
+  .btn:hover { transform: none !important; }
+  .action-card:hover { transform: none !important; }
+}
+
+/* ══════════════════════════════════
+   PRINT
+   ══════════════════════════════════ */
+@media print {
+  .sidebar,
+  .top-header,
+  .btn-group,
+  .tabs-container { display: none !important; }
+  .main-wrapper { margin-left: 0 !important; }
+  .content-area { padding: 0 !important; }
+}
