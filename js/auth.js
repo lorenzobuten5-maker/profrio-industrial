@@ -25,6 +25,43 @@ async function initAuth() {
       }
       window.location.href = profile.rol === 'jefe' ? 'dashboard-jefe.html' : 'dashboard-empleado.html';
     }
+    return;
+  }
+
+  // On dashboard pages — populate the header user name and wire common buttons
+  if (session && !isIndex) {
+    const profile = await getCurrentProfile();
+    if (!profile) { window.location.href = 'index.html'; return; }
+
+    // Check ban/block
+    if (profile.baneado_hasta) {
+      const baneadoHasta = new Date(profile.baneado_hasta);
+      if (baneadoHasta > new Date()) {
+        await handleLogout();
+        return;
+      } else {
+        await window.supabaseClient.from('profiles').update({ estado: 'activo', baneado_hasta: null }).eq('id', profile.id);
+      }
+    }
+    if (profile.estado === 'bloqueado' || profile.estado === 'baneado') {
+      await handleLogout();
+      return;
+    }
+
+    // Populate header name
+    const nameEl = document.getElementById('header-user-name');
+    if (nameEl) nameEl.textContent = profile.nombre || profile.email;
+
+    // Wire logout button
+    const btnLogout = document.getElementById('btn-logout');
+    if (btnLogout) btnLogout.addEventListener('click', handleLogout);
+
+    // Wire profile button on employee dashboard
+    const btnPerfil = document.getElementById('btn-ir-perfil');
+    if (btnPerfil) btnPerfil.addEventListener('click', () => { window.location.href = 'perfil.html'; });
+
+    // Store profile globally for other scripts
+    window.currentProfile = profile;
   }
 }
 

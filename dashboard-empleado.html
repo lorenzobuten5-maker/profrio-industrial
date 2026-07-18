@@ -74,22 +74,68 @@
   <script src="js/auth.js"></script>
   <script src="js/online-status.js"></script>
   <script>
-    setTimeout(() => { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(()=>document.getElementById('loading-overlay').style.display='none', 500); }, 500);
-    
-    // Sidebar toggle logic
+    // Hide loading overlay
+    setTimeout(() => {
+      const overlay = document.getElementById('loading-overlay');
+      if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 500); }
+    }, 300);
+
+    // Sidebar toggle
     const btnToggle = document.getElementById('btn-toggle-sidebar');
     const sidebar = document.querySelector('.sidebar');
     if (btnToggle && sidebar) {
-      btnToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        sidebar.classList.toggle('open');
-      });
+      btnToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); });
       document.addEventListener('click', (e) => {
-        if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) {
-          sidebar.classList.remove('open');
-        }
+        if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) sidebar.classList.remove('open');
       });
     }
+
+    // Load recent forms after auth resolves
+    async function cargarFormulariosRecientes() {
+      const profile = window.currentProfile;
+      if (!profile) return;
+      const listEl = document.getElementById('recent-forms-list');
+      if (!listEl) return;
+
+      try {
+        const [{ data: ints }, { data: mats }] = await Promise.all([
+          window.supabaseClient.from('formularios_intervencion').select('id,numero,cliente,created_at').eq('usuario_id', profile.id).order('created_at', { ascending: false }).limit(3),
+          window.supabaseClient.from('formularios_materiales').select('id,numero,cliente,created_at').eq('usuario_id', profile.id).order('created_at', { ascending: false }).limit(3)
+        ]);
+
+        const todos = [
+          ...(ints || []).map(f => ({ ...f, tipo: 'intervencion', label: 'Intervención' })),
+          ...(mats || []).map(f => ({ ...f, tipo: 'materiales', label: 'Materiales' }))
+        ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+
+        if (todos.length === 0) {
+          listEl.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--gray-400);">Aún no tienes formularios guardados.</div>';
+          return;
+        }
+
+        listEl.innerHTML = todos.map(f => `
+          <div class="list-item">
+            <div>
+              <strong>#${f.numero} — ${f.label}</strong><br>
+              <small style="color:var(--gray-600);">${f.cliente || 'Sin cliente'} &bull; ${new Date(f.created_at).toLocaleDateString('es-DO')}</small>
+            </div>
+            <a href="formulario-${f.tipo}.html?id=${f.id}" class="btn btn-secondary" style="padding:0.4rem 0.9rem;font-size:0.85rem;">Ver</a>
+          </div>
+        `).join('');
+      } catch (err) {
+        console.error('Error cargando recientes:', err);
+        const listEl = document.getElementById('recent-forms-list');
+        if (listEl) listEl.innerHTML = '<div style="padding:1rem;color:var(--danger);">Error cargando formularios.</div>';
+      }
+    }
+
+    // Poll for profile to be ready (set by auth.js initAuth)
+    let pollCount = 0;
+    const pollInterval = setInterval(() => {
+      pollCount++;
+      if (window.currentProfile) { clearInterval(pollInterval); cargarFormulariosRecientes(); }
+      else if (pollCount > 20) clearInterval(pollInterval); // stop after 4s
+    }, 200);
   </script>
 </body>
 </html>

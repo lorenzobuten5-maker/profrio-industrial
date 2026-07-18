@@ -197,7 +197,7 @@ function recolectarDatos() {
     inp_nivel_aceite: getVal('inp-nivel-aceite'),
     chk_correccion_fuga: getChk('chk-correccion-fuga'),
     chk_carga_refrigerante: getChk('chk-carga-refrigerante'),
-    chk_cambio-compresor: getChk('chk-cambio-compresor'),
+    'chk_cambio_compresor': getChk('chk-cambio-compresor'),
     chk_mant_aa: getChk('chk-mant-aa'),
     chk_mant_nevera: getChk('chk-mant-nevera'),
     chk_cambio_solenoide: getChk('chk-cambio-solenoide'),

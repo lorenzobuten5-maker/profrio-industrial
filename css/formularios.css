@@ -153,24 +153,82 @@
   position: fixed; top: 80px; right: 20px; z-index: 1000;
 }
 
-/* Print Styles */
+/* Print Styles — fits on 1 page */
 @media print {
-  body { background: white; margin: 0; padding: 0; height: auto; overflow: visible; }
-  .form-wrapper { box-shadow: none; margin: 0; padding: 0; max-width: 100%; }
-  .action-toolbar { display: none !important; }
-  .btn-back { display: none !important; }
-  #save-status { display: none !important; }
-  .sidebar, .top-header { display: none !important; }
-  .main-wrapper { margin: 0; }
-  @page { margin: 15mm; }
-  input, textarea { border-color: transparent !important; border-bottom: 1px solid #000 !important; resize: none; }
-  .data-table input { border: none !important; }
-  .section-title { background: transparent; color: #000; border-bottom: 2px solid #000; margin-bottom: 0.5rem; }
-  .photo-buttons { display: none !important; }
-  .photo-thumbnail-container .btn-delete-photo { display: none !important; }
-  .photo-section { border: none !important; page-break-inside: avoid; }
-  .photos-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-  .photo-thumbnail-container { width: 180px; height: 180px; }
+  * { box-sizing: border-box !important; }
+  body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 8pt !important; }
+  @page { size: A4 portrait; margin: 6mm 8mm; }
+
+  /* Hide non-printable elements */
+  .action-toolbar,
+  #save-status,
+  .photo-section,
+  .photo-buttons,
+  .sidebar,
+  .top-header,
+  .modal-overlay,
+  .lightbox-modal { display: none !important; }
+
+  /* Shrink wrapper */
+  .form-wrapper {
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 4mm !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+  .main-wrapper { margin: 0 !important; }
+
+  /* Header */
+  .form-header-print {
+    padding-bottom: 3mm !important;
+    margin-bottom: 3mm !important;
+  }
+  .form-logo { font-size: 12pt !important; }
+  .form-company-info { font-size: 6.5pt !important; line-height: 1.3 !important; }
+  .form-number-box { font-size: 10pt !important; }
+
+  /* Title */
+  .form-title { font-size: 11pt !important; margin: 3mm 0 !important; letter-spacing: 0 !important; }
+
+  /* Grids */
+  .form-grid { gap: 3mm !important; margin-bottom: 3mm !important; }
+  .section-box { padding: 3mm !important; margin-bottom: 3mm !important; }
+  .section-title {
+    padding: 1.5mm 3mm !important;
+    margin: -3mm -3mm 3mm -3mm !important;
+    font-size: 8pt !important;
+    background: #0C2340 !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Inputs */
+  input, textarea, select {
+    border: none !important;
+    border-bottom: 0.5pt solid #000 !important;
+    background: transparent !important;
+    font-size: 7.5pt !important;
+    padding: 0.5mm 1mm !important;
+    resize: none !important;
+  }
+  .input-line label { font-size: 7.5pt !important; font-weight: 600 !important; }
+  .data-table input { border: none !important; font-size: 7pt !important; }
+  .data-table th, .data-table td { padding: 1mm 2mm !important; font-size: 7pt !important; }
+
+  /* Compress textareas */
+  textarea { height: 14mm !important; min-height: 14mm !important; }
+
+  /* Checkboxes */
+  .chk-group, .radio-group { font-size: 7pt !important; }
+
+  /* Signatures */
+  .signatures { margin-top: 4mm !important; gap: 5mm !important; }
+  .sig-box { flex: 1 !important; }
+  .sig-line { margin-bottom: 1mm !important; }
+  .sig-box input { font-size: 7pt !important; }
 }
 
 /* Photo capture section */
