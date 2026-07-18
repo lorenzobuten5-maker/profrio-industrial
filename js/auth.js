@@ -71,9 +71,22 @@ async function initAuth() {
 }
 
 async function handleLogin(email, password) {
+  // Rate limit check
+  if (window.loginRateLimiter) {
+    const lockMsg = window.loginRateLimiter.isLocked();
+    if (lockMsg) {
+      const msgEl = document.getElementById('auth-message');
+      if (msgEl) { msgEl.textContent = lockMsg; msgEl.style.color = 'var(--danger)'; }
+      return;
+    }
+  }
+
   try {
     const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
-    if (error) throw error;
+    if (error) {
+      if (window.loginRateLimiter) window.loginRateLimiter.recordFail();
+      throw error;
+    }
     
     const profile = await getCurrentProfile();
     if (!profile) throw new Error("Perfil no encontrado");
@@ -82,6 +95,7 @@ async function handleLogin(email, password) {
        const baneadoHasta = new Date(profile.baneado_hasta);
        if (baneadoHasta > new Date()) {
           await window.supabaseClient.auth.signOut();
+          if (window.loginRateLimiter) window.loginRateLimiter.recordFail();
           throw new Error(`Cuenta baneada hasta ${baneadoHasta.toLocaleString()}`);
        } else {
           await window.supabaseClient.from('profiles').update({ estado: 'activo', baneado_hasta: null }).eq('id', profile.id);
@@ -91,9 +105,11 @@ async function handleLogin(email, password) {
     
     if (profile.estado === 'bloqueado' || profile.estado === 'baneado') {
       await window.supabaseClient.auth.signOut();
+      if (window.loginRateLimiter) window.loginRateLimiter.recordFail();
       throw new Error("Cuenta bloqueada o baneada");
     }
     
+    if (window.loginRateLimiter) window.loginRateLimiter.recordSuccess();
     if(window.setOnline) await window.setOnline(profile.id);
     window.location.href = profile.rol === 'jefe' ? 'dashboard-jefe.html' : 'dashboard-empleado.html';
   } catch (err) {

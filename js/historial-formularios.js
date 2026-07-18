@@ -245,11 +245,12 @@ function renderCards(formularios) {
     // Creator name (only relevant for Jefe view)
     let creadorHTML = '';
     if (perfilUsuario.rol === 'jefe') {
-      const nombreCreador = mapaPerfiles[f.usuario_id] || 'Técnico ProFrio';
+      const rawNombreCreador = mapaPerfiles[f.usuario_id] || 'Técnico ProFrio';
+      const sNombreCreador = window.sanitizeHTML ? window.sanitizeHTML(rawNombreCreador) : rawNombreCreador;
       creadorHTML = `
         <div class="meta-item">
           <span>👤</span>
-          <span>Téc: <strong>${nombreCreador}</strong></span>
+          <span>Téc: <strong>${sNombreCreador}</strong></span>
         </div>
       `;
     }
@@ -267,6 +268,9 @@ function renderCards(formularios) {
       rightInfoHTML = `<span class="card-total">$ ${totalVal.toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`;
     }
 
+    const sCliente = window.sanitizeHTML ? window.sanitizeHTML(f.cliente) : (f.cliente || 'Sin Cliente');
+    const sTipoServicio = window.sanitizeHTML ? window.sanitizeHTML(f.tipo_servicio) : (f.tipo_servicio || 'Servicio');
+
     card.innerHTML = `
       <div class="card-main-info">
         <div class="card-title-row">
@@ -276,7 +280,7 @@ function renderCards(formularios) {
         <div class="card-meta-row">
           <div class="meta-item">
             <span>🏢</span>
-            <span>Cliente: <strong>${f.cliente || 'Sin Cliente'}</strong></span>
+            <span>Cliente: <strong>${sCliente || 'Sin Cliente'}</strong></span>
           </div>
           <div class="meta-item">
             <span>📅</span>
@@ -286,7 +290,10 @@ function renderCards(formularios) {
         </div>
       </div>
       <div class="card-right-info">
-        ${rightInfoHTML}
+        ${isIntervencion
+          ? `<span class="badge" style="background:var(--primary-100); color:var(--primary-800); font-weight:600; font-size:0.75rem;">⚡ ${sTipoServicio}</span>`
+          : `<span class="card-total">$ ${(parseFloat(f.total) || 0).toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+        }
         <a href="formulario-${f._tipo}.html?id=${f.id}" class="btn btn-secondary" style="padding:0.4rem 1rem; font-size:0.8rem; border-radius:var(--radius-sm);">
           Ver / Editar 🔍
         </a>

@@ -128,14 +128,17 @@ async function cargarUsuarios() {
       accionesHTML += `<button class="btn-icon btn-delete" title="Eliminar" onclick="abrirDeleteModal('${user.id}','${user.nombre}')">🗑️</button>`;
       accionesHTML += `</div>`;
 
+      const sNombre = window.sanitizeHTML ? window.sanitizeHTML(user.nombre) : user.nombre;
+      const sEmail  = window.sanitizeHTML ? window.sanitizeHTML(user.email) : user.email;
+
       tr.innerHTML = `
         <td>
           <div style="display:flex;align-items:center;gap:0.6rem;">
-            <div class="user-avatar-sm">${(user.nombre || 'U').substring(0, 2).toUpperCase()}</div>
-            <span style="font-weight:600;">${user.nombre}</span>
+            <div class="user-avatar-sm">${(sNombre || 'U').substring(0, 2).toUpperCase()}</div>
+            <span style="font-weight:600;">${sNombre}</span>
           </div>
         </td>
-        <td style="color:var(--gray-600);font-size:0.85rem;">${user.email}</td>
+        <td style="color:var(--gray-600);font-size:0.85rem;">${sEmail}</td>
         <td>${rolBadge}</td>
         <td>${estadoHTML}</td>
         <td style="color:var(--gray-600);font-size:0.83rem;">${fechaReg}</td>
@@ -339,13 +342,16 @@ async function cargarUsuariosOnline() {
       
       const rolLabel = rol === 'jefe' ? '👑 Jefe' : '👷 Empleado';
 
+      const sNombreCard = window.sanitizeHTML ? window.sanitizeHTML(nombre) : nombre;
+      const sEmailCard  = window.sanitizeHTML ? window.sanitizeHTML(email)  : email;
+
       const card = document.createElement('div');
       card.className = cardClass;
       card.innerHTML = `
-        <div class="online-avatar">${initials}</div>
+        <div class="online-avatar">${sNombreCard.substring(0, 2).toUpperCase()}</div>
         <div class="online-card-info">
-          <strong>${nombre}</strong>
-          <span class="online-email">${email}</span>
+          <strong>${sNombreCard}</strong>
+          <span class="online-email">${sEmailCard}</span>
           <div class="online-meta">
             <span class="online-rol">${rolLabel}</span>
             <span class="online-time">${presenceText}</span>

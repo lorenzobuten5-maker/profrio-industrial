@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (isAdminView) {
     const banner = document.createElement('div');
     banner.style.cssText = 'background:var(--primary-50);border:1px solid var(--primary-200);border-radius:var(--radius-md);padding:0.6rem 1rem;margin-bottom:1rem;font-size:0.85rem;color:var(--primary-800);display:flex;align-items:center;gap:0.5rem;';
-    banner.innerHTML = `🛡️ <strong>Vista de Administrador</strong> — Viendo perfil de ${profile.nombre}`;
+    banner.innerHTML = `🛡️ <strong>Vista de Administrador</strong> — Viendo perfil de ${window.sanitizeHTML ? window.sanitizeHTML(profile.nombre) : profile.nombre}`;
     document.querySelector('main.container')?.insertBefore(banner, document.querySelector('.card'));
   }
 
@@ -150,10 +150,11 @@ function renderizarFormularios(formularios) {
     div.className = 'form-item';
     const tipoLabel = f._tipo === 'intervencion' ? 'Intervención' : 'Materiales';
     const badgeClass = f._tipo === 'intervencion' ? 'intervencion' : 'materiales';
+    const sCliente = window.sanitizeHTML ? window.sanitizeHTML(f.cliente) : (f.cliente || 'Sin cliente');
     div.innerHTML = `
       <div class="form-item-info">
         <strong>#${f.numero}<span class="badge-tipo ${badgeClass}">${tipoLabel}</span></strong>
-        <small>${f.cliente || 'Sin cliente'} &bull; ${f._fecha}</small>
+        <small>${sCliente} &bull; ${f._fecha}</small>
       </div>
       <a href="formulario-${f._tipo}.html?id=${f.id}" class="btn btn-secondary" style="flex-shrink:0;padding:0.4rem 0.9rem;font-size:0.82rem;">Ver</a>
     `;
