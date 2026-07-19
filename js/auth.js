@@ -11,6 +11,7 @@ async function initAuth() {
   const isIndex = currentPath.endsWith('/') || currentPath.endsWith('index.html');
   
   if (!session && !isIndex) {
+    window.authReady = true;
     window.location.href = 'index.html';
     return;
   }
@@ -67,6 +68,7 @@ async function initAuth() {
 
     // Store profile globally for other scripts
     window.currentProfile = profile;
+    window.authReady = true;
   }
 }
 
@@ -352,6 +354,36 @@ document.addEventListener('DOMContentLoaded', () => {
       const rol = document.getElementById('input-reg-rol').value;
       const adminCode = document.getElementById('input-admin-code')?.value || '';
       handleRegister(nombre, email, password, rol, adminCode);
+    });
+  }
+
+  // Unified Mobile Sidebar & Backdrop Handler
+  const btnToggle = document.getElementById('btn-toggle-sidebar');
+  const sidebar = document.querySelector('.sidebar');
+  if (btnToggle && sidebar) {
+    let backdrop = document.querySelector('.sidebar-backdrop');
+    if (!backdrop) {
+      backdrop = document.createElement('div');
+      backdrop.className = 'sidebar-backdrop';
+      document.body.appendChild(backdrop);
+    }
+
+    const toggleSidebar = (show) => {
+      sidebar.classList.toggle('open', show);
+      backdrop.classList.toggle('visible', show);
+    };
+
+    btnToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = sidebar.classList.contains('open');
+      toggleSidebar(!isOpen);
+    });
+
+    backdrop.addEventListener('click', () => toggleSidebar(false));
+    document.addEventListener('click', (e) => {
+      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) {
+        toggleSidebar(false);
+      }
     });
   }
 

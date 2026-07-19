@@ -1,43 +1,32 @@
 /**
  * historial-formularios.js
- * Completa y unificada gestión del historial de reportes y solicitudes
+ * Gestión completa del historial de reportes y solicitudes
  */
 
 let todosLosFormularios = [];
 let perfilUsuario = null;
-let mapaPerfiles = {}; // map uid -> name for Jefe view
+let mapaPerfiles = {};
+let filtroTipoActual = 'todos';
 
 /* ──────────────────────────────────────────
-   INIT & LISTENERS
+   INIT — espera a que auth.js esté listo
    ────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', async () => {
-  if (window.guardRoute) await window.guardRoute(['empleado', 'jefe']);
+async function iniciarHistorial() {
+  // Esperar a que el perfil esté disponible
+  perfilUsuario = window.currentProfile || await window.getCurrentProfile?.();
+  if (!perfilUsuario) {
+    // Si no hay sesión, redirigir al login
+    window.location.href = 'index.html';
+    return;
+  }
 
-  perfilUsuario = await window.getCurrentProfile?.();
-  if (!perfilUsuario) return;
-
-  // Sidebar link update
+  // Actualizar sidebar link según rol
   const dashLink = document.getElementById('sidebar-dash-link');
   if (dashLink) {
     dashLink.href = perfilUsuario.rol === 'jefe' ? 'dashboard-jefe.html' : 'dashboard-empleado.html';
   }
 
-  // Sidebar toggle
-  const btnToggle = document.getElementById('btn-toggle-sidebar');
-  const sidebar = document.querySelector('.sidebar');
-  if (btnToggle && sidebar) {
-    btnToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sidebar.classList.toggle('open');
-    });
-    document.addEventListener('click', (e) => {
-      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) {
-        sidebar.classList.remove('open');
-      }
-    });
-  }
-
-  // Header user info
+  // Header usuario
   const nameEl = document.getElementById('header-user-name');
   if (nameEl) nameEl.textContent = perfilUsuario.nombre || perfilUsuario.email;
   const avatarEl = document.getElementById('header-user-avatar');
@@ -45,53 +34,66 @@ document.addEventListener('DOMContentLoaded', async () => {
     avatarEl.textContent = perfilUsuario.rol === 'jefe' ? '👑' : '👷';
   }
 
-  // Logout
+  // Botón logout
   document.getElementById('btn-logout')?.addEventListener('click', () => window.handleLogout?.());
 
-  // Show admin banner
+  // Banner admin
   if (perfilUsuario.rol === 'jefe') {
     const banner = document.getElementById('admin-banner-view');
-    if (banner) banner.style.display = 'block';
-    // Fetch employee names to map creators
+    if (banner) banner.style.display = 'flex';
     await cargarMapaPerfiles();
   }
 
-  // Load records
+  // Cargar datos
   await cargarHistorial();
 
-  // Search & Filter listeners
-  const searchInput = document.getElementById('search-input');
-  const dateStart = document.getElementById('filter-date-start');
-  const dateEnd = document.getElementById('filter-date-end');
+  // Listeners de filtros y búsqueda
+  document.getElementById('search-input')?.addEventListener('input', filtrarYRenderizar);
+  document.getElementById('filter-date-start')?.addEventListener('change', filtrarYRenderizar);
+  document.getElementById('filter-date-end')?.addEventListener('change', filtrarYRenderizar);
 
-  if (searchInput) searchInput.addEventListener('input', filtrarYRenderizar);
-  if (dateStart) dateStart.addEventListener('change', filtrarYRenderizar);
-  if (dateEnd) dateEnd.addEventListener('change', filtrarYRenderizar);
+  // Pills de tipo
+  document.getElementById('pill-all')?.addEventListener('click', () => setPillActive('todos', 'pill-all'));
+  document.getElementById('pill-intervencion')?.addEventListener('click', () => setPillActive('intervencion', 'pill-intervencion'));
+  document.getElementById('pill-materiales')?.addEventListener('click', () => setPillActive('materiales', 'pill-materiales'));
+}
 
-  // Pills triggers
-  const pillAll = document.getElementById('pill-all');
-  const pillIntervencion = document.getElementById('pill-intervencion');
-  const pillMateriales = document.getElementById('pill-materiales');
-  
-  let filtroTipo = 'todos';
-  
-  const setPillActive = (activePill, tipo) => {
-    [pillAll, pillIntervencion, pillMateriales].forEach(p => p?.classList.remove('active'));
-    activePill?.classList.add('active');
-    filtroTipo = tipo;
-    filtrarYRenderizar(tipo);
-  };
+function setPillActive(tipo, activePillId) {
+  ['pill-all', 'pill-intervencion', 'pill-materiales'].forEach(id => {
+    document.getElementById(id)?.classList.remove('active');
+  });
+  document.getElementById(activePillId)?.classList.add('active');
+  filtroTipoActual = tipo;
+  filtrarYRenderizar();
+}
 
-  pillAll?.addEventListener('click', () => setPillActive(pillAll, 'todos'));
-  pillIntervencion?.addEventListener('click', () => setPillActive(pillIntervencion, 'intervencion'));
-  pillMateriales?.addEventListener('click', () => setPillActive(pillMateriales, 'materiales'));
+/* ──────────────────────────────────────────
+   ARRANQUE — poll esperando que auth.js
+   setee window.currentProfile
+   ────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', () => {
+  let intentos = 0;
+  const MAX_INTENTOS = 50; // 10 segundos máximo
 
-  // Expose active filters helper
-  window.obtenerFiltroTipoActual = () => filtroTipo;
+  const esperar = setInterval(async () => {
+    intentos++;
+
+    // Esperar a que auth.js complete su ciclo (setea authReady = true)
+    if (window.authReady || intentos >= MAX_INTENTOS) {
+      clearInterval(esperar);
+
+      if (!window.currentProfile) {
+        window.location.href = 'index.html';
+        return;
+      }
+
+      await iniciarHistorial();
+    }
+  }, 200);
 });
 
 /* ──────────────────────────────────────────
-   CREATOR MAPPING (JEFE MODE)
+   MAPA DE PERFILES (MODO JEFE)
    ────────────────────────────────────────── */
 async function cargarMapaPerfiles() {
   try {
@@ -99,37 +101,38 @@ async function cargarMapaPerfiles() {
       .from('profiles')
       .select('id, nombre');
     if (!error && data) {
-      data.forEach(p => {
-        mapaPerfiles[p.id] = p.nombre;
-      });
+      data.forEach(p => { mapaPerfiles[p.id] = p.nombre; });
     }
   } catch (err) {
-    console.error("Error cargando perfiles:", err);
+    console.error('Error cargando perfiles:', err);
   }
 }
 
 /* ──────────────────────────────────────────
-   LOAD HISTORIAL RECORDS
+   CARGAR HISTORIAL DESDE SUPABASE
    ────────────────────────────────────────── */
 async function cargarHistorial() {
   const spinner = document.getElementById('loading-spinner');
   const listContainer = document.getElementById('history-list-container');
+  const emptyState = document.getElementById('empty-state');
+
   if (spinner) spinner.style.display = 'block';
   if (listContainer) listContainer.style.display = 'none';
+  if (emptyState) emptyState.style.display = 'none';
 
   try {
     let q1 = window.supabaseClient.from('formularios_intervencion').select('*');
     let q2 = window.supabaseClient.from('formularios_materiales').select('*');
 
-    // If employee, limit to their own forms
+    // Empleado solo ve los suyos
     if (perfilUsuario.rol === 'empleado') {
       q1 = q1.eq('usuario_id', perfilUsuario.id);
       q2 = q2.eq('usuario_id', perfilUsuario.id);
     }
 
     const [res1, res2] = await Promise.all([
-      q1.order('numero', { ascending: false }),
-      q2.order('numero', { ascending: false })
+      q1.order('created_at', { ascending: false }),
+      q2.order('created_at', { ascending: false })
     ]);
 
     if (res1.error) throw res1.error;
@@ -147,35 +150,39 @@ async function cargarHistorial() {
       _fechaObj: new Date(f.created_at)
     }));
 
-    // Combine and sort descending by date
-    todosLosFormularios = [...intervenciones, ...materiales].sort((a, b) => b._fechaObj - a._fechaObj);
-    
+    todosLosFormularios = [...intervenciones, ...materiales]
+      .sort((a, b) => b._fechaObj - a._fechaObj);
+
     filtrarYRenderizar();
   } catch (err) {
-    console.error("Error al cargar historial:", err);
-    alert("Error cargando historial: " + err.message);
+    console.error('Error al cargar historial:', err);
+    const listContainer = document.getElementById('history-list-container');
+    if (listContainer) {
+      listContainer.innerHTML = `
+        <div style="text-align:center; padding:3rem; color:var(--danger);">
+          <p style="font-size:2rem;">⚠️</p>
+          <p>Error al cargar el historial.</p>
+          <small>${err.message || ''}</small>
+        </div>`;
+      listContainer.style.display = 'flex';
+    }
   } finally {
     if (spinner) spinner.style.display = 'none';
   }
 }
 
 /* ──────────────────────────────────────────
-   LOCAL FILTER & RENDER
+   FILTROS Y RENDERIZADO
    ────────────────────────────────────────── */
-function filtrarYRenderizar(tipoParam) {
+function filtrarYRenderizar() {
   const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
   const dateStartVal = document.getElementById('filter-date-start')?.value || '';
   const dateEndVal = document.getElementById('filter-date-end')?.value || '';
-  
-  // Use param or active pill
-  const tipoFiltro = typeof tipoParam === 'string' ? tipoParam : (window.obtenerFiltroTipoActual ? window.obtenerFiltroTipoActual() : 'todos');
+  const tipo = filtroTipoActual;
 
-  // Filter list
   const filtrados = todosLosFormularios.filter(f => {
-    // 1. Filter by Form Type
-    if (tipoFiltro !== 'todos' && f._tipo !== tipoFiltro) return false;
+    if (tipo !== 'todos' && f._tipo !== tipo) return false;
 
-    // 2. Filter by Date range
     if (dateStartVal) {
       const start = new Date(dateStartVal + 'T00:00:00');
       if (f._fechaObj < start) return false;
@@ -185,21 +192,20 @@ function filtrarYRenderizar(tipoParam) {
       if (f._fechaObj > end) return false;
     }
 
-    // 3. Filter by search input (client, number, date, creator name)
     if (query) {
       const creadorNombre = (mapaPerfiles[f.usuario_id] || '').toLowerCase();
       const cliente = (f.cliente || '').toLowerCase();
-      const numString = String(f.numero);
+      const numString = String(f.numero || '');
       const fechaString = f._fechaObj.toLocaleDateString('es-DO').toLowerCase();
-      const tipoString = f._tipo === 'intervencion' ? 'intervención' : 'materiales';
-      
-      const coincide = 
-        cliente.includes(query) || 
-        numString.includes(query) || 
-        fechaString.includes(query) || 
-        tipoString.includes(query) ||
+      const tipoStr = f._tipo === 'intervencion' ? 'intervención' : 'materiales';
+
+      const coincide =
+        cliente.includes(query) ||
+        numString.includes(query) ||
+        fechaString.includes(query) ||
+        tipoStr.includes(query) ||
         creadorNombre.includes(query);
-      
+
       if (!coincide) return false;
     }
 
@@ -224,77 +230,54 @@ function renderCards(formularios) {
 
   if (emptyState) emptyState.style.display = 'none';
   listContainer.style.display = 'flex';
+  listContainer.style.flexDirection = 'column';
+  listContainer.style.gap = '1rem';
 
   formularios.forEach(f => {
     const card = document.createElement('div');
     card.className = 'history-card';
 
     const fechaFmt = f._fechaObj.toLocaleDateString('es-DO', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
+      day: '2-digit', month: '2-digit', year: 'numeric',
+      hour: '2-digit', minute: '2-digit', hour12: true
     });
 
     const isIntervencion = f._tipo === 'intervencion';
     const tipoLabel = isIntervencion ? 'Hoja de Intervención' : 'Solicitud de Materiales';
     const badgeClass = isIntervencion ? 'intervencion' : 'materiales';
-    
-    // Creator name (only relevant for Jefe view)
+
     let creadorHTML = '';
     if (perfilUsuario.rol === 'jefe') {
-      const rawNombreCreador = mapaPerfiles[f.usuario_id] || 'Técnico ProFrio';
-      const sNombreCreador = window.sanitizeHTML ? window.sanitizeHTML(rawNombreCreador) : rawNombreCreador;
+      const nombre = mapaPerfiles[f.usuario_id] || 'Técnico ProFrio';
+      const sNombre = window.sanitizeHTML ? window.sanitizeHTML(nombre) : nombre;
       creadorHTML = `
         <div class="meta-item">
           <span>👤</span>
-          <span>Téc: <strong>${sNombreCreador}</strong></span>
-        </div>
-      `;
+          <span>Téc: <strong>${sNombre}</strong></span>
+        </div>`;
     }
 
-    // Right info (total display for materials, service type for intervention)
-    let rightInfoHTML = '';
-    if (isIntervencion) {
-      rightInfoHTML = `
-        <span class="badge" style="background:var(--primary-100); color:var(--primary-800); font-weight:600; font-size:0.75rem;">
-          ⚡ ${f.tipo_servicio || 'Servicio'}
-        </span>
-      `;
-    } else {
-      const totalVal = parseFloat(f.total) || 0;
-      rightInfoHTML = `<span class="card-total">$ ${totalVal.toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`;
-    }
-
-    const sCliente = window.sanitizeHTML ? window.sanitizeHTML(f.cliente) : (f.cliente || 'Sin Cliente');
-    const sTipoServicio = window.sanitizeHTML ? window.sanitizeHTML(f.tipo_servicio) : (f.tipo_servicio || 'Servicio');
+    const sCliente = window.sanitizeHTML ? window.sanitizeHTML(f.cliente || '') : (f.cliente || 'Sin Cliente');
+    const sTipoSrv = window.sanitizeHTML ? window.sanitizeHTML(f.tipo_servicio || '') : (f.tipo_servicio || 'Servicio');
 
     card.innerHTML = `
       <div class="card-main-info">
         <div class="card-title-row">
-          <strong>#${f.numero}</strong>
+          <strong>#${f.numero || '—'}</strong>
           <span class="badge-tipo ${badgeClass}">${tipoLabel}</span>
         </div>
         <div class="card-meta-row">
-          <div class="meta-item">
-            <span>🏢</span>
-            <span>Cliente: <strong>${sCliente || 'Sin Cliente'}</strong></span>
-          </div>
-          <div class="meta-item">
-            <span>📅</span>
-            <span>${fechaFmt}</span>
-          </div>
+          <div class="meta-item"><span>🏢</span><span>Cliente: <strong>${sCliente || 'Sin Cliente'}</strong></span></div>
+          <div class="meta-item"><span>📅</span><span>${fechaFmt}</span></div>
           ${creadorHTML}
         </div>
       </div>
       <div class="card-right-info">
         ${isIntervencion
-          ? `<span class="badge" style="background:var(--primary-100); color:var(--primary-800); font-weight:600; font-size:0.75rem;">⚡ ${sTipoServicio}</span>`
-          : `<span class="card-total">$ ${(parseFloat(f.total) || 0).toLocaleString('es-DO', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>`
+          ? `<span class="badge" style="background:var(--primary-100);color:var(--primary-800);font-weight:600;font-size:0.75rem;">⚡ ${sTipoSrv}</span>`
+          : `<span class="card-total">$ ${(parseFloat(f.total) || 0).toLocaleString('es-DO', { minimumFractionDigits: 2 })}</span>`
         }
-        <a href="formulario-${f._tipo}.html?id=${f.id}" class="btn btn-secondary" style="padding:0.4rem 1rem; font-size:0.8rem; border-radius:var(--radius-sm);">
+        <a href="formulario-${f._tipo}.html?id=${f.id}" class="btn btn-secondary" style="padding:0.4rem 1rem;font-size:0.8rem;border-radius:var(--radius-sm);white-space:nowrap;">
           Ver / Editar 🔍
         </a>
       </div>

@@ -4,14 +4,15 @@
 
 let todosLosFormularios = [];
 
-document.addEventListener('DOMContentLoaded', async () => {
-  if (window.guardRoute) await window.guardRoute(['empleado', 'jefe']);
-
+async function iniciarPerfil() {
   // Determine which profile to show
   const urlParams = new URLSearchParams(window.location.search);
   const targetUid = urlParams.get('uid');     // admin viewing another user
-  const myProfile = await window.getCurrentProfile?.();
-  if (!myProfile) return;
+  const myProfile = window.currentProfile || await window.getCurrentProfile?.();
+  if (!myProfile) {
+    window.location.href = 'index.html';
+    return;
+  }
 
   // If uid param is present, load that user (only jefe can do this)
   let profile = myProfile;
@@ -68,6 +69,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('filter-all')?.addEventListener('click', () => setFiltroTipo('todos'));
   document.getElementById('filter-intervencion')?.addEventListener('click', () => setFiltroTipo('intervencion'));
   document.getElementById('filter-materiales')?.addEventListener('click', () => setFiltroTipo('materiales'));
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  let intentos = 0;
+  const MAX_INTENTOS = 50;
+
+  const esperar = setInterval(async () => {
+    intentos++;
+    if (window.authReady || intentos >= MAX_INTENTOS) {
+      clearInterval(esperar);
+      if (!window.currentProfile) {
+        window.location.href = 'index.html';
+        return;
+      }
+      await iniciarPerfil();
+    }
+  }, 200);
 });
 
 let filtroTipoActual = 'todos';

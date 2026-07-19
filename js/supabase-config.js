@@ -1,7 +1,11 @@
 // Configuración de Supabase
 const { createClient } = supabase;
-const SUPABASE_URL = 'https://tiokuyziwnwbqysztpzb.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_Vap5YJd6IC8STJY8ewQwKQ_DIS27cVG';
+
+// Ofuscación de credenciales para evitar lectura casual en código fuente (view-source)
+// La seguridad real del sistema no reside en estas claves (que son públicas por diseño),
+// sino en las políticas de seguridad RLS (Row Level Security) configuradas en la base de datos Supabase.
+const SUPABASE_URL = atob('aHR0cHM6Ly90aW9rdXl6aXdud2JxeXN6dHB6Yi5zdXBhYmFzZS5jbw==');
+const SUPABASE_ANON_KEY = atob('c2JfcHVibGlzaGFibGVfVmFwNVlKZDZJQzhTVEpZOGV3UXdLUV9ESVMyN2NWRw==');
 
 // Check if sessionStorage is available and writable (prevents Safari Private Browsing SecurityError)
 let customStorage = window.sessionStorage;

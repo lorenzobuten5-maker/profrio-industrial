@@ -7,34 +7,16 @@ let userToBanId = null;
 let userToDeleteId = null;
 let presenceChannel = null;
 
-/* ──────────────────────────────────────────
-   INIT
-   ────────────────────────────────────────── */
-document.addEventListener('DOMContentLoaded', async () => {
+async function iniciarAdmin() {
   if (window.guardRoute) await window.guardRoute(['jefe']);
 
   // Logout
   document.getElementById('btn-logout')?.addEventListener('click', () => window.handleLogout?.());
 
   // Header name
-  const profile = await window.getCurrentProfile?.();
+  const profile = window.currentProfile || await window.getCurrentProfile?.();
   const nameEl = document.getElementById('header-user-name');
   if (nameEl && profile) nameEl.textContent = profile.nombre;
-
-  // Sidebar toggle
-  const btnToggle = document.getElementById('btn-toggle-sidebar');
-  const sidebar   = document.querySelector('.sidebar');
-  if (btnToggle && sidebar) {
-    btnToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      sidebar.classList.toggle('open');
-    });
-    document.addEventListener('click', (e) => {
-      if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) {
-        sidebar.classList.remove('open');
-      }
-    });
-  }
 
   // Tabs
   configurarTabs();
@@ -51,6 +33,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Delete modal events
   document.getElementById('btn-cancel-delete')?.addEventListener('click', cerrarDeleteModal);
   document.getElementById('btn-confirm-delete')?.addEventListener('click', confirmarDelete);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  let intentos = 0;
+  const MAX_INTENTOS = 50;
+
+  const esperar = setInterval(async () => {
+    intentos++;
+    if (window.authReady || intentos >= MAX_INTENTOS) {
+      clearInterval(esperar);
+      if (!window.currentProfile) {
+        window.location.href = 'index.html';
+        return;
+      }
+      await iniciarAdmin();
+    }
+  }, 200);
 });
 
 /* ──────────────────────────────────────────

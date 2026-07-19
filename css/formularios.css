@@ -1,29 +1,47 @@
-/* Form Specific Styles */
+/* ═══════════════════════════════════════════════════════════
+   formularios.css — ProFrio Industrial
+   Premium responsive form sheets
+   ═══════════════════════════════════════════════════════════ */
 
 .form-wrapper {
   max-width: 1000px;
-  margin: 2rem auto;
+  margin: 1.5rem auto;
   background: var(--white);
-  padding: 3rem;
-  border-radius: var(--radius-sm);
+  padding: clamp(1.25rem, 4vw, 3rem);
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   color: #000;
+  animation: fadeIn 0.3s ease;
 }
 
 .action-toolbar {
   position: sticky;
   top: 0;
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(8px);
-  padding: 1rem 2rem;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.75rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   z-index: 100;
   border-bottom: 1px solid var(--gray-200);
-  margin-bottom: 1rem;
+  box-shadow: 0 2px 12px rgba(12,35,64,0.06);
+  gap: 0.75rem;
+  transition: box-shadow 0.2s;
 }
-.toolbar-actions { display: flex; gap: 0.5rem; }
+.toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.toolbar-actions .btn {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.toolbar-actions .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
 
 /* Header Formulario */
 .form-header-print {

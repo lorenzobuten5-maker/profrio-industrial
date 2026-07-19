@@ -7,9 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Dashboard Empleado — ProFrio Industrial</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=10">
-  <link rel="stylesheet" href="css/dashboard.css?v=10">
-  <link rel="stylesheet" href="css/responsive.css?v=1">
+  <link rel="stylesheet" href="css/global.css?v=13">
+  <link rel="stylesheet" href="css/dashboard.css?v=12">
+  <link rel="stylesheet" href="css/responsive.css?v=12">
 </head>
 <body>
   
@@ -73,26 +73,16 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/security.js?v=1"></script>
-  <script src="js/supabase-config.js?v=9"></script>
-  <script src="js/auth.js?v=9"></script>
-  <script src="js/online-status.js?v=9"></script>
+  <script src="js/security.js?v=2"></script>
+  <script src="js/supabase-config.js?v=12"></script>
+  <script src="js/auth.js?v=14"></script>
+  <script src="js/online-status.js?v=12"></script>
   <script>
-    // Hide loading overlay
+    // Ocultar overlay de carga
     setTimeout(() => {
       const overlay = document.getElementById('loading-overlay');
       if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 500); }
     }, 300);
-
-    // Sidebar toggle
-    const btnToggle = document.getElementById('btn-toggle-sidebar');
-    const sidebar = document.querySelector('.sidebar');
-    if (btnToggle && sidebar) {
-      btnToggle.addEventListener('click', (e) => { e.stopPropagation(); sidebar.classList.toggle('open'); });
-      document.addEventListener('click', (e) => {
-        if (sidebar.classList.contains('open') && !sidebar.contains(e.target) && e.target !== btnToggle) sidebar.classList.remove('open');
-      });
-    }
 
     // Load recent forms after auth resolves
     async function cargarFormulariosRecientes() {
@@ -131,14 +121,18 @@
         const listEl = document.getElementById('recent-forms-list');
         if (listEl) listEl.innerHTML = '<div style="padding:1rem;color:var(--danger);">Error cargando formularios.</div>';
       }
-    }
-
     // Poll for profile to be ready (set by auth.js initAuth)
     let pollCount = 0;
     const pollInterval = setInterval(() => {
       pollCount++;
-      if (window.currentProfile) { clearInterval(pollInterval); cargarFormulariosRecientes(); }
-      else if (pollCount > 20) clearInterval(pollInterval); // stop after 4s
+      if (window.authReady || pollCount > 40) {
+        clearInterval(pollInterval);
+        if (!window.currentProfile) {
+          window.location.href = 'index.html';
+          return;
+        }
+        cargarFormulariosRecientes();
+      }
     }, 200);
   </script>
 </body>

@@ -36,14 +36,20 @@ textarea {
 
 /* ── Sidebar overlay for mobile ── */
 .sidebar-backdrop {
-  display: none;
   position: fixed;
   inset: 0;
   background: rgba(12,35,64,0.5);
-  z-index: 99;
+  z-index: 150;
   backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
 }
-.sidebar-backdrop.visible { display: block; }
+.sidebar-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
 
 /* ── Top header mobile improvements ── */
 .top-header .page-title {
