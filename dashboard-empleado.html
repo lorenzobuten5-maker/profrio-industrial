@@ -117,10 +117,11 @@
           </div>
         `).join('');
       } catch (err) {
-        console.error('Error cargando recientes:', err);
         const listEl = document.getElementById('recent-forms-list');
         if (listEl) listEl.innerHTML = '<div style="padding:1rem;color:var(--danger);">Error cargando formularios.</div>';
       }
+    }
+
     // Poll for profile to be ready (set by auth.js initAuth)
     let pollCount = 0;
     const pollInterval = setInterval(() => {
