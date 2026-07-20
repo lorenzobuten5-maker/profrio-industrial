@@ -345,6 +345,38 @@
   .canvas-container { border: none !important; box-shadow: none !important; max-width: 100% !important; background: transparent !important; }
   .btn-clear-canvas { display: none !important; }
   .sig-canvas { border-bottom: 0.5pt solid #000 !important; height: 12mm !important; background: transparent !important; }
+
+  /* Equipos + Temperaturas lado a lado en impresión */
+  .equipos-temps-row {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 2mm !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+  }
+  .equipos-col {
+    flex: 0 0 46% !important;
+    width: 46% !important;
+  }
+  .temps-col {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  /* En impresión NO hay scroll — quitar overflow y min-width para que quepa */
+  .temps-col .table-responsive {
+    overflow: visible !important;
+  }
+  .temps-col .data-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+  }
+  .temps-col .data-table th,
+  .temps-col .data-table td {
+    padding: 0.4mm 0.8mm !important;
+    font-size: 6.2pt !important;
+    word-break: break-word !important;
+  }
 }
 
 /* Photo capture section */
