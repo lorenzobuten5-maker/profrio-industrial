@@ -118,6 +118,36 @@
   margin-bottom: 1.5rem;
   border-radius: 4px;
 }
+
+/* Layout lado a lado para Equipos y Temperaturas */
+.equipos-temps-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  align-items: flex-start;
+  margin-bottom: 0;
+}
+.equipos-col {
+  flex: 0 0 auto;
+  width: 46%;
+}
+.temps-col {
+  flex: 1 1 auto;
+  min-width: 0;       /* crítico: permite que el hijo haga overflow-x scroll */
+  overflow: visible;  /* el scroll lo maneja table-responsive interno */
+}
+.temps-col .table-responsive {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+@media (max-width: 700px) {
+  .equipos-temps-row {
+    flex-direction: column;
+  }
+  .equipos-col, .temps-col {
+    width: 100%;
+  }
+}
 .section-title {
   font-weight: bold;
   background: var(--primary-900);
@@ -443,6 +473,7 @@
   
   .form-grid.grid-2 > *, .form-grid.grid-3 > * {
     grid-column: span 1 !important;
+    min-width: 0 !important;
   }
   
   /* Signatures stack vertically */

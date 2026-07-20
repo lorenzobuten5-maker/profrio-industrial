@@ -7,9 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Hoja de Intervención</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=16">
-  <link rel="stylesheet" href="css/formularios.css?v=16">
-  <link rel="stylesheet" href="css/responsive.css?v=16">
+  <link rel="stylesheet" href="css/global.css?v=17">
+  <link rel="stylesheet" href="css/formularios.css?v=17">
+  <link rel="stylesheet" href="css/responsive.css?v=17">
 </head>
 <body>
 
@@ -122,9 +122,10 @@
         <div></div>
       </div>
 
-      <div class="form-grid grid-2" style="align-items: start;">
+      <!-- Equipos + Temperaturas: flex-row en desktop, columna en móvil -->
+      <div class="equipos-temps-row">
         <!-- Equipos -->
-        <div class="section-box">
+        <div class="section-box equipos-col">
           <div class="section-title">EQUIPOS</div>
           <div class="equipos-grid">
             <label class="chk-group"><input type="checkbox" id="chk-aires"> Chequeo de aires acondicionados</label>
@@ -141,11 +142,11 @@
           </div>
         </div>
 
-        <!-- Temperaturas -->
-        <div class="section-box">
+        <!-- Temperaturas — sección independiente con su propio scroll horizontal -->
+        <div class="section-box temps-col">
           <div class="section-title">TEMPERATURA DE LA NEVERA Y CUARTO FRÍO</div>
           <div class="table-responsive">
-            <table class="data-table" style="margin:0;">
+            <table class="data-table" style="margin:0; min-width:420px;">
               <tr>
                 <th colspan="2">NEVERA</th>
                 <th colspan="2">CUARTO FRÍO</th>
@@ -251,13 +252,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/security.js?v=16"></script>
-  <script src="js/supabase-config.js?v=16"></script>
-  <script src="js/auth.js?v=16"></script>
-  <script src="js/online-status.js?v=16"></script>
-  <script src="js/formulario-intervencion.js?v=16"></script>
-  <script src="js/print-pdf.js?v=16"></script>
-  <script src="js/email.js?v=16"></script>
+  <script src="js/security.js?v=17"></script>
+  <script src="js/supabase-config.js?v=17"></script>
+  <script src="js/auth.js?v=17"></script>
+  <script src="js/online-status.js?v=17"></script>
+  <script src="js/formulario-intervencion.js?v=17"></script>
+  <script src="js/print-pdf.js?v=17"></script>
+  <script src="js/email.js?v=17"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
   </script>
