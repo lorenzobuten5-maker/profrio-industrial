@@ -7,9 +7,9 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Hoja de Intervención</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=18">
-  <link rel="stylesheet" href="css/formularios.css?v=18">
-  <link rel="stylesheet" href="css/responsive.css?v=18">
+  <link rel="stylesheet" href="css/global.css?v=19">
+  <link rel="stylesheet" href="css/formularios.css?v=19">
+  <link rel="stylesheet" href="css/responsive.css?v=19">
 </head>
 <body>
 
@@ -122,65 +122,62 @@
         <div></div>
       </div>
 
-      <!-- Equipos + Temperaturas: flex-row en desktop, columna en móvil -->
-      <div class="equipos-temps-row">
-        <!-- Equipos -->
-        <div class="section-box equipos-col">
-          <div class="section-title">EQUIPOS</div>
-          <div class="equipos-grid">
-            <label class="chk-group"><input type="checkbox" id="chk-aires"> Chequeo de aires acondicionados</label>
-            <label class="chk-group"><input type="checkbox" id="chk-rack"> Chequeo del rack</label>
-            <div class="input-line"><label class="chk-group"><input type="checkbox" id="chk-nivel-liquido"> Nivel de líquido</label><input type="text" id="inp-nivel-liquido"></div>
-            <div class="input-line"><label class="chk-group"><input type="checkbox" id="chk-nivel-aceite"> Nivel de aceite</label><input type="text" id="inp-nivel-aceite"></div>
-            <label class="chk-group"><input type="checkbox" id="chk-correccion-fuga"> Corrección de fuga</label>
-            <label class="chk-group"><input type="checkbox" id="chk-carga-refrigerante"> Carga de refrigerante</label>
-            <label class="chk-group"><input type="checkbox" id="chk-cambio-compresor"> Cambio compresor</label>
-            <label class="chk-group"><input type="checkbox" id="chk-mant-aa"> Mantenimiento A/A</label>
-            <label class="chk-group"><input type="checkbox" id="chk-mant-nevera"> Mantenimiento nevera</label>
-            <label class="chk-group"><input type="checkbox" id="chk-cambio-solenoide"> Cambio de solenoide</label>
-            <label class="chk-group"><input type="checkbox" id="chk-cambio-abanico"> Cambio de abanico</label>
-          </div>
+      <!-- Equipos — ancho completo -->
+      <div class="section-box">
+        <div class="section-title">EQUIPOS</div>
+        <div class="equipos-grid">
+          <label class="chk-group"><input type="checkbox" id="chk-aires"> Chequeo de aires acondicionados</label>
+          <label class="chk-group"><input type="checkbox" id="chk-rack"> Chequeo del rack</label>
+          <div class="input-line"><label class="chk-group"><input type="checkbox" id="chk-nivel-liquido"> Nivel de líquido</label><input type="text" id="inp-nivel-liquido"></div>
+          <div class="input-line"><label class="chk-group"><input type="checkbox" id="chk-nivel-aceite"> Nivel de aceite</label><input type="text" id="inp-nivel-aceite"></div>
+          <label class="chk-group"><input type="checkbox" id="chk-correccion-fuga"> Corrección de fuga</label>
+          <label class="chk-group"><input type="checkbox" id="chk-carga-refrigerante"> Carga de refrigerante</label>
+          <label class="chk-group"><input type="checkbox" id="chk-cambio-compresor"> Cambio compresor</label>
+          <label class="chk-group"><input type="checkbox" id="chk-mant-aa"> Mantenimiento A/A</label>
+          <label class="chk-group"><input type="checkbox" id="chk-mant-nevera"> Mantenimiento nevera</label>
+          <label class="chk-group"><input type="checkbox" id="chk-cambio-solenoide"> Cambio de solenoide</label>
+          <label class="chk-group"><input type="checkbox" id="chk-cambio-abanico"> Cambio de abanico</label>
         </div>
+      </div>
 
-        <!-- Temperaturas — sección independiente con su propio scroll horizontal -->
-        <div class="section-box temps-col">
-          <div class="section-title">TEMPERATURA DE LA NEVERA Y CUARTO FRÍO</div>
-          <div class="table-responsive">
-            <table class="data-table" style="margin:0; min-width:420px;">
-              <tr>
-                <th colspan="2">NEVERA</th>
-                <th colspan="2">CUARTO FRÍO</th>
-              </tr>
-              <tr>
-                <td>Congelado:</td><td><input type="text" id="inp-temp-congelado"></td>
-                <td>Vegetales:</td><td><input type="text" id="inp-cf-vegetales"></td>
-              </tr>
-              <tr>
-                <td>Deli Queso:</td><td><input type="text" id="inp-temp-deli-queso"></td>
-                <td>Congelado:</td><td><input type="text" id="inp-cf-congelado"></td>
-              </tr>
-              <tr>
-                <td>Deli Carne:</td><td><input type="text" id="inp-temp-deli-carne"></td>
-                <td>Carnes:</td><td><input type="text" id="inp-cf-carnes"></td>
-              </tr>
-              <tr>
-                <td>Salami:</td><td><input type="text" id="inp-temp-salami"></td>
-                <td>Pescados:</td><td><input type="text" id="inp-cf-pescados"></td>
-              </tr>
-              <tr>
-                <td>Yogurt:</td><td><input type="text" id="inp-temp-yogurt"></td>
-                <td>Preparación:</td><td><input type="text" id="inp-cf-preparacion"></td>
-              </tr>
-              <tr>
-                <td>Vegetales:</td><td><input type="text" id="inp-temp-vegetales-nev"></td>
-                <td></td><td></td>
-              </tr>
-              <tr>
-                <td>Jugos:</td><td><input type="text" id="inp-temp-jugos"></td>
-                <td></td><td></td>
-              </tr>
-            </table>
-          </div>
+      <!-- Temperaturas — ancho completo debajo de Equipos -->
+      <div class="section-box">
+        <div class="section-title">TEMPERATURA DE LA NEVERA Y CUARTO FRÍO</div>
+        <div class="table-responsive">
+          <table class="data-table" style="margin:0;">
+            <tr>
+              <th colspan="2">NEVERA</th>
+              <th colspan="2">CUARTO FRÍO</th>
+            </tr>
+            <tr>
+              <td>Congelado:</td><td><input type="text" id="inp-temp-congelado"></td>
+              <td>Vegetales:</td><td><input type="text" id="inp-cf-vegetales"></td>
+            </tr>
+            <tr>
+              <td>Deli Queso:</td><td><input type="text" id="inp-temp-deli-queso"></td>
+              <td>Congelado:</td><td><input type="text" id="inp-cf-congelado"></td>
+            </tr>
+            <tr>
+              <td>Deli Carne:</td><td><input type="text" id="inp-temp-deli-carne"></td>
+              <td>Carnes:</td><td><input type="text" id="inp-cf-carnes"></td>
+            </tr>
+            <tr>
+              <td>Salami:</td><td><input type="text" id="inp-temp-salami"></td>
+              <td>Pescados:</td><td><input type="text" id="inp-cf-pescados"></td>
+            </tr>
+            <tr>
+              <td>Yogurt:</td><td><input type="text" id="inp-temp-yogurt"></td>
+              <td>Preparación:</td><td><input type="text" id="inp-cf-preparacion"></td>
+            </tr>
+            <tr>
+              <td>Vegetales:</td><td><input type="text" id="inp-temp-vegetales-nev"></td>
+              <td></td><td></td>
+            </tr>
+            <tr>
+              <td>Jugos:</td><td><input type="text" id="inp-temp-jugos"></td>
+              <td></td><td></td>
+            </tr>
+          </table>
         </div>
       </div>
 
@@ -252,13 +249,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/security.js?v=18"></script>
-  <script src="js/supabase-config.js?v=18"></script>
-  <script src="js/auth.js?v=18"></script>
-  <script src="js/online-status.js?v=18"></script>
-  <script src="js/formulario-intervencion.js?v=18"></script>
-  <script src="js/print-pdf.js?v=18"></script>
-  <script src="js/email.js?v=18"></script>
+  <script src="js/security.js?v=19"></script>
+  <script src="js/supabase-config.js?v=19"></script>
+  <script src="js/auth.js?v=19"></script>
+  <script src="js/online-status.js?v=19"></script>
+  <script src="js/formulario-intervencion.js?v=19"></script>
+  <script src="js/print-pdf.js?v=19"></script>
+  <script src="js/email.js?v=19"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
   </script>
