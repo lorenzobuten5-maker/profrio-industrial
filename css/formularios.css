@@ -457,21 +457,26 @@
   }
   
   /* Tables content and padding */
-  .data-table {
-    display: table !important; /* mantener como tabla para respetar table-layout: fixed */
+  .table-responsive {
     width: 100% !important;
-    table-layout: fixed !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    margin-bottom: 1.25rem !important;
+  }
+  .table-responsive .data-table {
+    display: table !important;
+    width: 100% !important;
+    min-width: 580px !important;
+    table-layout: auto !important;
   }
   .data-table th, .data-table td {
-    padding: 0.4rem 0.25rem;
-    font-size: 0.8rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    padding: 0.5rem 0.35rem;
+    font-size: 0.85rem;
   }
   .data-table input {
     width: 100% !important;
     min-width: 0 !important;
-    font-size: 0.8rem !important;
+    font-size: 0.85rem !important;
   }
   
   /* Fixed spacing for layout boxes */
