@@ -1,0 +1,539 @@
+/* ═══════════════════════════════════════════════════════════
+   formularios.css — ProFrio Industrial
+   Premium responsive form sheets
+   ═══════════════════════════════════════════════════════════ */
+
+.form-wrapper {
+  max-width: 1000px;
+  margin: 1.5rem auto;
+  background: var(--white);
+  padding: clamp(1.25rem, 4vw, 3rem);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  color: #000;
+  animation: fadeIn 0.3s ease;
+}
+
+.action-toolbar {
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+  border-bottom: 1px solid var(--gray-200);
+  box-shadow: 0 2px 12px rgba(12,35,64,0.06);
+  gap: 0.75rem;
+  transition: box-shadow 0.2s;
+}
+.toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.toolbar-actions .btn {
+  white-space: nowrap;
+  font-size: 0.85rem;
+  padding: 0.5rem 0.9rem;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.toolbar-actions .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow-md); }
+
+/* Header Formulario */
+.form-header-print {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  border-bottom: 3px solid var(--primary-900);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+.form-logo {
+  font-size: 2rem; font-weight: 800; color: var(--primary-900);
+  display: flex; align-items: center; gap: 8px;
+}
+.form-company-info { font-size: 0.85rem; color: #333; line-height: 1.4; margin-top: 0.5rem; }
+.form-number-box {
+  text-align: right;
+  font-size: 1.2rem; font-weight: bold; color: var(--primary-900);
+}
+.form-number-box span { color: var(--danger); }
+
+/* Form Sections */
+.form-title {
+  text-align: center;
+  color: var(--primary-800);
+  font-size: 1.5rem;
+  margin: 1.5rem 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.form-grid {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.grid-2 { grid-template-columns: 1fr 1fr; }
+.grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.input-line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+.input-line label { font-weight: 600; white-space: nowrap; }
+.input-line input[type="text"], .input-line input[type="number"] {
+  flex: 1;
+  border: none;
+  border-bottom: 1px solid #000;
+  background: transparent;
+  padding: 2px 5px;
+  font-family: inherit;
+  font-size: 1rem;
+}
+.input-line input:focus { outline: none; border-bottom-color: var(--primary-500); }
+
+/* Custom Checkboxes and Radios */
+.chk-group, .radio-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+.chk-group input[type="checkbox"], .radio-group input[type="radio"] {
+  width: 16px; height: 16px;
+  accent-color: var(--primary-600);
+}
+
+/* Sections and Tables */
+.section-box {
+  border: 1px solid var(--primary-900);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  border-radius: 4px;
+}
+.section-title {
+  font-weight: bold;
+  background: var(--primary-900);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  margin: -1rem -1rem 1rem -1rem;
+  border-radius: 3px 3px 0 0;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.5rem;
+}
+.data-table th, .data-table td {
+  border: 1px solid #000;
+  padding: 0.5rem;
+  text-align: left;
+}
+.data-table th { background: var(--primary-100); font-weight: 600; text-align: center; }
+.data-table input { width: 100%; border: none; background: transparent; padding: 4px; }
+.data-table input:focus { outline: 1px solid var(--primary-300); }
+
+/* Textareas */
+.textarea-container { display: flex; flex-direction: column; gap: 0.5rem; height: 100%; }
+.textarea-container label { font-weight: bold; }
+.textarea-container textarea {
+  width: 100%; flex: 1; min-height: 100px;
+  border: 1px solid #000; padding: 0.5rem; resize: vertical;
+}
+
+/* Signatures Canvas Styling */
+.signatures {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-top: 2rem;
+  flex-wrap: wrap;
+}
+.sig-box {
+  flex: 1;
+  min-width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sig-label {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--primary-900);
+  margin-bottom: 0.5rem;
+  text-align: center;
+  width: 100%;
+}
+.canvas-container {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  background: var(--white);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.sig-canvas {
+  width: 100%;
+  height: 120px;
+  display: block;
+  cursor: crosshair;
+  touch-action: none;
+  background: #ffffff;
+}
+.btn-clear-canvas {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  font-size: 0.75rem;
+  background: var(--gray-100);
+  color: var(--gray-600);
+  border: none;
+  border-top: 1.5px solid var(--gray-200);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.btn-clear-canvas:hover {
+  background: var(--danger);
+  color: white;
+}
+
+/* Status */
+#save-status {
+  position: fixed; top: 80px; right: 20px; z-index: 1000;
+}
+
+/* Equipos Grid Layout */
+.equipos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+@media (min-width: 576px) {
+  .equipos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem 1.5rem;
+  }
+}
+
+/* Print Styles — fits on 1 page of Letter size */
+@media print {
+  * { box-sizing: border-box !important; }
+  body { background: white !important; margin: 0 !important; padding: 0 !important; font-size: 7.5pt !important; }
+  @page { size: letter portrait; margin: 4mm 5mm !important; }
+
+  /* Hide non-printable elements */
+  .action-toolbar,
+  #save-status,
+  .photo-section,
+  .photo-buttons,
+  .sidebar,
+  .top-header,
+  .modal-overlay,
+  .lightbox-modal { display: none !important; }
+
+  /* Shrink wrapper */
+  .form-wrapper {
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 2mm !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+  }
+  .main-wrapper { margin: 0 !important; }
+
+  /* Header */
+  .form-header-print {
+    padding-bottom: 2mm !important;
+    margin-bottom: 2mm !important;
+  }
+  .form-logo { font-size: 11pt !important; }
+  .form-company-info { font-size: 6pt !important; line-height: 1.2 !important; margin-top: 2px !important; }
+  .form-number-box { font-size: 9pt !important; }
+
+  /* Title */
+  .form-title { font-size: 10pt !important; margin: 2mm 0 !important; letter-spacing: 0 !important; }
+
+  /* Grids */
+  .form-grid { gap: 2mm !important; margin-bottom: 2mm !important; }
+  .section-box { padding: 2mm !important; margin-bottom: 2mm !important; }
+  .section-title {
+    padding: 1mm 2mm !important;
+    margin: -2mm -2mm 2mm -2mm !important;
+    font-size: 7.5pt !important;
+    background: #0C2340 !important;
+    color: white !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Equipos Grid in Print */
+  .equipos-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5mm 3mm !important;
+  }
+
+  /* Inputs */
+  input, textarea, select {
+    border: none !important;
+    border-bottom: 0.5pt solid #000 !important;
+    background: transparent !important;
+    font-size: 7.2pt !important;
+    padding: 0.2mm 0.5mm !important;
+    resize: none !important;
+  }
+  .input-line label { font-size: 7.2pt !important; font-weight: 600 !important; }
+  .data-table input { border: none !important; font-size: 6.8pt !important; }
+  .data-table th, .data-table td { padding: 0.6mm 1mm !important; font-size: 6.8pt !important; }
+
+  /* Compress textareas */
+  textarea { height: 10mm !important; min-height: 10mm !important; }
+
+  /* Checkboxes */
+  .chk-group, .radio-group { font-size: 6.8pt !important; }
+
+  /* Signatures */
+  .signatures { margin-top: 2mm !important; gap: 4mm !important; }
+  .sig-box { flex: 1 !important; min-width: 0 !important; }
+  .sig-label { font-size: 6.8pt !important; margin-bottom: 1mm !important; }
+  .canvas-container { border: none !important; box-shadow: none !important; max-width: 100% !important; background: transparent !important; }
+  .btn-clear-canvas { display: none !important; }
+  .sig-canvas { border-bottom: 0.5pt solid #000 !important; height: 12mm !important; background: transparent !important; }
+}
+
+/* Photo capture section */
+.photo-section {
+  grid-column: span 2;
+  margin-top: 1.5rem;
+  padding: 1rem;
+  border: 1px solid var(--primary-900);
+  border-radius: 4px;
+}
+.photo-section label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--primary-900);
+}
+.photo-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+.photos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 15px;
+}
+.photo-thumbnail-container {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background-color: var(--gray-100);
+  box-shadow: var(--shadow-sm);
+}
+.photo-thumbnail-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  cursor: pointer;
+}
+.photo-thumbnail-container .btn-delete-photo {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background: var(--danger);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  opacity: 0.8;
+}
+.photo-thumbnail-container .btn-delete-photo:hover {
+  opacity: 1;
+}
+
+/* Lightbox/Preview Modal */
+.lightbox-modal {
+  display: none;
+  position: fixed;
+  z-index: 10000;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.9);
+  align-items: center;
+  justify-content: center;
+}
+.lightbox-modal.active {
+  display: flex;
+}
+.lightbox-content {
+  max-width: 90%;
+  max-height: 80%;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+.lightbox-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: white;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Responsive Mobile Rules */
+@media (max-width: 768px) {
+  .form-wrapper {
+    padding: 1rem 0.75rem;
+    margin: 0.75rem 0.5rem;
+    box-shadow: var(--shadow-md);
+    width: auto;
+    max-width: calc(100vw - 1rem) !important;
+    box-sizing: border-box !important;
+    overflow: hidden;
+  }
+  
+  .form-grid.grid-2, .form-grid.grid-3 {
+    grid-template-columns: 1fr !important;
+    gap: 1rem;
+  }
+  
+  .input-line {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+  .input-line label {
+    margin-bottom: 2px;
+  }
+  .input-line input[type="text"], .input-line input[type="number"] {
+    width: 100% !important;
+    border-bottom: 1px solid var(--primary-300);
+  }
+  
+  .form-grid.grid-2 > *, .form-grid.grid-3 > * {
+    grid-column: span 1 !important;
+  }
+  
+  /* Signatures stack vertically */
+  .signatures {
+    flex-direction: column;
+    gap: 2.5rem;
+    align-items: center;
+    margin-top: 2.5rem;
+  }
+  .sig-box {
+    width: 90%;
+  }
+  
+  /* Tables content and padding */
+  .data-table {
+    display: table !important; /* mantener como tabla para respetar table-layout: fixed */
+    width: 100% !important;
+    table-layout: fixed !important;
+  }
+  .data-table th, .data-table td {
+    padding: 0.4rem 0.25rem;
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .data-table input {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: 0.8rem !important;
+  }
+  
+  /* Fixed spacing for layout boxes */
+  .section-box {
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    margin: -0.75rem -0.75rem 0.75rem -0.75rem;
+    padding: 0.4rem 0.5rem;
+  }
+  
+  /* Buttons Toolbar */
+  .action-toolbar {
+    padding: 0.75rem;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
+    position: static;
+  }
+  .toolbar-actions {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .toolbar-actions .btn {
+    width: 100%;
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+    border-radius: var(--radius-sm);
+  }
+  
+  /* Form Header for print / mobile view */
+  .form-header-print {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+  }
+  .form-number-box {
+    text-align: center;
+    width: 100%;
+  }
+  
+  .photo-buttons {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .photo-buttons .btn {
+    width: 100%;
+  }
+  
+  .photo-section {
+    grid-column: span 1 !important;
+  }
+  
+  .flex.gap-4.mt-4.justify-center {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem !important;
+  }
+}
+
+

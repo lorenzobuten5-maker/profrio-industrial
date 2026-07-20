@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0C2340">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>ProFrio Industrial — Acceso</title>
+  <meta name="description" content="Sistema de gestión de formularios para ProFrio Industrial E.I.R.L.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css?v=13">
+  <link rel="stylesheet" href="css/login.css?v=10">
+</head>
+<body>
+  <div id="auth-container">
+
+    <!-- ── Left panel: Brand ── -->
+    <div class="auth-left">
+      <div class="brand-wrapper">
+        <div class="brand-logo">
+          <span>❄️</span> ProFrio
+        </div>
+        <div class="brand-slogan">Soluciones en Refrigeración Industrial y Comercial</div>
+      </div>
+      <div class="brand-features">
+        <div class="brand-feature-item">
+          <span class="feat-icon">📋</span>
+          <span>Formularios digitales firmados</span>
+        </div>
+        <div class="brand-feature-item">
+          <span class="feat-icon">📡</span>
+          <span>Control de presencia en tiempo real</span>
+        </div>
+        <div class="brand-feature-item">
+          <span class="feat-icon">🔐</span>
+          <span>Acceso seguro con roles</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Right panel: Forms ── -->
+    <div class="auth-right">
+      <div class="auth-card">
+
+        <!-- ════ LOGIN FORM ════ -->
+        <div id="login-box">
+          <div class="auth-header">
+            <h2>Bienvenido 👋</h2>
+            <p>Ingresa tus credenciales para continuar</p>
+          </div>
+          <form id="loginForm" autocomplete="on" novalidate>
+
+            <div class="form-group">
+              <label class="form-label" for="input-login-email">Correo Electrónico</label>
+              <input
+                type="email"
+                id="input-login-email"
+                name="email"
+                class="form-input"
+                required
+                autocomplete="email"
+                autocapitalize="none"
+                autocorrect="off"
+                spellcheck="false"
+                inputmode="email"
+                placeholder="tu@correo.com">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="input-login-password">Contraseña</label>
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  id="input-login-password"
+                  name="password"
+                  class="form-input"
+                  required
+                  autocomplete="current-password"
+                  placeholder="••••••••">
+                <button type="button" class="btn-eye" id="eye-login" aria-label="Mostrar contraseña" title="Mostrar / ocultar contraseña">
+                  <!-- Eye open -->
+                  <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <!-- Eye closed -->
+                  <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-login" class="btn btn-primary w-full">
+              Iniciar Sesión
+            </button>
+          </form>
+
+          <div class="auth-footer">
+            ¿No tienes cuenta? <button id="btn-to-register" type="button">Regístrate aquí</button>
+          </div>
+        </div>
+
+        <!-- ════ REGISTER FORM ════ -->
+        <div id="register-box" style="display:none;">
+          <div class="auth-header">
+            <h2>Crear Cuenta ✨</h2>
+            <p>Regístrate en el sistema ProFrio</p>
+          </div>
+          <form id="registerForm" autocomplete="off" novalidate>
+
+            <div class="form-group">
+              <label class="form-label" for="input-reg-nombre">Nombre Completo</label>
+              <input
+                type="text"
+                id="input-reg-nombre"
+                name="nombre"
+                class="form-input"
+                required
+                autocomplete="name"
+                autocapitalize="words"
+                placeholder="Juan Pérez">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="input-reg-email">Correo Electrónico</label>
+              <input
+                type="email"
+                id="input-reg-email"
+                name="email"
+                class="form-input"
+                required
+                autocomplete="email"
+                autocapitalize="none"
+                autocorrect="off"
+                inputmode="email"
+                placeholder="tu@correo.com">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="input-reg-password">Contraseña</label>
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  id="input-reg-password"
+                  name="password"
+                  class="form-input"
+                  required
+                  autocomplete="new-password"
+                  placeholder="Mínimo 8 caracteres">
+                <button type="button" class="btn-eye" id="eye-register" aria-label="Mostrar contraseña" title="Mostrar / ocultar contraseña">
+                  <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+              <!-- Strength meter (only on register) -->
+              <div class="strength-meter" id="strength-meter" style="display:none;">
+                <div class="strength-bars">
+                  <div class="strength-bar" id="sb1"></div>
+                  <div class="strength-bar" id="sb2"></div>
+                  <div class="strength-bar" id="sb3"></div>
+                  <div class="strength-bar" id="sb4"></div>
+                </div>
+                <span class="strength-label" id="strength-label">—</span>
+              </div>
+              <!-- Requirements hints -->
+              <div class="password-hints" id="password-hints" style="display:none;">
+                <div class="hint-item" id="hint-length">
+                  <span class="hint-icon"></span>
+                  <span>8+ caracteres</span>
+                </div>
+                <div class="hint-item" id="hint-upper">
+                  <span class="hint-icon"></span>
+                  <span>Mayúscula</span>
+                </div>
+                <div class="hint-item" id="hint-number">
+                  <span class="hint-icon"></span>
+                  <span>Número</span>
+                </div>
+                <div class="hint-item" id="hint-special">
+                  <span class="hint-icon"></span>
+                  <span>Símbolo (!@#...)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="input-reg-rol">Rol</label>
+              <select id="input-reg-rol" name="rol" class="form-input" required>
+                <option value="empleado">Empleado</option>
+                <option value="jefe">Jefe / Administrador</option>
+              </select>
+            </div>
+
+            <div class="form-group" id="admin-code-section" style="display:none;">
+              <label class="form-label" for="input-admin-code">Código de Administrador</label>
+              <div class="password-wrapper">
+                <input
+                  type="password"
+                  id="input-admin-code"
+                  name="admin-code"
+                  class="form-input"
+                  autocomplete="off"
+                  placeholder="Código secreto">
+                <button type="button" class="btn-eye" id="eye-admin" aria-label="Mostrar código" title="Mostrar / ocultar código">
+                  <svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <button type="submit" id="btn-register" class="btn btn-primary w-full">
+              Crear Cuenta
+            </button>
+          </form>
+
+          <div class="auth-footer">
+            ¿Ya tienes cuenta? <button id="btn-to-login" type="button">Inicia sesión</button>
+          </div>
+        </div>
+
+        <!-- Message area -->
+        <div id="auth-message" role="alert" aria-live="polite"></div>
+
+        <!-- Registration Success Card -->
+        <div id="register-success-card" class="register-success-card">
+          <div class="success-icon-circle">✅</div>
+          <div class="success-title">¡Cuenta creada exitosamente!</div>
+          <div class="success-subtitle">
+            Tu cuenta ha sido registrada. Ahora puedes iniciar sesión con:
+          </div>
+          <div class="success-email-badge" id="success-email-display">—</div>
+          <button class="btn btn-primary" id="btn-success-login" style="width:100%;margin-top:0.5rem;">
+            Ir a Iniciar Sesión →
+          </button>
+          <div class="success-redirect-note">Serás redirigido automáticamente en unos segundos...</div>
+        </div>
+
+      </div><!-- /auth-card -->
+    </div><!-- /auth-right -->
+  </div><!-- /auth-container -->
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/security.js?v=2"></script>
+  <script src="js/supabase-config.js?v=12"></script>
+  <script src="js/auth.js?v=14"></script>
+  <script src="js/login-ui.js?v=2"></script>
+</body>
+</html>
