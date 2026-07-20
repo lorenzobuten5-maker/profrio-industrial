@@ -414,10 +414,13 @@
 /* Responsive Mobile Rules */
 @media (max-width: 768px) {
   .form-wrapper {
-    padding: 1.5rem 1rem;
-    margin: 1rem 0.5rem;
+    padding: 1rem 0.75rem;
+    margin: 0.75rem 0.5rem;
     box-shadow: var(--shadow-md);
     width: auto;
+    max-width: calc(100vw - 1rem) !important;
+    box-sizing: border-box !important;
+    overflow: hidden;
   }
   
   .form-grid.grid-2, .form-grid.grid-3 {
@@ -438,7 +441,7 @@
     border-bottom: 1px solid var(--primary-300);
   }
   
-  .form-grid.grid-2 > div, .form-grid.grid-3 > div {
+  .form-grid.grid-2 > *, .form-grid.grid-3 > * {
     grid-column: span 1 !important;
   }
   
@@ -455,14 +458,20 @@
   
   /* Tables content and padding */
   .data-table {
-    display: block;
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    display: table !important; /* mantener como tabla para respetar table-layout: fixed */
+    width: 100% !important;
+    table-layout: fixed !important;
   }
   .data-table th, .data-table td {
-    padding: 0.5rem 0.35rem;
-    font-size: 0.85rem;
+    padding: 0.4rem 0.25rem;
+    font-size: 0.8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .data-table input {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: 0.8rem !important;
   }
   
   /* Fixed spacing for layout boxes */

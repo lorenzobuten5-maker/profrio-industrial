@@ -8,7 +8,7 @@
   <title>Hoja de Intervención</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=13">
-  <link rel="stylesheet" href="css/formularios.css?v=12">
+  <link rel="stylesheet" href="css/formularios.css?v=15">
   <link rel="stylesheet" href="css/responsive.css?v=12">
 </head>
 <body>
@@ -92,20 +92,22 @@
       <div class="form-grid grid-2">
         <!-- Roles -->
         <div class="section-box">
-          <table class="data-table" style="margin:0;">
-            <tr>
-              <td><label class="chk-group"><input type="checkbox" id="chk-tecnico"> Técnico</label></td>
-              <td>Número de horas: <input type="number" id="inp-horas-tecnico" style="width:50px; border-bottom:1px solid #000;"></td>
-            </tr>
-            <tr>
-              <td><label class="chk-group"><input type="checkbox" id="chk-jefe-obra"> Jefe de obra</label></td>
-              <td>Número de horas: <input type="number" id="inp-horas-jefe-obra" style="width:50px; border-bottom:1px solid #000;"></td>
-            </tr>
-            <tr>
-              <td><label class="chk-group"><input type="checkbox" id="chk-jefe-equipo"> Jefe de equipo</label></td>
-              <td>Número de horas: <input type="number" id="inp-horas-jefe-equipo" style="width:50px; border-bottom:1px solid #000;"></td>
-            </tr>
-          </table>
+          <div class="table-responsive">
+            <table class="data-table" style="margin:0;">
+              <tr>
+                <td><label class="chk-group"><input type="checkbox" id="chk-tecnico"> Técnico</label></td>
+                <td>Número de horas: <input type="number" id="inp-horas-tecnico" style="width:50px; border-bottom:1px solid #000;"></td>
+              </tr>
+              <tr>
+                <td><label class="chk-group"><input type="checkbox" id="chk-jefe-obra"> Jefe de obra</label></td>
+                <td>Número de horas: <input type="number" id="inp-horas-jefe-obra" style="width:50px; border-bottom:1px solid #000;"></td>
+              </tr>
+              <tr>
+                <td><label class="chk-group"><input type="checkbox" id="chk-jefe-equipo"> Jefe de equipo</label></td>
+                <td>Número de horas: <input type="number" id="inp-horas-jefe-equipo" style="width:50px; border-bottom:1px solid #000;"></td>
+              </tr>
+            </table>
+          </div>
         </div>
 
         <!-- Space holder or extra info if needed -->
@@ -134,40 +136,42 @@
         <!-- Temperaturas -->
         <div class="section-box">
           <div class="section-title">TEMPERATURA DE LA NEVERA Y CUARTO FRÍO</div>
-          <table class="data-table" style="margin:0;">
-            <tr>
-              <th colspan="2">NEVERA</th>
-              <th colspan="2">CUARTO FRÍO</th>
-            </tr>
-            <tr>
-              <td>Congelado:</td><td><input type="text" id="inp-temp-congelado"></td>
-              <td>Vegetales:</td><td><input type="text" id="inp-cf-vegetales"></td>
-            </tr>
-            <tr>
-              <td>Deli Queso:</td><td><input type="text" id="inp-temp-deli-queso"></td>
-              <td>Congelado:</td><td><input type="text" id="inp-cf-congelado"></td>
-            </tr>
-            <tr>
-              <td>Deli Carne:</td><td><input type="text" id="inp-temp-deli-carne"></td>
-              <td>Carnes:</td><td><input type="text" id="inp-cf-carnes"></td>
-            </tr>
-            <tr>
-              <td>Salami:</td><td><input type="text" id="inp-temp-salami"></td>
-              <td>Pescados:</td><td><input type="text" id="inp-cf-pescados"></td>
-            </tr>
-            <tr>
-              <td>Yogurt:</td><td><input type="text" id="inp-temp-yogurt"></td>
-              <td>Preparación:</td><td><input type="text" id="inp-cf-preparacion"></td>
-            </tr>
-            <tr>
-              <td>Vegetales:</td><td><input type="text" id="inp-temp-vegetales-nev"></td>
-              <td></td><td></td>
-            </tr>
-            <tr>
-              <td>Jugos:</td><td><input type="text" id="inp-temp-jugos"></td>
-              <td></td><td></td>
-            </tr>
-          </table>
+          <div class="table-responsive">
+            <table class="data-table" style="margin:0;">
+              <tr>
+                <th colspan="2">NEVERA</th>
+                <th colspan="2">CUARTO FRÍO</th>
+              </tr>
+              <tr>
+                <td>Congelado:</td><td><input type="text" id="inp-temp-congelado"></td>
+                <td>Vegetales:</td><td><input type="text" id="inp-cf-vegetales"></td>
+              </tr>
+              <tr>
+                <td>Deli Queso:</td><td><input type="text" id="inp-temp-deli-queso"></td>
+                <td>Congelado:</td><td><input type="text" id="inp-cf-congelado"></td>
+              </tr>
+              <tr>
+                <td>Deli Carne:</td><td><input type="text" id="inp-temp-deli-carne"></td>
+                <td>Carnes:</td><td><input type="text" id="inp-cf-carnes"></td>
+              </tr>
+              <tr>
+                <td>Salami:</td><td><input type="text" id="inp-temp-salami"></td>
+                <td>Pescados:</td><td><input type="text" id="inp-cf-pescados"></td>
+              </tr>
+              <tr>
+                <td>Yogurt:</td><td><input type="text" id="inp-temp-yogurt"></td>
+                <td>Preparación:</td><td><input type="text" id="inp-cf-preparacion"></td>
+              </tr>
+              <tr>
+                <td>Vegetales:</td><td><input type="text" id="inp-temp-vegetales-nev"></td>
+                <td></td><td></td>
+              </tr>
+              <tr>
+                <td>Jugos:</td><td><input type="text" id="inp-temp-jugos"></td>
+                <td></td><td></td>
+              </tr>
+            </table>
+          </div>
         </div>
       </div>
 
