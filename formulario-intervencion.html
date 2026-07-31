@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0C2340">
+  <meta name="theme-color" content="#071929">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Hoja de Intervención</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=19">
-  <link rel="stylesheet" href="css/formularios.css?v=19">
-  <link rel="stylesheet" href="css/responsive.css?v=19">
+  <meta name="description" content="Hoja de Intervención — ProFrio Industrial E.I.R.L. Reporte de servicio técnico.">
+  <title>Hoja de Intervención — ProFrio Industrial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css?v=20">
+  <link rel="stylesheet" href="css/formularios.css?v=20">
+  <link rel="stylesheet" href="css/responsive.css?v=20">
 </head>
 <body>
 
@@ -27,7 +28,7 @@
 
   <div class="form-wrapper">
     <form id="form-intervencion">
-      
+
       <div class="form-header-print">
         <div>
           <div class="form-logo">❄️ ProFrio Industrial</div>
@@ -97,32 +98,30 @@
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--gray-100); padding-bottom: 0.5rem;">
               <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-tecnico"> Técnico</label>
               <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">Horas:</span>
-                <input type="number" id="inp-horas-tecnico" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem;">
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-500);">Horas:</span>
+                <input type="number" id="inp-horas-tecnico" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem; background:transparent;">
               </div>
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--gray-100); padding-bottom: 0.5rem;">
               <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-jefe-obra"> Jefe de obra</label>
               <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">Horas:</span>
-                <input type="number" id="inp-horas-jefe-obra" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem;">
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-500);">Horas:</span>
+                <input type="number" id="inp-horas-jefe-obra" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem; background:transparent;">
               </div>
             </div>
             <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 0.25rem;">
               <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-jefe-equipo"> Jefe de equipo</label>
               <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">Horas:</span>
-                <input type="number" id="inp-horas-jefe-equipo" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem;">
+                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-500);">Horas:</span>
+                <input type="number" id="inp-horas-jefe-equipo" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem; background:transparent;">
               </div>
             </div>
           </div>
         </div>
-
-        <!-- Space holder or extra info if needed -->
         <div></div>
       </div>
 
-      <!-- Equipos — ancho completo -->
+      <!-- Equipos -->
       <div class="section-box">
         <div class="section-title">EQUIPOS</div>
         <div class="equipos-grid">
@@ -140,7 +139,7 @@
         </div>
       </div>
 
-      <!-- Temperaturas — ancho completo debajo de Equipos -->
+      <!-- Temperaturas -->
       <div class="section-box">
         <div class="section-title">TEMPERATURA DE LA NEVERA Y CUARTO FRÍO</div>
         <div class="table-responsive">
@@ -207,7 +206,7 @@
         <div class="sig-box">
           <label class="sig-label">FIRMA INTERVINIENTE</label>
           <div class="canvas-container">
-            <canvas id="canvas-firma-interviniente" class="sig-canvas" width="300" height="120"></canvas>
+            <canvas id="canvas-firma-interviniente" class="sig-canvas" width="300" height="130"></canvas>
             <button type="button" class="btn-clear-canvas" id="btn-clear-interviniente">Limpiar Firma</button>
           </div>
           <input type="hidden" id="inp-firma-interviniente">
@@ -215,7 +214,7 @@
         <div class="sig-box">
           <label class="sig-label">FIRMA CLIENTE (CON SU SELLO)</label>
           <div class="canvas-container">
-            <canvas id="canvas-firma-cliente" class="sig-canvas" width="300" height="120"></canvas>
+            <canvas id="canvas-firma-cliente" class="sig-canvas" width="300" height="130"></canvas>
             <button type="button" class="btn-clear-canvas" id="btn-clear-cliente">Limpiar Firma</button>
           </div>
           <input type="hidden" id="inp-firma-cliente">
@@ -228,19 +227,19 @@
   <!-- Email Modal -->
   <div id="email-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3>Enviar por Email</h3>
+      <h3>✉️ Enviar por Email</h3>
       <div class="form-group mt-4">
         <label for="email-destino" class="form-label">Correo del destinatario:</label>
         <input type="email" id="email-destino" class="form-input" placeholder="cliente@correo.com">
       </div>
-      <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px;">
+      <div class="modal-actions">
         <button id="btn-cancel-email" class="btn btn-secondary">Cancelar</button>
         <button id="btn-enviar-email" class="btn btn-primary">Enviar</button>
       </div>
     </div>
   </div>
 
-  <!-- Lightbox Modal for Photo Preview -->
+  <!-- Lightbox -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span class="lightbox-close" id="lightbox-close">&times;</span>
     <img class="lightbox-content" id="lightbox-img" src="" alt="Vista previa">
@@ -249,15 +248,19 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/security.js?v=19"></script>
-  <script src="js/supabase-config.js?v=19"></script>
-  <script src="js/auth.js?v=19"></script>
-  <script src="js/online-status.js?v=19"></script>
-  <script src="js/formulario-intervencion.js?v=19"></script>
-  <script src="js/print-pdf.js?v=19"></script>
-  <script src="js/email.js?v=19"></script>
+  <script src="js/security.js?v=20"></script>
+  <script src="js/supabase-config.js?v=20"></script>
+  <script src="js/auth.js?v=20"></script>
+  <script src="js/online-status.js?v=20"></script>
+  <script src="js/formulario-intervencion.js?v=20"></script>
+  <script src="js/print-pdf.js?v=20"></script>
+  <script src="js/email.js?v=20"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
+    // Modal open with class toggle
+    document.getElementById('btn-email')?.addEventListener('click', () => {
+      document.getElementById('email-modal')?.classList.add('active');
+    });
   </script>
 </body>
 </html>

@@ -369,6 +369,17 @@ function generatePDFMateriales() {
   doc.line(12, y + 12, 12 + sigW, y + 12);
   doc.line(12 + sigW + 16, y + 12, 12 + sigW * 2 + 16, y + 12);
   doc.setFontSize(7); doc.setFont('helvetica', 'normal');
+
+  const firmaDesp = getVal('inp-firma-despachado');
+  const firmaRec  = getVal('inp-firma-recibido');
+
+  if (firmaDesp && firmaDesp.startsWith('data:image')) {
+    try { doc.addImage(firmaDesp, 'PNG', 12 + (sigW - 35) / 2, y + 1, 35, 10); } catch (e) {}
+  }
+  if (firmaRec && firmaRec.startsWith('data:image')) {
+    try { doc.addImage(firmaRec, 'PNG', 12 + sigW + 16 + (sigW - 35) / 2, y + 1, 35, 10); } catch (e) {}
+  }
+
   doc.text(getVal('inp-despachado') || 'DESPACHADO POR', 12 + sigW / 2, y + 16, { align: 'center' });
   doc.text(getVal('inp-recibido') || 'RECIBIDO CONFORME', 12 + sigW * 1.5 + 16, y + 16, { align: 'center' });
 

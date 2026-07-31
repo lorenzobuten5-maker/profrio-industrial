@@ -3,161 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0C2340">
+  <meta name="theme-color" content="#071929">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="Panel administrativo ProFrio Industrial — gestión de usuarios, presencia y formularios.">
   <title>Panel Administrativo — ProFrio Industrial</title>
-  <meta name="description" content="Panel de administración de ProFrio Industrial E.I.R.L.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=13">
-  <link rel="stylesheet" href="css/dashboard.css?v=12">
-  <link rel="stylesheet" href="css/admin.css?v=13">
-  <link rel="stylesheet" href="css/responsive.css?v=12">
+  <link rel="stylesheet" href="css/global.css?v=20">
+  <link rel="stylesheet" href="css/dashboard.css?v=20">
+  <link rel="stylesheet" href="css/admin.css?v=20">
+  <link rel="stylesheet" href="css/responsive.css?v=20">
   <style>
-    /* ── Overflow prevention ── */
     html, body { overflow-x: hidden; max-width: 100vw; }
     .main-wrapper { overflow-x: hidden; }
-
-    /* ── Tabs strip ── */
-    .tabs-container {
-      display: flex;
-      gap: 0;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      border-bottom: 2px solid var(--gray-200);
-      margin-bottom: 1.5rem;
-    }
-    .tabs-container::-webkit-scrollbar { display: none; }
-    .tab-btn {
-      flex-shrink: 0;
-      padding: 0.75rem 1.1rem;
-      font-size: 0.9rem;
-      white-space: nowrap;
-      display: flex;
-      align-items: center;
-      gap: 0.4rem;
-    }
-
-    /* ── Online badge ── */
-    .online-badge {
-      display: none;
-      background: var(--success);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 700;
-      min-width: 18px;
-      height: 18px;
-      border-radius: 99px;
-      align-items: center;
-      justify-content: center;
-      padding: 0 4px;
-      animation: pulse 2s infinite;
-    }
-
-    /* ── Admin table ── */
-    .admin-table-wrapper {
-      width: 100%;
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-sm);
-    }
-    .admin-table-container {
-      overflow-x: unset;
-      box-shadow: none;
-      border-radius: 0;
-    }
-    .admin-table { min-width: 620px; }
-    .admin-table th, .admin-table td { padding: 0.75rem 1rem; font-size: 0.85rem; }
-
-    /* ── User avatar small ── */
-    .user-avatar-sm {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
-      color: white;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.75rem; font-weight: 700; flex-shrink: 0;
-    }
-
-    /* ── Online section ── */
-    .online-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1rem;
-    }
-    .online-header h3 { font-size: 1.1rem; }
-    .online-realtime-dot {
-      display: flex; align-items: center; gap: 0.4rem;
-      font-size: 0.8rem; color: var(--success); font-weight: 600;
-    }
-    .online-realtime-dot span { width: 8px; height: 8px; border-radius: 50%; background: var(--success); animation: pulse 2s infinite; }
-
-    .online-list { display: flex; flex-direction: column; gap: 0.75rem; }
-    .online-card {
-      background: var(--white);
-      border-radius: var(--radius-md);
-      padding: 1rem 1.25rem;
-      box-shadow: var(--shadow-sm);
-      display: flex; align-items: center; gap: 1rem;
-      border-left: 3px solid var(--success);
-    }
-    .online-card.offline {
-      border-left: 3px solid var(--gray-400);
-      opacity: 0.75;
-    }
-    .status-dot.offline {
-      background: var(--gray-400) !important;
-      box-shadow: none !important;
-      animation: none !important;
-    }
-    .online-avatar {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
-      color: white;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; font-weight: 700; flex-shrink: 0;
-    }
-    .online-card-info { flex: 1; min-width: 0; }
-    .online-card-info strong { display: block; font-size: 0.95rem; color: var(--primary-900); }
-    .online-email { display: block; font-size: 0.78rem; color: var(--gray-600); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .online-meta { display: flex; gap: 0.75rem; margin-top: 0.25rem; flex-wrap: wrap; }
-    .online-rol { font-size: 0.75rem; color: var(--primary-600); font-weight: 600; }
-    .online-time { font-size: 0.75rem; color: var(--gray-400); }
-    .online-empty { text-align: center; padding: 3rem 1rem; color: var(--gray-400); }
-
-    /* ── Forms stats cards ── */
-    #forms-stats-container { display: flex; flex-direction: column; gap: 1rem; }
-    .forms-stat-card {
-      background: var(--white);
-      border-radius: var(--radius-md);
-      padding: 1rem 1.25rem;
-      box-shadow: var(--shadow-sm);
-      display: flex; align-items: center; gap: 1rem;
-      flex-wrap: wrap;
-    }
-    .forms-stat-avatar {
-      width: 42px; height: 42px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--primary-600), var(--primary-400));
-      color: white;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; font-weight: 700; flex-shrink: 0;
-    }
-    .forms-stat-info { flex: 1; min-width: 100px; }
-    .forms-stat-info strong { display: block; font-size: 0.95rem; color: var(--primary-900); }
-    .forms-stat-email { font-size: 0.78rem; color: var(--gray-600); }
-    .forms-stat-counts { display: flex; gap: 1rem; }
-    .forms-stat-count { text-align: center; }
-    .count-number { display: block; font-size: 1.5rem; font-weight: 800; color: var(--primary-600); line-height: 1; }
-    .count-label { font-size: 0.7rem; color: var(--gray-600); font-weight: 500; }
-    .btn-ver-perfil { flex-shrink: 0; font-size: 0.85rem; padding: 0.5rem 1rem; text-decoration: none; }
-
-    @media (max-width: 768px) {
-      .content-area { padding: 1rem 0.75rem; }
-      .forms-stat-card { gap: 0.75rem; }
-      .btn-ver-perfil { width: 100%; text-align: center; }
-    }
   </style>
 </head>
 <body>
@@ -168,9 +25,11 @@
     </div>
     <nav class="sidebar-nav">
       <a href="dashboard-jefe.html" class="active">🛡️ Administración</a>
+      <a href="historial-formularios.html">📂 Historial General</a>
+      <a href="perfil.html">👤 Mi Perfil</a>
     </nav>
     <div class="sidebar-footer">
-      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:white;">Cerrar Sesión</button>
+      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:rgba(255,255,255,0.4);">Cerrar Sesión</button>
     </div>
   </aside>
 
@@ -181,7 +40,7 @@
         <div class="page-title" style="margin:0;">Panel Administrativo</div>
       </div>
       <div class="user-info">
-        <span id="header-user-name">Jefe ProFrio</span>
+        <span id="header-user-name" class="user-name">Jefe ProFrio</span>
         <div class="user-avatar">👑</div>
       </div>
     </header>
@@ -214,7 +73,7 @@
                 </tr>
               </thead>
               <tbody id="users-table-body">
-                <tr><td colspan="6" style="text-align:center;padding:2rem;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
+                <tr><td colspan="6" style="text-align:center;padding:2.5rem;"><div class="spinner" style="margin:0 auto;"></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -235,13 +94,13 @@
       <!-- Panel: Formularios -->
       <div id="panel-formularios" class="tab-panel" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
-          <h3 style="color:var(--primary-900); margin:0;">Formularios por empleado</h3>
-          <a href="historial-formularios.html" class="btn btn-primary" style="text-decoration:none; padding:0.5rem 1rem; font-size:0.85rem; display:inline-flex; align-items:center; gap:5px;">
+          <h3 style="color:var(--primary-900); margin:0; font-size:1.1rem;">Formularios por empleado</h3>
+          <a href="historial-formularios.html" class="btn btn-primary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
             📂 Ver Historial General
           </a>
         </div>
         <div id="forms-stats-container">
-          <div style="text-align:center;padding:2rem;"><div class="spinner" style="margin:0 auto;"></div></div>
+          <div style="text-align:center;padding:2.5rem;"><div class="spinner" style="margin:0 auto;"></div></div>
         </div>
       </div>
 
@@ -252,7 +111,7 @@
   <div id="ban-modal" class="modal-overlay">
     <div class="modal-content">
       <h3 style="margin-bottom:0.5rem;">🚫 Banear Usuario</h3>
-      <p style="color:var(--gray-600);margin-bottom:1.25rem;">Usuario: <strong id="ban-modal-username" style="color:var(--danger);">...</strong></p>
+      <p style="color:var(--gray-500);margin-bottom:1.25rem;">Usuario: <strong id="ban-modal-username" style="color:var(--danger);">...</strong></p>
       <div class="form-group">
         <label for="ban-duration-days" class="form-label">Días de baneo:</label>
         <input type="number" id="ban-duration-days" class="form-input" min="1" max="365" value="7">
@@ -267,9 +126,9 @@
   <!-- Modal: Delete -->
   <div id="delete-modal" class="modal-overlay">
     <div class="modal-content" style="text-align:center;">
-      <div style="font-size:2.5rem;margin-bottom:0.75rem;">⚠️</div>
+      <div style="font-size:2.8rem;margin-bottom:0.75rem;">⚠️</div>
       <h3 style="margin-bottom:0.5rem;">Eliminar Usuario</h3>
-      <p style="color:var(--gray-600);margin-bottom:1.5rem;">¿Estás seguro de eliminar a <strong id="delete-modal-username" style="color:var(--danger);">...</strong>? Esta acción es <strong>irreversible</strong>.</p>
+      <p style="color:var(--gray-500);margin-bottom:1.5rem;">¿Estás seguro de eliminar a <strong id="delete-modal-username" style="color:var(--danger);">...</strong>? Esta acción es <strong>irreversible</strong>.</p>
       <div class="modal-actions">
         <button id="btn-cancel-delete" class="btn btn-secondary">Cancelar</button>
         <button id="btn-confirm-delete" class="btn btn-danger">Sí, eliminar</button>
@@ -278,10 +137,10 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/security.js?v=12"></script>
-  <script src="js/supabase-config.js?v=12"></script>
-  <script src="js/auth.js?v=14"></script>
-  <script src="js/online-status.js?v=12"></script>
-  <script src="js/admin.js?v=14"></script>
+  <script src="js/security.js?v=20"></script>
+  <script src="js/supabase-config.js?v=20"></script>
+  <script src="js/auth.js?v=20"></script>
+  <script src="js/online-status.js?v=20"></script>
+  <script src="js/admin.js?v=20"></script>
 </body>
 </html>

@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0C2340">
+  <meta name="theme-color" content="#071929">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="description" content="Panel de empleado ProFrio Industrial — gestión de formularios de intervención y materiales.">
   <title>Dashboard Empleado — ProFrio Industrial</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=13">
-  <link rel="stylesheet" href="css/dashboard.css?v=12">
-  <link rel="stylesheet" href="css/responsive.css?v=12">
+  <link rel="stylesheet" href="css/global.css?v=20">
+  <link rel="stylesheet" href="css/dashboard.css?v=20">
+  <link rel="stylesheet" href="css/responsive.css?v=20">
 </head>
 <body>
-  
+
   <div id="loading-overlay">
     <div class="spinner"></div>
   </div>
@@ -25,9 +26,11 @@
       <a href="dashboard-empleado.html" class="active">🏠 Dashboard</a>
       <a href="formulario-intervencion.html">📋 Nueva Intervención</a>
       <a href="formulario-materiales.html">📦 Solicitud Materiales</a>
+      <a href="historial-formularios.html">📂 Mi Historial</a>
+      <a href="perfil.html">👤 Mi Perfil</a>
     </nav>
     <div class="sidebar-footer">
-      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:white;">Cerrar Sesión</button>
+      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:rgba(255,255,255,0.4);">Cerrar Sesión</button>
     </div>
   </aside>
 
@@ -38,45 +41,59 @@
         <div class="page-title" style="margin:0;">Panel de Empleado</div>
       </div>
       <div class="user-info">
-        <span id="header-user-name">Cargando...</span>
-        <button id="btn-ir-perfil" class="user-avatar" style="border:none; cursor:pointer;" title="Ir al Perfil">👤</button>
+        <span id="header-user-name" class="user-name">Cargando...</span>
+        <button id="btn-ir-perfil" class="user-avatar" title="Ir al Perfil">👤</button>
       </div>
     </header>
 
     <div class="content-area">
-      <h2 class="page-title">¿Qué deseas hacer hoy?</h2>
-      
+      <h2 class="page-title" style="margin-bottom:1.5rem; font-size:1.2rem; color:var(--gray-600); font-weight:600; letter-spacing:0;">¿Qué deseas hacer hoy?</h2>
+
       <div class="action-cards">
         <a href="formulario-intervencion.html" id="btn-nueva-intervencion" class="action-card">
           <div class="action-icon">📋</div>
-          <h3>Hoja de Intervención</h3>
-          <p>Crear un nuevo reporte de servicio técnico o mantenimiento.</p>
+          <div>
+            <h3>Hoja de Intervención</h3>
+            <p>Crear un nuevo reporte de servicio técnico o mantenimiento.</p>
+          </div>
         </a>
-        
+
         <a href="formulario-materiales.html" id="btn-nueva-materiales" class="action-card">
           <div class="action-icon">📦</div>
-          <h3>Solicitud de Materiales</h3>
-          <p>Solicitar piezas o insumos al almacén de ProFrio.</p>
+          <div>
+            <h3>Solicitud de Materiales</h3>
+            <p>Solicitar piezas o insumos al almacén de ProFrio.</p>
+          </div>
+        </a>
+
+        <a href="historial-formularios.html" class="action-card">
+          <div class="action-icon">📂</div>
+          <div>
+            <h3>Mi Historial</h3>
+            <p>Ver y buscar todos tus formularios guardados.</p>
+          </div>
         </a>
       </div>
 
       <div class="list-container">
         <div class="list-header">
-          <h3>Formularios Recientes</h3>
-          <a href="historial-formularios.html" style="font-size: 0.9rem; color: var(--primary-600); text-decoration: none; font-weight:600;">Ver todos →</a>
+          <h3>📄 Formularios Recientes</h3>
+          <a href="historial-formularios.html" style="font-size: 0.88rem; color: var(--primary-500); text-decoration: none; font-weight:700;">Ver todos →</a>
         </div>
         <div id="recent-forms-list">
-          <div style="padding: 2rem; text-align: center; color: var(--gray-400);">Cargando historial...</div>
+          <div style="padding: 2rem; text-align: center; color: var(--gray-400);">
+            <div class="spinner" style="margin:0 auto;"></div>
+          </div>
         </div>
       </div>
     </div>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/security.js?v=2"></script>
-  <script src="js/supabase-config.js?v=12"></script>
-  <script src="js/auth.js?v=14"></script>
-  <script src="js/online-status.js?v=12"></script>
+  <script src="js/security.js?v=20"></script>
+  <script src="js/supabase-config.js?v=20"></script>
+  <script src="js/auth.js?v=20"></script>
+  <script src="js/online-status.js?v=20"></script>
   <script>
     // Ocultar overlay de carga
     setTimeout(() => {
@@ -84,7 +101,7 @@
       if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 500); }
     }, 300);
 
-    // Load recent forms after auth resolves
+    // Cargar formularios recientes
     async function cargarFormulariosRecientes() {
       const profile = window.currentProfile;
       if (!profile) return;
@@ -98,22 +115,28 @@
         ]);
 
         const todos = [
-          ...(ints || []).map(f => ({ ...f, tipo: 'intervencion', label: 'Intervención' })),
-          ...(mats || []).map(f => ({ ...f, tipo: 'materiales', label: 'Materiales' }))
-        ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 5);
+          ...(ints || []).map(f => ({ ...f, tipo: 'intervencion', label: 'Intervención', color: 'var(--primary-500)', bg: 'var(--primary-50)' })),
+          ...(mats || []).map(f => ({ ...f, tipo: 'materiales',   label: 'Materiales',   color: '#15803d', bg: '#f0fdf4' }))
+        ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 6);
 
         if (todos.length === 0) {
-          listEl.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--gray-400);">Aún no tienes formularios guardados.</div>';
+          listEl.innerHTML = '<div style="padding:2.5rem;text-align:center;color:var(--gray-400);font-size:0.95rem;">Aún no tienes formularios guardados.</div>';
           return;
         }
 
         listEl.innerHTML = todos.map(f => `
           <div class="list-item">
-            <div>
-              <strong>#${f.numero} — ${f.label}</strong><br>
-              <small style="color:var(--gray-600);">${f.cliente || 'Sin cliente'} &bull; ${new Date(f.created_at).toLocaleDateString('es-DO')}</small>
+            <div style="display:flex; align-items:center; gap:0.85rem; flex:1; min-width:0;">
+              <span style="font-size:1.2rem; flex-shrink:0;">${f.tipo === 'intervencion' ? '📋' : '📦'}</span>
+              <div style="min-width:0;">
+                <div style="font-weight:700; font-size:0.9rem; color:var(--primary-900); display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
+                  #${f.numero}
+                  <span style="font-size:0.7rem; background:${f.bg}; color:${f.color}; padding:0.15rem 0.6rem; border-radius:99px; font-weight:700;">${f.label}</span>
+                </div>
+                <div style="font-size:0.8rem; color:var(--gray-500); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.cliente || 'Sin cliente'} · ${new Date(f.created_at).toLocaleDateString('es-DO')}</div>
+              </div>
             </div>
-            <a href="formulario-${f.tipo}.html?id=${f.id}" class="btn btn-secondary" style="padding:0.4rem 0.9rem;font-size:0.85rem;">Ver</a>
+            <a href="formulario-${f.tipo}.html?id=${f.id}" class="btn btn-secondary btn-sm" style="flex-shrink:0;">Ver →</a>
           </div>
         `).join('');
       } catch (err) {
@@ -122,16 +145,12 @@
       }
     }
 
-    // Poll for profile to be ready (set by auth.js initAuth)
     let pollCount = 0;
     const pollInterval = setInterval(() => {
       pollCount++;
       if (window.authReady || pollCount > 40) {
         clearInterval(pollInterval);
-        if (!window.currentProfile) {
-          window.location.href = 'index.html';
-          return;
-        }
+        if (!window.currentProfile) { window.location.href = 'index.html'; return; }
         cargarFormulariosRecientes();
       }
     }, 200);

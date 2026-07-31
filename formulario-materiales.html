@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0C2340">
+  <meta name="theme-color" content="#071929">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Solicitud de Materiales</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=16">
-  <link rel="stylesheet" href="css/formularios.css?v=16">
-  <link rel="stylesheet" href="css/responsive.css?v=16">
+  <meta name="description" content="Solicitud de Materiales y Suministros — ProFrio Industrial E.I.R.L.">
+  <title>Solicitud de Materiales — ProFrio Industrial</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css?v=20">
+  <link rel="stylesheet" href="css/formularios.css?v=20">
+  <link rel="stylesheet" href="css/responsive.css?v=20">
 </head>
 <body>
 
@@ -27,7 +28,7 @@
 
   <div class="form-wrapper">
     <form id="form-materiales">
-      
+
       <div class="form-header-print">
         <div>
           <div class="form-logo">❄️ ProFrio Industrial</div>
@@ -43,11 +44,13 @@
           <div class="form-number-box mb-4">
             No. <span id="form-numero">00000</span>
           </div>
-          <div style="display:flex; align-items:center; gap:5px; border:1px solid #000; padding:5px;">
-            <b>FECHA:</b>
-            <input type="text" id="inp-fecha-dia" style="width:30px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="DD"> /
-            <input type="text" id="inp-fecha-mes" style="width:30px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="MM"> /
-            <input type="text" id="inp-fecha-anio" style="width:40px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="AAAA">
+          <div style="display:flex; align-items:center; gap:5px; border:1.5px solid var(--primary-800); border-radius:6px; padding:6px 10px; margin-top:8px;">
+            <b style="font-size:0.85rem;">FECHA:</b>
+            <input type="text" id="inp-fecha-dia" style="width:30px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="DD">
+            /
+            <input type="text" id="inp-fecha-mes" style="width:30px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="MM">
+            /
+            <input type="text" id="inp-fecha-anio" style="width:44px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="AAAA">
           </div>
         </div>
       </div>
@@ -78,26 +81,27 @@
               <th style="width:10%;">CANT.</th>
               <th style="width:50%;">DESCRIPCIÓN</th>
               <th style="width:20%;">PRECIO UNITARIO</th>
-              <th style="width:20%;">TOTAL</th>
+              <th style="width:15%;">TOTAL</th>
+              <th style="width:5%;"></th>
             </tr>
           </thead>
           <tbody id="items-tbody">
-            <!-- Las filas se agregan dinámicamente mediante JS -->
+            <!-- Filas dinámicas -->
           </tbody>
         </table>
       </div>
-      
-      <div class="flex justify-between items-center mb-6">
-        <button type="button" id="btn-add-item" class="btn btn-secondary btn-sm" style="padding: 0.25rem 0.75rem;">+ Agregar fila</button>
-        <div style="font-size: 1.25rem; font-weight: bold;">
+
+      <div class="flex justify-between items-center mb-6" style="margin-top:0.5rem;">
+        <button type="button" id="btn-add-item" class="btn btn-secondary btn-sm">+ Agregar fila</button>
+        <div style="font-size: 1.2rem; font-weight: 800; color: var(--primary-700);">
           TOTAL: $ <span id="total-display">0.00</span>
         </div>
       </div>
 
-      <div style="margin-top: 2rem; margin-bottom: 1.5rem;">
+      <div style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
         <div class="textarea-container">
           <label>OBSERVACIONES:</label>
-          <textarea id="ta-observaciones" style="width: 100%; min-height: 80px; padding: 8px; border: 1px solid #000;"></textarea>
+          <textarea id="ta-observaciones" style="min-height: 80px;"></textarea>
         </div>
       </div>
 
@@ -112,14 +116,25 @@
         <div class="photos-grid" id="photos-preview"></div>
       </div>
 
+      <!-- ═══ FIRMAS — Idénticas a Intervenciones ═══ -->
       <div class="signatures">
         <div class="sig-box">
-          <div class="sig-line"></div>
-          <input type="text" id="inp-despachado" placeholder="DESPACHADO POR">
+          <label class="sig-label">FIRMA DESPACHADO POR</label>
+          <div class="canvas-container">
+            <canvas id="canvas-firma-despachado" class="sig-canvas" width="300" height="130"></canvas>
+            <button type="button" class="btn-clear-canvas" id="btn-clear-despachado">Limpiar Firma</button>
+          </div>
+          <input type="hidden" id="inp-firma-despachado">
+          <input type="text" id="inp-despachado" placeholder="Nombre del despachador" style="margin-top:0.5rem; width:100%; max-width:320px; border:none; border-bottom:1.5px solid #ccc; text-align:center; padding:4px; font-family:inherit; font-size:0.88rem; background:transparent;">
         </div>
         <div class="sig-box">
-          <div class="sig-line"></div>
-          <input type="text" id="inp-recibido" placeholder="RECIBIDO CONFORME">
+          <label class="sig-label">FIRMA RECIBIDO CONFORME</label>
+          <div class="canvas-container">
+            <canvas id="canvas-firma-recibido" class="sig-canvas" width="300" height="130"></canvas>
+            <button type="button" class="btn-clear-canvas" id="btn-clear-recibido">Limpiar Firma</button>
+          </div>
+          <input type="hidden" id="inp-firma-recibido">
+          <input type="text" id="inp-recibido" placeholder="Nombre del receptor" style="margin-top:0.5rem; width:100%; max-width:320px; border:none; border-bottom:1.5px solid #ccc; text-align:center; padding:4px; font-family:inherit; font-size:0.88rem; background:transparent;">
         </div>
       </div>
 
@@ -129,19 +144,19 @@
   <!-- Email Modal -->
   <div id="email-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3>Enviar por Email</h3>
+      <h3>✉️ Enviar por Email</h3>
       <div class="form-group mt-4">
         <label for="email-destino" class="form-label">Correo del destinatario:</label>
         <input type="email" id="email-destino" class="form-input" placeholder="cliente@correo.com">
       </div>
-      <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px;">
+      <div class="modal-actions">
         <button id="btn-cancel-email" class="btn btn-secondary">Cancelar</button>
         <button id="btn-enviar-email" class="btn btn-primary">Enviar</button>
       </div>
     </div>
   </div>
 
-  <!-- Lightbox Modal for Photo Preview -->
+  <!-- Lightbox -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span class="lightbox-close" id="lightbox-close">&times;</span>
     <img class="lightbox-content" id="lightbox-img" src="" alt="Vista previa">
@@ -150,13 +165,13 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/security.js?v=16"></script>
-  <script src="js/supabase-config.js?v=16"></script>
-  <script src="js/auth.js?v=16"></script>
-  <script src="js/online-status.js?v=16"></script>
-  <script src="js/formulario-materiales.js?v=16"></script>
-  <script src="js/print-pdf.js?v=16"></script>
-  <script src="js/email.js?v=16"></script>
+  <script src="js/security.js?v=20"></script>
+  <script src="js/supabase-config.js?v=20"></script>
+  <script src="js/auth.js?v=20"></script>
+  <script src="js/online-status.js?v=20"></script>
+  <script src="js/formulario-materiales.js?v=20"></script>
+  <script src="js/print-pdf.js?v=20"></script>
+  <script src="js/email.js?v=20"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
   </script>
