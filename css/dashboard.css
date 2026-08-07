@@ -344,6 +344,26 @@ body {
   flex-shrink: 0;
 }
 .recent-badge.mint { background: var(--clay-mint-bg); color: var(--clay-mint-dark); }
+.badge-tipo {
+  font-size: 0.7rem; font-weight: 700;
+  padding: 0.2rem 0.65rem; border-radius: var(--radius-full);
+  display: inline-flex; align-items: center;
+  box-shadow: 3px 3px 8px rgba(37,99,235,0.12), -2px -2px 6px rgba(255,255,255,0.9);
+}
+.badge-tipo.intervencion { background: var(--clay-blue-100); color: var(--clay-blue-700); border: 1.5px solid var(--clay-blue-200); }
+.badge-tipo.materiales   { background: var(--clay-mint-bg); color: var(--clay-mint-dark); border: 1.5px solid rgba(18,183,106,0.25); }
+
+.form-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 1rem 1.15rem; margin-bottom: 0.75rem;
+  background: rgba(255,255,255,0.9); border-radius: var(--radius-lg);
+  box-shadow: var(--clay-shadow-white); border: 2px solid rgba(255,255,255,0.95);
+  transition: all 0.22s ease; gap: 0.75rem;
+}
+.form-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+.form-item-info { display: flex; flex-direction: column; gap: 0.25rem; min-width: 0; }
+.form-item-info strong { font-size: 0.95rem; color: var(--clay-blue-900); display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.form-item-info small { font-size: 0.78rem; color: var(--gray-500); }
 
 /* ══════════════════════════════════════
    BOTTOM NAVIGATION BAR — Pristine Blue
