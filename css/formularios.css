@@ -537,54 +537,12 @@
     background: transparent !important;
   }
 
-  .equipos-temps-row {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 2.5mm !important;
-    align-items: stretch !important;
-    width: 100% !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-  .equipos-col {
-    flex: 0 0 48% !important;
-    width: 48% !important;
-    margin-bottom: 0 !important;
-  }
-  .temps-col {
-    flex: 0 0 50% !important;
-    width: 50% !important;
-    margin-bottom: 0 !important;
-  }
-  .temps-col .table-responsive {
+  .table-responsive {
     overflow: visible !important;
   }
-  .temps-col .data-table {
+  .data-table {
     width: 100% !important;
     min-width: 0 !important;
-    table-layout: fixed !important;
-  }
-  .temps-col .data-table th, .temps-col .data-table td {
-    padding: 0.4mm 0.6mm !important;
-    font-size: 6pt !important;
-    word-break: break-word !important;
-  }
-
-  /* Observaciones y Pedido de Materiales en 2 Columnas Lado a Lado (50/50) */
-  .form-grid.grid-2 {
-    display: flex !important;
-    flex-direction: row !important;
-    gap: 2.5mm !important;
-    align-items: stretch !important;
-    width: 100% !important;
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-  .form-grid.grid-2 > .section-box {
-    flex: 1 !important;
-    width: 49% !important;
-    min-width: 0 !important;
-    margin-bottom: 0 !important;
   }
 }
 
