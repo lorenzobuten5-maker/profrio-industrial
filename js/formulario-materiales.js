@@ -98,12 +98,16 @@ function agregarFila(item = null) {
   const tbody = document.getElementById('items-tbody');
   if (!tbody) return;
 
+  const cant   = item ? (parseFloat(item.cantidad) || 0) : 1;
+  const precio = item ? (parseFloat(item.precio)   || 0) : 0;
+  const total  = (cant * precio).toFixed(2);
+
   const tr = document.createElement('tr');
   tr.innerHTML = `
-    <td><input type="number" class="inp-cantidad" value="${item ? item.cantidad : 1}" min="1" style="width:100%"></td>
+    <td><input type="number" class="inp-cantidad" value="${cant}" min="1" style="width:100%"></td>
     <td><input type="text" class="inp-descripcion" value="${item ? escHtml(item.descripcion) : ''}" style="width:100%"></td>
-    <td><input type="number" class="inp-precio" value="${item ? item.precio : 0}" step="0.01" style="width:100%"></td>
-    <td class="td-total">${item ? (item.cantidad * item.precio).toFixed(2) : '0.00'}</td>
+    <td><input type="number" class="inp-precio" value="${precio}" step="0.01" style="width:100%"></td>
+    <td class="td-total">${total}</td>
     <td><button type="button" class="btn-remove-row" title="Eliminar fila" style="background:var(--danger);color:white;border:none;border-radius:4px;padding:2px 7px;cursor:pointer;font-size:0.8rem;">✕</button></td>
   `;
 
@@ -115,9 +119,9 @@ function agregarFila(item = null) {
   });
 
   const recalcularFila = () => {
-    const cant   = parseFloat(tr.querySelector('.inp-cantidad').value) || 0;
-    const precio = parseFloat(tr.querySelector('.inp-precio').value)   || 0;
-    tr.querySelector('.td-total').textContent = (cant * precio).toFixed(2);
+    const c = parseFloat(tr.querySelector('.inp-cantidad').value) || 0;
+    const p = parseFloat(tr.querySelector('.inp-precio').value)   || 0;
+    tr.querySelector('.td-total').textContent = (c * p).toFixed(2);
     recalcularTotal();
   };
 

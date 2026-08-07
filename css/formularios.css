@@ -248,11 +248,12 @@
     margin: 0 !important; padding: 0 !important;
     font-size: 6.8pt !important;
     color: #000000 !important;
-    height: 100% !important; overflow: hidden !important;
+    height: auto !important;
+    overflow: visible !important;
   }
   @page {
     size: letter portrait;
-    margin: 2mm 3mm !important;
+    margin: 3mm 4mm !important;
   }
 
   .action-toolbar, #save-status, .photo-section, .photo-buttons,
@@ -266,12 +267,14 @@
     padding: 1mm !important; max-width: 100% !important;
     width: 100% !important; border-radius: 0 !important;
     border: none !important; background: #ffffff !important;
+    height: auto !important; overflow: visible !important;
   }
   .main-wrapper { margin: 0 !important; padding-bottom: 0 !important; }
 
   .form-header-print {
     padding-bottom: 1mm !important; margin-bottom: 1.5mm !important;
     border-bottom: 1.2pt solid #1E3A8A !important;
+    page-break-inside: avoid !important; break-inside: avoid !important;
   }
   .form-logo { font-size: 10pt !important; color: #1E3A8A !important; }
   .form-company-info { font-size: 5.8pt !important; line-height: 1.15 !important; color: #222 !important; }
@@ -290,6 +293,7 @@
     padding: 1.2mm !important; margin-bottom: 1.2mm !important;
     border: 0.5pt solid #1E3A8A !important; background: #ffffff !important;
     box-shadow: none !important;
+    page-break-inside: avoid !important; break-inside: avoid !important;
   }
   .section-title {
     padding: 0.6mm 1.5mm !important; margin: -1.2mm -1.2mm 1mm -1.2mm !important;
@@ -300,7 +304,7 @@
 
   .equipos-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.3mm 2mm !important; }
 
-  input, textarea, select {
+  input, select {
     border: none !important; border-bottom: 0.4pt solid #000000 !important;
     background: transparent !important; font-size: 6.5pt !important;
     padding: 0.1mm 0.3mm !important; resize: none !important;
@@ -318,7 +322,15 @@
     -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
   }
 
-  textarea { height: 8mm !important; min-height: 8mm !important; }
+  textarea {
+    border: none !important; border-bottom: 0.4pt solid #000000 !important;
+    background: transparent !important; font-size: 6.5pt !important;
+    padding: 0.1mm 0.3mm !important; resize: none !important;
+    box-shadow: none !important; color: #000000 !important;
+    height: auto !important; min-height: 8mm !important;
+    max-height: none !important; overflow: visible !important;
+    white-space: pre-wrap !important; word-wrap: break-word !important;
+  }
   /* ── Checkboxes & Radios in print — render as proper symbols not blue squares ── */
   .chk-group input[type="checkbox"],
   .radio-group input[type="radio"] {
