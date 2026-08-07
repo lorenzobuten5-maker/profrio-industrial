@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#3B1F8F">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="description" content="Panel administrativo ProFrio Industrial — gestión de usuarios, presencia y formularios.">
   <title>Panel Administrativo — ProFrio Industrial</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -18,6 +19,7 @@
 </head>
 <body>
 
+  <!-- ══ DESKTOP SIDEBAR ══ -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <span>❄️</span> ProFrio Admin
@@ -32,15 +34,13 @@
     </div>
   </aside>
 
+  <!-- ══ MAIN ══ -->
   <main class="main-wrapper">
     <header class="top-header">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <button id="btn-toggle-sidebar" class="sidebar-toggle-btn">☰</button>
-        <div class="page-title" style="margin:0;">Panel Administrativo</div>
-      </div>
+      <div class="page-title" style="margin:0;">🛡️ Administración</div>
       <div class="user-info">
         <span id="header-user-name" class="user-name">Jefe ProFrio</span>
-        <div class="user-avatar">👑</div>
+        <div class="user-avatar" id="btn-ir-perfil-admin" title="Mi Perfil">👑</div>
       </div>
     </header>
 
@@ -93,7 +93,7 @@
       <!-- Panel: Formularios -->
       <div id="panel-formularios" class="tab-panel" style="display:none;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px;">
-          <h3 style="color:var(--primary-900); margin:0; font-size:1.1rem;">Formularios por empleado</h3>
+          <h3 style="color:var(--clay-purple-900); margin:0; font-size:1.1rem;">Formularios por empleado</h3>
           <a href="historial-formularios.html" class="btn btn-primary btn-sm" style="text-decoration:none; display:inline-flex; align-items:center; gap:5px;">
             📂 Ver Historial General
           </a>
@@ -105,6 +105,22 @@
 
     </div>
   </main>
+
+  <!-- ══ BOTTOM NAV (MOBILE) ══ -->
+  <nav class="bottom-nav" role="navigation" aria-label="Navegación principal admin">
+    <a href="dashboard-jefe.html" class="nav-item active">
+      <div class="nav-icon-wrap">🛡️</div>
+      <span class="nav-label">Admin</span>
+    </a>
+    <a href="historial-formularios.html" class="nav-item">
+      <div class="nav-icon-wrap">📂</div>
+      <span class="nav-label">Historial</span>
+    </a>
+    <a href="perfil.html" class="nav-item">
+      <div class="nav-icon-wrap">👤</div>
+      <span class="nav-label">Perfil</span>
+    </a>
+  </nav>
 
   <!-- Modal: Ban -->
   <div id="ban-modal" class="modal-overlay">
@@ -141,5 +157,8 @@
   <script src="js/auth.js?v=21"></script>
   <script src="js/online-status.js?v=21"></script>
   <script src="js/admin.js?v=21"></script>
+  <script>
+    document.getElementById('btn-ir-perfil-admin')?.addEventListener('click', () => { window.location.href = 'perfil.html'; });
+  </script>
 </body>
 </html>

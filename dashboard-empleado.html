@@ -5,88 +5,119 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#3B1F8F">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="description" content="Panel de empleado ProFrio Industrial — gestión de formularios de intervención y materiales.">
-  <title>Dashboard Empleado — ProFrio Industrial</title>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="description" content="Panel de empleado ProFrio Industrial — formularios de intervención y materiales.">
+  <title>Inicio — ProFrio Industrial</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=21">
   <link rel="stylesheet" href="css/dashboard.css?v=21">
 </head>
 <body>
 
-  <div id="loading-overlay">
-    <div class="spinner"></div>
-  </div>
+  <div id="loading-overlay"><div class="spinner"></div></div>
 
+  <!-- ══ DESKTOP SIDEBAR ══ -->
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <span>❄️</span> ProFrio
-    </div>
+    <div class="sidebar-header"><span>❄️</span> ProFrio</div>
     <nav class="sidebar-nav">
-      <a href="dashboard-empleado.html" class="active">🏠 Dashboard</a>
-      <a href="formulario-intervencion.html">📋 Nueva Intervención</a>
-      <a href="formulario-materiales.html">📦 Solicitud Materiales</a>
-      <a href="historial-formularios.html">📂 Mi Historial</a>
-      <a href="perfil.html">👤 Mi Perfil</a>
+      <a href="dashboard-empleado.html" class="active">🏠 Inicio</a>
+      <a href="formulario-intervencion.html">📋 Intervención</a>
+      <a href="formulario-materiales.html">📦 Materiales</a>
+      <a href="historial-formularios.html">📂 Historial</a>
+      <a href="perfil.html">👤 Perfil</a>
     </nav>
     <div class="sidebar-footer">
-      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:rgba(255,255,255,0.4);">Cerrar Sesión</button>
+      <button id="btn-logout-desk" class="btn btn-outline w-full" style="color:white;border-color:rgba(255,255,255,0.4);">Cerrar Sesión</button>
     </div>
   </aside>
 
+  <!-- ══ MAIN ══ -->
   <main class="main-wrapper">
+
+    <!-- Top Header -->
     <header class="top-header">
-      <div style="display:flex; align-items:center; gap:10px;">
-        <button id="btn-toggle-sidebar" class="sidebar-toggle-btn">☰</button>
-        <div class="page-title" style="margin:0;">Panel de Empleado</div>
-      </div>
+      <div class="page-title" style="margin:0;">❄️ ProFrio</div>
       <div class="user-info">
         <span id="header-user-name" class="user-name">Cargando...</span>
-        <button id="btn-ir-perfil" class="user-avatar" title="Ir al Perfil">👤</button>
+        <div class="user-avatar" id="btn-ir-perfil" title="Mi Perfil">👷</div>
       </div>
     </header>
 
     <div class="content-area">
-      <h2 class="page-title" style="margin-bottom:1.5rem; font-size:1.2rem; color:var(--gray-600); font-weight:600; letter-spacing:0;">¿Qué deseas hacer hoy?</h2>
 
-      <div class="action-cards">
-        <a href="formulario-intervencion.html" id="btn-nueva-intervencion" class="action-card">
-          <div class="action-icon">📋</div>
-          <div>
-            <h3>Hoja de Intervención</h3>
-            <p>Crear un nuevo reporte de servicio técnico o mantenimiento.</p>
+      <!-- ── Hero Card ── -->
+      <div class="hero-card" id="hero-card">
+        <div class="hero-greeting">Buenos días 👋</div>
+        <div class="hero-name" id="hero-name">Bienvenido</div>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="hero-count-int">0</div>
+            <div class="hero-stat-label">Intervenciones</div>
           </div>
-        </a>
-
-        <a href="formulario-materiales.html" id="btn-nueva-materiales" class="action-card">
-          <div class="action-icon">📦</div>
-          <div>
-            <h3>Solicitud de Materiales</h3>
-            <p>Solicitar piezas o insumos al almacén de ProFrio.</p>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="hero-count-mat">0</div>
+            <div class="hero-stat-label">Materiales</div>
           </div>
-        </a>
-
-        <a href="historial-formularios.html" class="action-card">
-          <div class="action-icon">📂</div>
-          <div>
-            <h3>Mi Historial</h3>
-            <p>Ver y buscar todos tus formularios guardados.</p>
-          </div>
-        </a>
-      </div>
-
-      <div class="list-container">
-        <div class="list-header">
-          <h3>📄 Formularios Recientes</h3>
-          <a href="historial-formularios.html" style="font-size: 0.88rem; color: var(--primary-500); text-decoration: none; font-weight:700;">Ver todos →</a>
-        </div>
-        <div id="recent-forms-list">
-          <div style="padding: 2rem; text-align: center; color: var(--gray-400);">
-            <div class="spinner" style="margin:0 auto;"></div>
+          <div class="hero-stat">
+            <div class="hero-stat-value" id="hero-total">0</div>
+            <div class="hero-stat-label">Total</div>
           </div>
         </div>
       </div>
+
+      <!-- ── Quick Actions ── -->
+      <div class="section-label">⚡ Acciones Rápidas</div>
+      <div class="action-grid">
+        <a href="formulario-intervencion.html" class="action-btn action-btn-purple" id="btn-nueva-intervencion">
+          <div class="action-icon-wrap">📋</div>
+          <div class="action-btn-label">Nueva Intervención</div>
+        </a>
+        <a href="formulario-materiales.html" class="action-btn action-btn-mint" id="btn-nueva-materiales">
+          <div class="action-icon-wrap">📦</div>
+          <div class="action-btn-label">Solicitar Materiales</div>
+        </a>
+        <a href="historial-formularios.html" class="action-btn action-btn-peach">
+          <div class="action-icon-wrap">📂</div>
+          <div class="action-btn-label">Mi Historial</div>
+        </a>
+        <a href="perfil.html" class="action-btn action-btn-sky">
+          <div class="action-icon-wrap">👤</div>
+          <div class="action-btn-label">Mi Perfil</div>
+        </a>
+      </div>
+
+      <!-- ── Recent Forms ── -->
+      <div class="section-label">🕐 Formularios Recientes</div>
+      <div id="recent-forms-list" class="recent-section">
+        <div style="padding:2.5rem;text-align:center;"><div class="spinner" style="margin:0 auto;"></div></div>
+      </div>
+
     </div>
   </main>
+
+  <!-- ══ BOTTOM NAV ══ -->
+  <nav class="bottom-nav" role="navigation" aria-label="Navegación principal">
+    <a href="dashboard-empleado.html" class="nav-item active">
+      <div class="nav-icon-wrap">🏠</div>
+      <span class="nav-label">Inicio</span>
+    </a>
+    <a href="formulario-intervencion.html" class="nav-item">
+      <div class="nav-icon-wrap">📋</div>
+      <span class="nav-label">Intervención</span>
+    </a>
+    <a href="formulario-materiales.html" class="nav-item">
+      <div class="nav-icon-wrap">📦</div>
+      <span class="nav-label">Materiales</span>
+    </a>
+    <a href="historial-formularios.html" class="nav-item">
+      <div class="nav-icon-wrap">📂</div>
+      <span class="nav-label">Historial</span>
+    </a>
+    <a href="perfil.html" class="nav-item">
+      <div class="nav-icon-wrap">👤</div>
+      <span class="nav-label">Perfil</span>
+    </a>
+  </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/security.js?v=21"></script>
@@ -94,63 +125,93 @@
   <script src="js/auth.js?v=21"></script>
   <script src="js/online-status.js?v=21"></script>
   <script>
-    // Ocultar overlay de carga
+    // Greeting by time
+    const hour = new Date().getHours();
+    const greeting = hour < 12 ? 'Buenos días 👋' : hour < 19 ? 'Buenas tardes 👋' : 'Buenas noches 👋';
+    document.querySelector('.hero-greeting').textContent = greeting;
+
+    // Fade out overlay
     setTimeout(() => {
-      const overlay = document.getElementById('loading-overlay');
-      if (overlay) { overlay.style.opacity = '0'; setTimeout(() => overlay.style.display = 'none', 500); }
+      const ov = document.getElementById('loading-overlay');
+      if (ov) { ov.style.opacity = '0'; setTimeout(() => ov.style.display = 'none', 500); }
     }, 300);
 
-    // Cargar formularios recientes
-    async function cargarFormulariosRecientes() {
-      const profile = window.currentProfile;
-      if (!profile) return;
-      const listEl = document.getElementById('recent-forms-list');
-      if (!listEl) return;
+    // Logout
+    document.getElementById('btn-logout-desk')?.addEventListener('click', () => window.handleLogout?.());
 
+    // Profile avatar click
+    document.getElementById('btn-ir-perfil')?.addEventListener('click', () => { window.location.href = 'perfil.html'; });
+
+    async function initDashboard() {
+      const profile = window.currentProfile;
+      if (!profile) { window.location.href = 'index.html'; return; }
+
+      // Set user info
+      const nombre = profile.nombre || profile.email || 'Técnico';
+      document.getElementById('header-user-name').textContent = nombre;
+      document.getElementById('hero-name').textContent = nombre;
+
+      // Avatar initial
+      const av = document.getElementById('btn-ir-perfil');
+      if (av) { av.textContent = (nombre.charAt(0) || '👷').toUpperCase(); }
+
+      // Load stats + recent
       try {
-        const [{ data: ints }, { data: mats }] = await Promise.all([
-          window.supabaseClient.from('formularios_intervencion').select('id,numero,cliente,created_at').eq('usuario_id', profile.id).order('created_at', { ascending: false }).limit(3),
-          window.supabaseClient.from('formularios_materiales').select('id,numero,cliente,created_at').eq('usuario_id', profile.id).order('created_at', { ascending: false }).limit(3)
+        const [{ data: ints, error: e1 }, { data: mats, error: e2 }] = await Promise.all([
+          window.supabaseClient.from('formularios_intervencion').select('id,numero,cliente,created_at').eq('usuario_id', profile.id).order('created_at', { ascending: false }).limit(5),
+          window.supabaseClient.from('formularios_materiales').select('id,numero,cliente,created_at').eq('usuario_id', profile.id).order('created_at', { ascending: false }).limit(5)
         ]);
 
+        const intCount = (ints || []).length;
+        const matCount = (mats || []).length;
+        document.getElementById('hero-count-int').textContent = intCount;
+        document.getElementById('hero-count-mat').textContent = matCount;
+        document.getElementById('hero-total').textContent = intCount + matCount;
+
+        // Recent forms list
         const todos = [
-          ...(ints || []).map(f => ({ ...f, tipo: 'intervencion', label: 'Intervención', color: 'var(--primary-500)', bg: 'var(--primary-50)' })),
-          ...(mats || []).map(f => ({ ...f, tipo: 'materiales',   label: 'Materiales',   color: '#15803d', bg: '#f0fdf4' }))
+          ...(ints || []).map(f => ({ ...f, _tipo: 'intervencion' })),
+          ...(mats || []).map(f => ({ ...f, _tipo: 'materiales' }))
         ].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).slice(0, 6);
 
+        const listEl = document.getElementById('recent-forms-list');
+        if (!listEl) return;
+
         if (todos.length === 0) {
-          listEl.innerHTML = '<div style="padding:2.5rem;text-align:center;color:var(--gray-400);font-size:0.95rem;">Aún no tienes formularios guardados.</div>';
+          listEl.innerHTML = `<div class="recent-card"><div style="padding:2rem;text-align:center;color:var(--gray-400);font-size:0.9rem;">No tienes formularios guardados aún.<br><br><a href="formulario-intervencion.html" class="btn btn-primary btn-sm">Crear Intervención →</a></div></div>`;
           return;
         }
 
-        listEl.innerHTML = todos.map(f => `
-          <div class="list-item">
-            <div style="display:flex; align-items:center; gap:0.85rem; flex:1; min-width:0;">
-              <span style="font-size:1.2rem; flex-shrink:0;">${f.tipo === 'intervencion' ? '📋' : '📦'}</span>
-              <div style="min-width:0;">
-                <div style="font-weight:700; font-size:0.9rem; color:var(--primary-900); display:flex; align-items:center; gap:0.5rem; flex-wrap:wrap;">
-                  #${f.numero}
-                  <span style="font-size:0.7rem; background:${f.bg}; color:${f.color}; padding:0.15rem 0.6rem; border-radius:99px; font-weight:700;">${f.label}</span>
-                </div>
-                <div style="font-size:0.8rem; color:var(--gray-500); margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${f.cliente || 'Sin cliente'} · ${new Date(f.created_at).toLocaleDateString('es-DO')}</div>
+        listEl.innerHTML = `<div class="recent-card">` +
+          todos.map(f => {
+            const isInt = f._tipo === 'intervencion';
+            const fecha = new Date(f.created_at).toLocaleDateString('es-DO', { day: '2-digit', month: 'short', year: 'numeric' });
+            return `<a href="formulario-${f._tipo}.html?id=${f.id}" class="recent-item">
+              <div class="recent-icon ${isInt ? 'recent-icon-purple' : 'recent-icon-mint'}">${isInt ? '📋' : '📦'}</div>
+              <div class="recent-info">
+                <div class="recent-title">#${f.numero || '—'} · ${f.cliente || 'Sin cliente'}</div>
+                <div class="recent-sub">${fecha}</div>
               </div>
-            </div>
-            <a href="formulario-${f.tipo}.html?id=${f.id}" class="btn btn-secondary btn-sm" style="flex-shrink:0;">Ver →</a>
-          </div>
-        `).join('');
+              <span class="recent-badge ${isInt ? '' : 'mint'}">${isInt ? 'Intervención' : 'Materiales'}</span>
+            </a>`;
+          }).join('') +
+          `<a href="historial-formularios.html" class="recent-item" style="justify-content:center;color:var(--clay-purple-600);font-weight:700;font-size:0.84rem;">Ver todo el historial →</a>
+          </div>`;
       } catch (err) {
+        console.error('Error cargando dashboard:', err);
         const listEl = document.getElementById('recent-forms-list');
-        if (listEl) listEl.innerHTML = '<div style="padding:1rem;color:var(--danger);">Error cargando formularios.</div>';
+        if (listEl) listEl.innerHTML = `<div class="recent-card"><div style="padding:1.5rem;text-align:center;color:var(--clay-rose);">Error cargando datos.</div></div>`;
       }
     }
 
-    let pollCount = 0;
-    const pollInterval = setInterval(() => {
-      pollCount++;
-      if (window.authReady || pollCount > 40) {
-        clearInterval(pollInterval);
+    // Poll for auth
+    let polls = 0;
+    const poll = setInterval(() => {
+      polls++;
+      if (window.authReady || polls > 50) {
+        clearInterval(poll);
         if (!window.currentProfile) { window.location.href = 'index.html'; return; }
-        cargarFormulariosRecientes();
+        initDashboard();
       }
     }, 200);
   </script>
