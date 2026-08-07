@@ -190,7 +190,8 @@ async function cargarFormularioExistente(id) {
     document.getElementById('inp-telefono').value    = data.telefono    || '';
     const inpDesp = document.getElementById('inp-despachado');
     if (inpDesp) inpDesp.value = data.despachado_por || '';
-    document.getElementById('inp-recibido').value    = data.recibido_conforme  || '';
+    const inpRecibido = document.getElementById('inp-recibido');
+    if (inpRecibido) inpRecibido.value = data.recibido_conforme || '';
     document.getElementById('ta-observaciones').value = data.observaciones || '';
 
     // ── Cargar firmas en canvas ──

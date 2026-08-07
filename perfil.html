@@ -8,8 +8,8 @@
   <meta name="description" content="Mi perfil en ProFrio Industrial — historial de formularios y estadísticas personales.">
   <title>Mi Perfil — ProFrio Industrial</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=22">
-  <link rel="stylesheet" href="css/dashboard.css?v=22">
+  <link rel="stylesheet" href="css/global.css?v=23">
+  <link rel="stylesheet" href="css/dashboard.css?v=23">
   <style>
     body { display: block; }
 
@@ -95,34 +95,38 @@
       margin-top: 1.75rem;
     }
     .stat-card {
-      background: linear-gradient(135deg, var(--primary-50), var(--off-white));
-      border-radius: var(--radius-md);
-      padding: 1.25rem 1.4rem;
-      border: 1px solid var(--primary-100);
+      background: linear-gradient(135deg, var(--clay-blue-50, #EFF6FF), #FFFFFF);
+      border-radius: var(--radius-lg);
+      padding: 1rem 0.85rem;
+      border: 2px solid var(--clay-blue-100, #DBEAFE);
       text-align: center;
       transition: all 0.25s ease;
       position: relative;
       overflow: hidden;
+      box-shadow: 4px 6px 16px rgba(37,99,235,0.08), -2px -2px 8px rgba(255,255,255,0.9);
     }
     .stat-card::before {
       content: '';
       position: absolute;
       top: 0; left: 0; right: 0;
       height: 3px;
-      background: var(--grad-primary);
+      background: linear-gradient(90deg, var(--clay-blue-800), var(--clay-blue-500));
     }
     .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
     .stat-card h3 {
-      font-size: 0.73rem;
+      font-size: 0.67rem;
       color: var(--gray-500);
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.45rem;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.4rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .stat-card p {
-      font-size: 2.4rem; font-weight: 800;
-      color: var(--primary-600);
+      font-size: 2.2rem; font-weight: 800;
+      color: var(--clay-blue-600);
       margin: 0; line-height: 1;
       letter-spacing: -0.04em;
     }
