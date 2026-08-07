@@ -125,8 +125,16 @@
         <div class="equipos-grid">
           <label class="chk-group"><input type="checkbox" id="chk-aires"> Chequeo de aires acondicionados</label>
           <label class="chk-group"><input type="checkbox" id="chk-rack"> Chequeo del rack</label>
-          <div class="input-line"><label class="chk-group"><input type="checkbox" id="chk-nivel-liquido"> Nivel de líquido</label><input type="text" id="inp-nivel-liquido"></div>
-          <div class="input-line"><label class="chk-group"><input type="checkbox" id="chk-nivel-aceite"> Nivel de aceite</label><input type="text" id="inp-nivel-aceite"></div>
+          <label class="chk-group chk-group-input">
+            <input type="checkbox" id="chk-nivel-liquido">
+            <span>Nivel de líquido</span>
+            <input type="text" id="inp-nivel-liquido" class="inp-equipos-line">
+          </label>
+          <label class="chk-group chk-group-input">
+            <input type="checkbox" id="chk-nivel-aceite">
+            <span>Nivel de aceite</span>
+            <input type="text" id="inp-nivel-aceite" class="inp-equipos-line">
+          </label>
           <label class="chk-group"><input type="checkbox" id="chk-correccion-fuga"> Corrección de fuga</label>
           <label class="chk-group"><input type="checkbox" id="chk-carga-refrigerante"> Carga de refrigerante</label>
           <label class="chk-group"><input type="checkbox" id="chk-cambio-compresor"> Cambio compresor</label>
