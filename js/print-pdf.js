@@ -387,7 +387,28 @@ function generatePDFMateriales() {
   doc.save(`Materiales_No${num}_${cliente}.pdf`);
 }
 
-function printForm() { window.print(); }
+function prepareTextareasForPrint() {
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(ta.scrollHeight + 6, 32) + 'px';
+  });
+}
+
+function restoreTextareasAfterPrint() {
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.style.height = '';
+  });
+}
+
+window.addEventListener('beforeprint', prepareTextareasForPrint);
+window.addEventListener('afterprint', restoreTextareasAfterPrint);
+
+function printForm() {
+  prepareTextareasForPrint();
+  setTimeout(() => {
+    window.print();
+  }, 100);
+}
 
 window.generatePDFIntervencion = generatePDFIntervencion;
 window.generatePDFMateriales = generatePDFMateriales;

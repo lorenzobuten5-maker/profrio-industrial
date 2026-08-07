@@ -242,147 +242,314 @@
    HIGH-PRECISION 1-PAGE PRINT ENGINE 🖨️
    ══════════════════════════════════════ */
 @media print {
-  * { box-sizing: border-box !important; }
+  * {
+    box-sizing: border-box !important;
+  }
+
   html, body {
     background: #ffffff !important;
-    margin: 0 !important; padding: 0 !important;
-    font-size: 6.8pt !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 7pt !important;
     color: #000000 !important;
     height: auto !important;
     overflow: visible !important;
   }
+
   @page {
     size: letter portrait;
-    margin: 3mm 4mm !important;
+    margin: 4mm 5mm !important;
   }
 
+  /* Ocultar elementos no imprimibles */
   .action-toolbar, #save-status, .photo-section, .photo-buttons,
   .sidebar, .top-header, .bottom-nav, .modal-overlay, .lightbox-modal,
-  .btn-clear-canvas, .btn {
+  .btn-clear-canvas, .btn, .btn-remove-row {
     display: none !important;
   }
 
   .form-wrapper {
-    box-shadow: none !important; margin: 0 !important;
-    padding: 1mm !important; max-width: 100% !important;
-    width: 100% !important; border-radius: 0 !important;
-    border: none !important; background: #ffffff !important;
-    height: auto !important; overflow: visible !important;
-  }
-  .main-wrapper { margin: 0 !important; padding-bottom: 0 !important; }
-
-  .form-header-print {
-    padding-bottom: 1mm !important; margin-bottom: 1.5mm !important;
-    border-bottom: 1.2pt solid #1E3A8A !important;
-    page-break-inside: avoid !important; break-inside: avoid !important;
-  }
-  .form-logo { font-size: 10pt !important; color: #1E3A8A !important; }
-  .form-company-info { font-size: 5.8pt !important; line-height: 1.15 !important; color: #222 !important; }
-  .form-number-box {
-    font-size: 7.5pt !important; border: 0.75pt solid #1E3A8A !important;
-    background: transparent !important; box-shadow: none !important; color: #1E3A8A !important;
-    padding: 0.2mm 0.6mm !important;
-  }
-  .form-number-box span { color: #BE123C !important; }
-
-  .form-title { font-size: 9pt !important; margin: 1.5mm 0 !important; letter-spacing: 0.5px !important; color: #1E3A8A !important; }
-  .form-title::after { display: none !important; }
-
-  .form-grid { gap: 1mm !important; margin-bottom: 1.5mm !important; }
-  .section-box {
-    padding: 1.2mm !important; margin-bottom: 1.2mm !important;
-    border: 0.5pt solid #1E3A8A !important; background: #ffffff !important;
     box-shadow: none !important;
-    page-break-inside: avoid !important; break-inside: avoid !important;
-  }
-  .section-title {
-    padding: 0.6mm 1.5mm !important; margin: -1.2mm -1.2mm 1mm -1.2mm !important;
-    font-size: 6.8pt !important; background: #1E3A8A !important; color: #ffffff !important;
-    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
-    border-radius: 0 !important; font-weight: 800 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    border-radius: 0 !important;
+    border: none !important;
+    background: #ffffff !important;
+    height: auto !important;
+    overflow: visible !important;
   }
 
-  .equipos-grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.3mm 2mm !important; }
+  .main-wrapper {
+    margin: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* Cabecera Imprimible */
+  .form-header-print {
+    padding-bottom: 1.5mm !important;
+    margin-bottom: 2mm !important;
+    border-bottom: 1.5pt solid #1E3A8A !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .form-logo {
+    font-size: 11pt !important;
+    font-weight: 800 !important;
+    color: #1E3A8A !important;
+  }
+  .form-company-info {
+    font-size: 6pt !important;
+    line-height: 1.2 !important;
+    color: #222222 !important;
+  }
+  .form-number-box {
+    font-size: 8pt !important;
+    font-weight: 800 !important;
+    border: 1pt solid #1E3A8A !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    color: #1E3A8A !important;
+    padding: 0.5mm 1mm !important;
+    border-radius: 2pt !important;
+  }
+  .form-number-box span {
+    color: #BE123C !important;
+  }
+
+  .form-title {
+    font-size: 9.5pt !important;
+    font-weight: 800 !important;
+    margin: 1.5mm 0 !important;
+    letter-spacing: 0.5px !important;
+    color: #1E3A8A !important;
+  }
+  .form-title::after {
+    display: none !important;
+  }
+
+  .form-grid {
+    gap: 1.2mm !important;
+    margin-bottom: 1.5mm !important;
+  }
+
+  /* Cajas de Sección Imprimibles */
+  .section-box {
+    padding: 1.5mm !important;
+    margin-bottom: 1.8mm !important;
+    border: 1pt solid #1E3A8A !important;
+    border-radius: 2pt !important;
+    background: #ffffff !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  .section-title {
+    padding: 0.6mm 1.5mm !important;
+    margin: -1.5mm -1.5mm 1.2mm -1.5mm !important;
+    font-size: 7pt !important;
+    background: #1E3A8A !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    border-radius: 0 !important;
+    font-weight: 800 !important;
+    letter-spacing: 0.3px !important;
+  }
+
+  .equipos-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 0.5mm 3mm !important;
+  }
 
   input, select {
-    border: none !important; border-bottom: 0.4pt solid #000000 !important;
-    background: transparent !important; font-size: 6.5pt !important;
-    padding: 0.1mm 0.3mm !important; resize: none !important;
-    box-shadow: none !important; color: #000000 !important;
+    border: none !important;
+    border-bottom: 0.5pt solid #000000 !important;
+    background: transparent !important;
+    font-size: 6.8pt !important;
+    padding: 0.2mm 0.4mm !important;
+    resize: none !important;
+    box-shadow: none !important;
+    color: #000000 !important;
   }
-  .input-line label { font-size: 6.5pt !important; font-weight: 700 !important; color: #000000 !important; }
+  .input-line label {
+    font-size: 6.8pt !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+  }
 
-  .data-table input { border: none !important; font-size: 6.2pt !important; }
+  /* Tablas de Datos */
+  .data-table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    border: 1pt solid #1E3A8A !important;
+    margin-bottom: 0 !important;
+  }
+  .data-table input {
+    border: none !important;
+    font-size: 6.5pt !important;
+    padding: 0.1mm !important;
+  }
   .data-table th, .data-table td {
-    padding: 0.3mm 0.6mm !important; font-size: 6.2pt !important;
-    border: 0.4pt solid #64748B !important;
+    padding: 0.5mm 0.8mm !important;
+    font-size: 6.5pt !important;
+    border: 0.5pt solid #1E3A8A !important;
+    color: #000000 !important;
   }
   .data-table th {
-    background: #1E3A8A !important; color: #ffffff !important;
-    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    background: #1E3A8A !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    text-align: center !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
+  /* Adaptación de Textarea (Observaciones / Pedido de Materiales) */
   textarea {
-    border: none !important; border-bottom: 0.4pt solid #000000 !important;
-    background: transparent !important; font-size: 6.5pt !important;
-    padding: 0.1mm 0.3mm !important; resize: none !important;
-    box-shadow: none !important; color: #000000 !important;
-    height: auto !important; min-height: 8mm !important;
-    max-height: none !important; overflow: visible !important;
-    white-space: pre-wrap !important; word-wrap: break-word !important;
+    border: none !important;
+    border-bottom: 0.5pt solid #000000 !important;
+    background: transparent !important;
+    font-size: 7.2pt !important;
+    font-family: inherit !important;
+    line-height: 1.35 !important;
+    padding: 0.5mm 0.5mm !important;
+    resize: none !important;
+    box-shadow: none !important;
+    color: #000000 !important;
+    height: auto !important;
+    min-height: 10mm !important;
+    max-height: none !important;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
+    word-wrap: break-word !important;
+    display: block !important;
+    width: 100% !important;
   }
-  /* ── Checkboxes & Radios in print — render as proper symbols not blue squares ── */
+
+  /* Checkboxes y Radios Limpios y Alineados */
+  .radio-options-row {
+    margin-top: 0.5rem !important;
+    gap: 0.5rem 1rem !important;
+    justify-content: flex-start !important;
+  }
+
   .chk-group input[type="checkbox"],
   .radio-group input[type="radio"] {
     -webkit-appearance: none !important;
     appearance: none !important;
-    width: 8pt !important; height: 8pt !important;
-    border: 0.8pt solid #000 !important;
-    border-radius: 1pt !important;
-    background: transparent !important;
+    width: 8.5pt !important;
+    height: 8.5pt !important;
+    border: 1pt solid #1E3A8A !important;
+    border-radius: 1.5pt !important;
+    background: #ffffff !important;
     display: inline-block !important;
     vertical-align: middle !important;
     position: relative !important;
     flex-shrink: 0 !important;
-    margin-right: 1pt !important;
-    accent-color: unset !important;
+    margin-right: 2pt !important;
+    margin-top: -1pt !important;
   }
-  .chk-group input[type="checkbox"]:checked::after,
-  .radio-group input[type="radio"]:checked::after {
+  .chk-group input[type="checkbox"]:checked::after {
     content: '✓' !important;
-    font-size: 6pt !important; font-weight: 900 !important;
+    font-size: 6.5pt !important;
+    font-weight: 900 !important;
     color: #1E3A8A !important;
     position: absolute !important;
-    top: -1pt !important; left: 0.5pt !important;
-    -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+    top: -1.5pt !important;
+    left: 0.5pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
-  .radio-group input[type="radio"] { border-radius: 50% !important; }
-  .chk-group, .radio-group { font-size: 6.2pt !important; color: #000 !important; }
+  .radio-group input[type="radio"] {
+    border-radius: 50% !important;
+  }
+  .radio-group input[type="radio"]:checked::after {
+    content: '●' !important;
+    font-size: 5pt !important;
+    color: #1E3A8A !important;
+    position: absolute !important;
+    top: -0.5pt !important;
+    left: 1.5pt !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  .chk-group, .radio-group {
+    font-size: 6.8pt !important;
+    color: #000000 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+  }
 
-  /* ── Signatures: no page break, compact ── */
+  /* Firmas Compactas sin Corte */
   .signatures {
-    margin-top: 2mm !important; gap: 2mm !important;
-    display: flex !important; flex-wrap: nowrap !important;
-    page-break-inside: avoid !important; break-inside: avoid !important;
+    margin-top: 2.5mm !important;
+    gap: 3mm !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
   .sig-box {
-    flex: 1 !important; min-width: 0 !important;
-    page-break-inside: avoid !important; break-inside: avoid !important;
+    flex: 1 !important;
+    min-width: 0 !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-  .sig-label { font-size: 5.5pt !important; margin-bottom: 0.3mm !important; color: #1E3A8A !important; }
+  .sig-label {
+    font-size: 6pt !important;
+    font-weight: 800 !important;
+    margin-bottom: 0.5mm !important;
+    color: #1E3A8A !important;
+  }
   .canvas-container {
-    border: none !important; box-shadow: none !important;
-    max-width: 100% !important; background: transparent !important;
-    page-break-inside: avoid !important; break-inside: avoid !important;
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    background: transparent !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
   }
-  .sig-canvas { border-bottom: 0.5pt solid #000000 !important; height: 10mm !important; background: transparent !important; }
+  .sig-canvas {
+    border-bottom: 0.6pt solid #000000 !important;
+    height: 12mm !important;
+    width: 100% !important;
+    background: transparent !important;
+  }
 
-  .equipos-temps-row { display: flex !important; flex-direction: row !important; gap: 1.5mm !important; align-items: flex-start !important; width: 100% !important; }
-  .equipos-col { flex: 0 0 46% !important; width: 46% !important; }
-  .temps-col { flex: 1 1 auto !important; min-width: 0 !important; }
-  .temps-col .table-responsive { overflow: visible !important; }
-  .temps-col .data-table { width: 100% !important; min-width: 0 !important; table-layout: fixed !important; }
-  .temps-col .data-table th, .temps-col .data-table td { padding: 0.3mm 0.5mm !important; font-size: 5.8pt !important; word-break: break-word !important; }
+  .equipos-temps-row {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: 2mm !important;
+    align-items: flex-start !important;
+    width: 100% !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  .equipos-col {
+    flex: 0 0 46% !important;
+    width: 46% !important;
+  }
+  .temps-col {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+  }
+  .temps-col .table-responsive {
+    overflow: visible !important;
+  }
+  .temps-col .data-table {
+    width: 100% !important;
+    min-width: 0 !important;
+    table-layout: fixed !important;
+  }
+  .temps-col .data-table th, .temps-col .data-table td {
+    padding: 0.4mm 0.6mm !important;
+    font-size: 6pt !important;
+    word-break: break-word !important;
+  }
 }
 
 /* ══════════════════════════════════════
