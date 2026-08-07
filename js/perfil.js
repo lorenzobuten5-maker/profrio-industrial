@@ -95,23 +95,26 @@ async function cargarFormularios(usuarioId) {
   if (loadingEl) loadingEl.style.display = 'block';
   
   try {
-    const { data: intervenciones, error: err1 } = await window.supabaseClient
+    const { data: intervenciones, count: countInt, error: err1 } = await window.supabaseClient
       .from('formularios_intervencion')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('usuario_id', usuarioId)
-      .order('numero', { ascending: false });
+      .order('numero', { ascending: false })
+      .range(0, 999);
       
-    const { data: materiales, error: err2 } = await window.supabaseClient
+    const { data: materiales, count: countMat, error: err2 } = await window.supabaseClient
       .from('formularios_materiales')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('usuario_id', usuarioId)
-      .order('numero', { ascending: false });
+      .order('numero', { ascending: false })
+      .range(0, 999);
       
     if (err1) throw err1;
     if (err2) throw err2;
     
-    document.getElementById('stat-intervencion').textContent = (intervenciones || []).length;
-    document.getElementById('stat-materiales').textContent = (materiales || []).length;
+    document.getElementById('stat-intervencion').textContent = countInt ?? (intervenciones || []).length;
+    document.getElementById('stat-materiales').textContent = countMat ?? (materiales || []).length;
+
     
     const mapeadosIntervencion = (intervenciones || []).map(f => ({
       ...f,

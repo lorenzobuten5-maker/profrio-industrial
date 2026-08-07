@@ -16,20 +16,36 @@ function setupRoleNavigation() {
     return;
   }
 
-  // Actualizar todos los enlaces de "Inicio" / "Panel Principal" en el sidebar y bottom-nav
-  const homeLinks = document.querySelectorAll('a[href="dashboard-empleado.html"], a[href="dashboard-jefe.html"], #sidebar-dash-link');
-  const targetDash = isJefe ? 'dashboard-jefe.html' : 'dashboard-empleado.html';
+  const bottomNav = document.querySelector('.bottom-nav');
 
-  homeLinks.forEach(link => {
-    link.href = targetDash;
-  });
-
-  // Si es jefe, actualizar la etiqueta en el Bottom Nav si dice "Inicio"
-  if (isJefe) {
-    const bottomNavHome = document.querySelector('.bottom-nav a[href="' + targetDash + '"] .nav-label');
-    if (bottomNavHome) bottomNavHome.textContent = 'Admin';
-    const bottomNavIcon = document.querySelector('.bottom-nav a[href="' + targetDash + '"] .nav-icon-wrap');
-    if (bottomNavIcon) bottomNavIcon.textContent = '🛡️';
+  // Si es jefe y la nav contiene un link a dashboard-empleado.html, reconstruir nav completa
+  if (isJefe && bottomNav) {
+    const hasEmpleadoHome = bottomNav.querySelector('a[href="dashboard-empleado.html"]');
+    if (hasEmpleadoHome) {
+      // Reconstruir nav para jefe: Admin, Intervención, Materiales, Historial, Perfil
+      bottomNav.innerHTML = `
+        <a href="dashboard-jefe.html" class="nav-item">
+          <div class="nav-icon-wrap">🛡️</div>
+          <span class="nav-label">Admin</span>
+        </a>
+        <a href="formulario-intervencion.html" class="nav-item">
+          <div class="nav-icon-wrap">📋</div>
+          <span class="nav-label">Intervención</span>
+        </a>
+        <a href="formulario-materiales.html" class="nav-item">
+          <div class="nav-icon-wrap">📦</div>
+          <span class="nav-label">Materiales</span>
+        </a>
+        <a href="historial-formularios.html" class="nav-item">
+          <div class="nav-icon-wrap">📂</div>
+          <span class="nav-label">Historial</span>
+        </a>
+        <a href="perfil.html" class="nav-item">
+          <div class="nav-icon-wrap">👤</div>
+          <span class="nav-label">Perfil</span>
+        </a>
+      `;
+    }
   }
 
   // Resaltar ícono activo en Bottom Nav según la página actual
