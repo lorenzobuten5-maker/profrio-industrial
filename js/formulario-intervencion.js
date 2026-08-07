@@ -398,6 +398,7 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   }
 
   function startDrawing(e) {
+    if (e.cancelable) e.preventDefault();
     drawing = true;
     lastPos = getPos(e);
     ctx.beginPath();

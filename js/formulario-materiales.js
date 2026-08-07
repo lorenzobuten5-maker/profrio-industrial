@@ -188,7 +188,8 @@ async function cargarFormularioExistente(id) {
     document.getElementById('inp-cliente').value     = data.cliente     || '';
     document.getElementById('inp-direccion').value   = data.direccion   || '';
     document.getElementById('inp-telefono').value    = data.telefono    || '';
-    document.getElementById('inp-despachado').value  = data.despachado_por     || '';
+    const inpDesp = document.getElementById('inp-despachado');
+    if (inpDesp) inpDesp.value = data.despachado_por || '';
     document.getElementById('inp-recibido').value    = data.recibido_conforme  || '';
     document.getElementById('ta-observaciones').value = data.observaciones || '';
 
@@ -307,6 +308,7 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   }
 
   function startDrawing(e) {
+    if (e.cancelable) e.preventDefault();
     drawing = true;
     lastPos = getPos(e);
     ctx.beginPath();
