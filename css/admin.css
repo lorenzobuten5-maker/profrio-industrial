@@ -65,7 +65,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  min-width: 580px;
+  min-width: 680px;
   font-size: 0.88rem;
   background: var(--clay-white);
 }
@@ -88,6 +88,7 @@
   border-bottom: 1.5px solid var(--clay-blue-100);
   vertical-align: middle;
   color: var(--clay-blue-900);
+  white-space: nowrap;
 }
 .admin-table tbody tr:last-child td { border-bottom: none; }
 .admin-table tbody tr { transition: background 0.15s; }

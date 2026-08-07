@@ -159,8 +159,22 @@
   --grad-card:     linear-gradient(145deg, #FFFFFF 0%, #F8FAFC 100%);
 }
 
-/* ── Reset & Smooth Scroll ── */
-*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+/* ── Disable blue tap highlights & focus outlines globally for clean, crisp native feel ── */
+*, *::before, *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent !important;
+  -webkit-touch-callout: none !important;
+}
+
+button:focus, button:focus-visible,
+a:focus, a:focus-visible,
+input:focus, input:focus-visible,
+select:focus, select:focus-visible,
+textarea:focus, textarea:focus-visible,
+[role="button"]:focus {
+  outline: none !important;
+}
+
 html {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
