@@ -250,7 +250,7 @@
     background: #ffffff !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-size: 7pt !important;
+    font-size: 7.5pt !important;
     color: #000000 !important;
     height: auto !important;
     overflow: visible !important;
@@ -258,10 +258,10 @@
 
   @page {
     size: letter portrait;
-    margin: 4mm 5mm !important;
+    margin: 6mm 8mm !important;
   }
 
-  /* Ocultar elementos no imprimibles */
+  /* Ocultar elementos interactivos */
   .action-toolbar, #save-status, .photo-section, .photo-buttons,
   .sidebar, .top-header, .bottom-nav, .modal-overlay, .lightbox-modal,
   .btn-clear-canvas, .btn, .btn-remove-row {
@@ -286,60 +286,67 @@
     padding-bottom: 0 !important;
   }
 
-  /* Cabecera Imprimible */
+  /* Cabecera Principal */
   .form-header-print {
-    padding-bottom: 1.5mm !important;
-    margin-bottom: 2mm !important;
-    border-bottom: 1.5pt solid #1E3A8A !important;
+    padding-bottom: 2mm !important;
+    margin-bottom: 3mm !important;
+    border-bottom: 2pt solid #1E3A8A !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+
   .form-logo {
-    font-size: 11pt !important;
+    font-size: 13pt !important;
     font-weight: 800 !important;
     color: #1E3A8A !important;
+    letter-spacing: 0.5px !important;
   }
+
   .form-company-info {
-    font-size: 6pt !important;
-    line-height: 1.2 !important;
-    color: #222222 !important;
+    font-size: 6.8pt !important;
+    line-height: 1.25 !important;
+    color: #333333 !important;
   }
+
   .form-number-box {
-    font-size: 8pt !important;
+    font-size: 9pt !important;
     font-weight: 800 !important;
-    border: 1pt solid #1E3A8A !important;
+    border: 1.2pt solid #1E3A8A !important;
     background: #ffffff !important;
     box-shadow: none !important;
     color: #1E3A8A !important;
-    padding: 0.5mm 1mm !important;
-    border-radius: 2pt !important;
+    padding: 1mm 2mm !important;
+    border-radius: 3pt !important;
   }
+
   .form-number-box span {
     color: #BE123C !important;
   }
 
   .form-title {
-    font-size: 9.5pt !important;
+    font-size: 11pt !important;
     font-weight: 800 !important;
-    margin: 1.5mm 0 !important;
-    letter-spacing: 0.5px !important;
+    margin: 2mm 0 3mm 0 !important;
+    letter-spacing: 0.8px !important;
     color: #1E3A8A !important;
+    text-align: center !important;
   }
+
   .form-title::after {
     display: none !important;
   }
 
   .form-grid {
-    gap: 1.2mm !important;
-    margin-bottom: 1.5mm !important;
+    gap: 2mm !important;
+    margin-bottom: 2.5mm !important;
   }
 
-  /* Cajas de Sección Imprimibles */
+  /* Cajas de Sección Imprimibles Elegantes */
   .section-box {
-    padding: 1.5mm !important;
-    margin-bottom: 1.8mm !important;
+    padding: 2.5mm 3mm !important;
+    margin-bottom: 3.5mm !important;
     border: 1pt solid #1E3A8A !important;
-    border-radius: 2pt !important;
+    border-radius: 3pt !important;
     background: #ffffff !important;
     box-shadow: none !important;
     page-break-inside: avoid !important;
@@ -347,98 +354,132 @@
   }
 
   .section-title {
-    padding: 0.6mm 1.5mm !important;
-    margin: -1.5mm -1.5mm 1.2mm -1.5mm !important;
-    font-size: 7pt !important;
+    padding: 1mm 2mm !important;
+    margin: -2.5mm -3mm 2mm -3mm !important;
+    font-size: 7.8pt !important;
     background: #1E3A8A !important;
     color: #ffffff !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     border-radius: 0 !important;
     font-weight: 800 !important;
-    letter-spacing: 0.3px !important;
+    letter-spacing: 0.5px !important;
+    text-transform: uppercase !important;
   }
 
-  .equipos-grid {
-    display: grid !important;
-    grid-template-columns: 1fr 1fr !important;
-    gap: 0.5mm 3mm !important;
-  }
-
+  /* Entradas de Texto / Selects Generales */
   input, select {
     border: none !important;
-    border-bottom: 0.5pt solid #000000 !important;
+    border-bottom: 0.8pt solid #000000 !important;
     background: transparent !important;
-    font-size: 6.8pt !important;
-    padding: 0.2mm 0.4mm !important;
+    font-size: 7.5pt !important;
+    padding: 0.3mm 0.5mm !important;
     resize: none !important;
     box-shadow: none !important;
     color: #000000 !important;
   }
+
   .input-line label {
-    font-size: 6.8pt !important;
+    font-size: 7.5pt !important;
     font-weight: 700 !important;
     color: #000000 !important;
   }
 
-  /* Quitar raya negra gigante en EQUIPOS */
+  /* EQUIPOS Grid Imprimible Impecable */
+  .equipos-grid {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 1.5mm 4mm !important;
+    align-items: center !important;
+  }
+
+  .equipos-grid .chk-group {
+    font-size: 7.2pt !important;
+    color: #000000 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 1.5mm !important;
+    margin: 0 !important;
+  }
+
   .equipos-grid .input-line {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 0.3rem !important;
-  }
-  .equipos-grid .input-line input[type="text"] {
-    flex: 0 0 45px !important;
-    width: 45px !important;
-    min-width: 0 !important;
-    border: none !important;
-    border-bottom: 0.5pt solid #1E3A8A !important;
-    padding: 0 2px !important;
-    font-size: 6.8pt !important;
+    gap: 1.5mm !important;
+    margin: 0 !important;
   }
 
-  /* Tablas de Datos */
+  .equipos-grid .input-line label {
+    font-size: 7.2pt !important;
+    font-weight: 700 !important;
+    color: #000000 !important;
+    white-space: nowrap !important;
+  }
+
+  .equipos-grid .input-line input[type="text"] {
+    flex: 1 !important;
+    min-width: 35px !important;
+    border: none !important;
+    border-bottom: 0.8pt solid #1E3A8A !important;
+    padding: 0 1mm !important;
+    font-size: 7.2pt !important;
+    height: 4mm !important;
+  }
+
+  /* Tablas de Datos Elegantes */
   .data-table {
     width: 100% !important;
     border-collapse: collapse !important;
     border: 1pt solid #1E3A8A !important;
     margin-bottom: 0 !important;
   }
+
   .data-table input {
     border: none !important;
-    font-size: 6.5pt !important;
-    padding: 0.1mm !important;
+    font-size: 7pt !important;
+    padding: 0.2mm !important;
   }
+
   .data-table th, .data-table td {
-    padding: 0.5mm 0.8mm !important;
-    font-size: 6.5pt !important;
+    padding: 0.8mm 1.2mm !important;
+    font-size: 7pt !important;
     border: 0.5pt solid #1E3A8A !important;
     color: #000000 !important;
   }
+
   .data-table th {
     background: #1E3A8A !important;
     color: #ffffff !important;
     font-weight: 800 !important;
     text-align: center !important;
+    font-size: 7.2pt !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Adaptación de Textarea (Observaciones / Pedido de Materiales) */
+  /* Observaciones / Pedido de Materiales Textareas Amplios */
+  .textarea-container label {
+    font-size: 7.8pt !important;
+    font-weight: 800 !important;
+    color: #1E3A8A !important;
+    margin-bottom: 1mm !important;
+    display: block !important;
+  }
+
   textarea {
-    border: none !important;
-    border-bottom: 0.5pt solid #1E3A8A !important;
-    background: transparent !important;
-    font-size: 7.2pt !important;
+    border: 0.8pt solid #1E3A8A !important;
+    border-radius: 2.5pt !important;
+    background: #ffffff !important;
+    font-size: 7.8pt !important;
     font-family: inherit !important;
-    line-height: 1.35 !important;
-    padding: 1.5mm 2mm !important;
+    line-height: 1.4 !important;
+    padding: 2.5mm 3mm !important;
     margin-top: 0.5mm !important;
     resize: none !important;
     box-shadow: none !important;
     color: #000000 !important;
     height: auto !important;
-    min-height: 10mm !important;
+    min-height: 20mm !important;
     max-height: none !important;
     overflow: visible !important;
     white-space: pre-wrap !important;
@@ -447,10 +488,10 @@
     width: 100% !important;
   }
 
-  /* Checkboxes y Radios Limpios y Alineados */
+  /* Checkboxes y Radios */
   .radio-options-row {
     margin-top: 0.5rem !important;
-    gap: 0.5rem 1rem !important;
+    gap: 0.5rem 1.2rem !important;
     justify-content: flex-start !important;
   }
 
@@ -458,8 +499,8 @@
   .radio-group input[type="radio"] {
     -webkit-appearance: none !important;
     appearance: none !important;
-    width: 8.5pt !important;
-    height: 8.5pt !important;
+    width: 9pt !important;
+    height: 9pt !important;
     border: 1pt solid #1E3A8A !important;
     border-radius: 1.5pt !important;
     background: #ffffff !important;
@@ -470,9 +511,10 @@
     margin-right: 2pt !important;
     margin-top: -1pt !important;
   }
+
   .chk-group input[type="checkbox"]:checked::after {
     content: '✓' !important;
-    font-size: 6.5pt !important;
+    font-size: 7pt !important;
     font-weight: 900 !important;
     color: #1E3A8A !important;
     position: absolute !important;
@@ -481,47 +523,61 @@
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+
   .radio-group input[type="radio"] {
     border-radius: 50% !important;
   }
+
   .radio-group input[type="radio"]:checked::after {
     content: '●' !important;
-    font-size: 5pt !important;
+    font-size: 5.5pt !important;
     color: #1E3A8A !important;
     position: absolute !important;
     top: -0.5pt !important;
-    left: 1.5pt !important;
+    left: 1.8pt !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
+
   .chk-group, .radio-group {
-    font-size: 6.8pt !important;
+    font-size: 7.2pt !important;
     color: #000000 !important;
     display: inline-flex !important;
     align-items: center !important;
   }
 
-  /* Firmas Compactas sin Corte */
+  /* Tarjetas de Firma Oficiales en Bloque Evitando Cortes Solitarios */
   .signatures {
-    margin-top: 2.5mm !important;
-    gap: 3mm !important;
+    margin-top: 4mm !important;
+    gap: 5mm !important;
     display: flex !important;
     flex-wrap: nowrap !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+
   .sig-box {
     flex: 1 !important;
     min-width: 0 !important;
+    border: 1pt solid #1E3A8A !important;
+    border-radius: 3pt !important;
+    padding: 2.5mm !important;
+    text-align: center !important;
+    background: #ffffff !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+
   .sig-label {
-    font-size: 6pt !important;
+    font-size: 6.8pt !important;
     font-weight: 800 !important;
-    margin-bottom: 0.5mm !important;
+    margin-bottom: 1.5mm !important;
     color: #1E3A8A !important;
+    display: block !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.4px !important;
   }
+
   .canvas-container {
     border: none !important;
     box-shadow: none !important;
@@ -530,9 +586,10 @@
     page-break-inside: avoid !important;
     break-inside: avoid !important;
   }
+
   .sig-canvas {
-    border-bottom: 0.6pt solid #000000 !important;
-    height: 12mm !important;
+    border-bottom: 1pt solid #1E3A8A !important;
+    height: 15mm !important;
     width: 100% !important;
     background: transparent !important;
   }
