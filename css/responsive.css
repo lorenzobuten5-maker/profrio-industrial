@@ -298,17 +298,47 @@ textarea {
 }
 
 /* ══════════════════════════════════
-   LANDSCAPE PHONE
+   LANDSCAPE PHONE (OPTIMAL SPACING & SCROLLING)
    ══════════════════════════════════ */
 @media (max-height: 500px) and (orientation: landscape) {
+  html, body {
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
   .sidebar {
-    overflow-y: auto;
+    overflow-y: auto !important;
+    max-height: 100vh;
   }
   .content-area {
-    padding: 0.75rem !important;
+    padding: 0.75rem 1rem !important;
   }
-  .action-cards {
+  .hero-card {
+    padding: 1rem 1.25rem !important;
+    margin-bottom: 1rem !important;
+  }
+  .hero-name {
+    font-size: 1.2rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+  .action-grid, .action-cards {
     grid-template-columns: repeat(2, 1fr) !important;
+    gap: 0.75rem !important;
+  }
+  .action-btn {
+    padding: 0.85rem 0.6rem !important;
+  }
+  .top-header {
+    height: 52px !important;
+    padding: 0 1rem !important;
+  }
+  .form-wrapper {
+    margin: 0.5rem auto !important;
+    padding: 1rem !important;
+  }
+  .modal-content {
+    max-height: 88vh !important;
+    overflow-y: auto !important;
+    padding: 1.25rem !important;
   }
 }
 

@@ -555,3 +555,111 @@ body {
   .action-btn-label { font-size: 0.72rem; }
   .hero-name { font-size: 1.25rem; }
 }
+
+/* ══════════════════════════════════════
+   FORM CARDS COLOR CODING 🎨
+   ══════════════════════════════════════ */
+.card-type-intervencion { border-left: 4px solid var(--clay-blue-600) !important; }
+.card-type-materiales { border-left: 4px solid #F59E0B !important; }
+
+/* ══════════════════════════════════════
+   DARK MODE DASHBOARD STYLES 🌙
+   ══════════════════════════════════════ */
+html.dark-mode .hero-card, [data-theme="dark"] .hero-card {
+  background: linear-gradient(145deg, #020617 0%, #0F172A 55%, #1E3A8A 100%);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 12px 16px 40px rgba(0, 0, 0, 0.6), inset -6px -6px 16px rgba(0, 0, 0, 0.6);
+}
+
+html.dark-mode .hero-stat, [data-theme="dark"] .hero-stat {
+  background: rgba(15, 23, 42, 0.5);
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+html.dark-mode .recent-card, [data-theme="dark"] .recent-card,
+html.dark-mode .content-card, [data-theme="dark"] .content-card,
+html.dark-mode .stat-mini, [data-theme="dark"] .stat-mini,
+html.dark-mode .list-container, [data-theme="dark"] .list-container,
+html.dark-mode .online-card, [data-theme="dark"] .online-card,
+html.dark-mode .forms-stat-card, [data-theme="dark"] .forms-stat-card,
+html.dark-mode .form-item, [data-theme="dark"] .form-item {
+  background: rgba(30, 41, 59, 0.9);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: var(--clay-shadow-white);
+  color: #F8FAFC;
+}
+
+html.dark-mode .recent-title, [data-theme="dark"] .recent-title,
+html.dark-mode .form-item-info strong, [data-theme="dark"] .form-item-info strong,
+html.dark-mode .list-header h3, [data-theme="dark"] .list-header h3,
+html.dark-mode .online-card .user-info h4, [data-theme="dark"] .online-card .user-info h4,
+html.dark-mode .forms-stat-info strong, [data-theme="dark"] .forms-stat-info strong {
+  color: #F8FAFC;
+}
+
+html.dark-mode .recent-sub, [data-theme="dark"] .recent-sub,
+html.dark-mode .form-item-info small, [data-theme="dark"] .form-item-info small,
+html.dark-mode .stat-mini h3, [data-theme="dark"] .stat-mini h3,
+html.dark-mode .count-label, [data-theme="dark"] .count-label,
+html.dark-mode .forms-stat-email, [data-theme="dark"] .forms-stat-email {
+  color: #94A3B8;
+}
+
+html.dark-mode .recent-item, [data-theme="dark"] .recent-item,
+html.dark-mode .list-item, [data-theme="dark"] .list-item {
+  border-bottom-color: #334155;
+}
+
+html.dark-mode .recent-item:hover, [data-theme="dark"] .recent-item:hover,
+html.dark-mode .list-item:hover, [data-theme="dark"] .list-item:hover {
+  background: #0F172A;
+}
+
+html.dark-mode .tabs-container, [data-theme="dark"] .tabs-container {
+  background: rgba(30, 41, 59, 0.7);
+  box-shadow: inset 4px 4px 10px rgba(0, 0, 0, 0.4);
+}
+
+html.dark-mode .tab-btn, [data-theme="dark"] .tab-btn {
+  color: #94A3B8;
+}
+
+html.dark-mode .tab-btn:hover, [data-theme="dark"] .tab-btn:hover {
+  color: #60A5FA;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+html.dark-mode .action-btn-purple, [data-theme="dark"] .action-btn-purple,
+html.dark-mode .action-btn-blue, [data-theme="dark"] .action-btn-blue {
+  background: linear-gradient(145deg, #1E3A8A, #1D4ED8);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 8px 10px 22px rgba(0, 0, 0, 0.4);
+}
+html.dark-mode .action-btn-mint, [data-theme="dark"] .action-btn-mint {
+  background: linear-gradient(145deg, #065F46, #047857);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 8px 10px 22px rgba(0, 0, 0, 0.4);
+}
+html.dark-mode .action-btn-peach, [data-theme="dark"] .action-btn-peach {
+  background: linear-gradient(145deg, #164E63, #0891B2);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 8px 10px 22px rgba(0, 0, 0, 0.4);
+}
+html.dark-mode .action-btn-sky, [data-theme="dark"] .action-btn-sky {
+  background: linear-gradient(145deg, #075985, #0284C7);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 8px 10px 22px rgba(0, 0, 0, 0.4);
+}
+html.dark-mode .action-btn-label, [data-theme="dark"] .action-btn-label {
+  color: #F8FAFC;
+}
+html.dark-mode .action-icon-wrap, [data-theme="dark"] .action-icon-wrap {
+  background: rgba(15, 23, 42, 0.6);
+  color: #F8FAFC;
+  box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+}
+
+html.dark-mode .section-label, [data-theme="dark"] .section-label {
+  color: #93C5FD;
+}

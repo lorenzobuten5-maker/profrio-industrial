@@ -7,9 +7,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="description" content="Historial completo de reportes de intervención y solicitudes de materiales de ProFrio Industrial.">
   <title>Historial de Formularios — ProFrio Industrial</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=22">
-  <link rel="stylesheet" href="css/dashboard.css?v=22">
+  <link rel="stylesheet" href="css/global.css?v=25">
+  <link rel="stylesheet" href="css/dashboard.css?v=25">
+  <script src="js/utils.js?v=25"></script>
+  <script src="js/darkmode.js?v=25"></script>
   <style>
     html, body { overflow-x: hidden; max-width: 100vw; }
 
@@ -109,6 +113,7 @@
         <div class="page-title" style="margin:0;">📂 Historial de Formularios</div>
       </div>
       <div class="user-info">
+        <button class="dark-mode-toggle btn btn-sm btn-outline" style="padding:0.35rem 0.75rem;font-size:0.8rem;border-radius:20px;">🌙 <span class="toggle-text">Oscuro</span></button>
         <span id="header-user-name" class="user-name">Usuario</span>
         <div class="user-avatar" id="header-user-avatar">👷</div>
       </div>
@@ -135,6 +140,20 @@
           </div>
         </div>
         <div class="toolbar-row">
+          <div class="toolbar-group">
+            <label>Técnico</label>
+            <select id="filter-tecnico" class="form-input">
+              <option value="">Todos los técnicos</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <label>Estado</label>
+            <select id="filter-status" class="form-input">
+              <option value="">Todos los estados</option>
+              <option value="completo">Completo</option>
+              <option value="pendiente">Pendiente</option>
+            </select>
+          </div>
           <div class="toolbar-group">
             <label>Fecha inicial</label>
             <input type="date" id="filter-date-start" class="form-input">
@@ -185,11 +204,12 @@
   </nav>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/security.js?v=23"></script>
-  <script src="js/supabase-config.js?v=23"></script>
-  <script src="js/auth.js?v=23"></script>
-  <script src="js/nav-router.js?v=23"></script>
-  <script src="js/online-status.js?v=23"></script>
-  <script src="js/historial-formularios.js?v=23"></script>
+  <script src="js/security.js?v=25"></script>
+  <script src="js/supabase-config.js?v=25"></script>
+  <script src="js/auth.js?v=25"></script>
+  <script src="js/nav-router.js?v=25"></script>
+  <script src="js/online-status.js?v=25"></script>
+  <script src="js/historial-formularios.js?v=25"></script>
+  <button id="scroll-to-top-btn" aria-label="Volver arriba" title="Volver arriba">↑</button>
 </body>
 </html>

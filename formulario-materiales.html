@@ -7,9 +7,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="description" content="Solicitud de Materiales y Suministros — ProFrio Industrial E.I.R.L.">
   <title>Solicitud de Materiales — ProFrio Industrial</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=23">
-  <link rel="stylesheet" href="css/formularios.css?v=23">
+  <link rel="stylesheet" href="css/global.css?v=25">
+  <link rel="stylesheet" href="css/formularios.css?v=25">
+  <script src="js/utils.js?v=25"></script>
+  <script src="js/darkmode.js?v=25"></script>
 </head>
 <body>
 
@@ -186,16 +190,17 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/security.js?v=23"></script>
-  <script src="js/supabase-config.js?v=23"></script>
-  <script src="js/auth.js?v=23"></script>
-  <script src="js/nav-router.js?v=23"></script>
-  <script src="js/online-status.js?v=23"></script>
-  <script src="js/formulario-materiales.js?v=23"></script>
-  <script src="js/print-pdf.js?v=23"></script>
-  <script src="js/email.js?v=23"></script>
+  <script src="js/security.js?v=25"></script>
+  <script src="js/supabase-config.js?v=25"></script>
+  <script src="js/auth.js?v=25"></script>
+  <script src="js/nav-router.js?v=25"></script>
+  <script src="js/online-status.js?v=25"></script>
+  <script src="js/formulario-materiales.js?v=25"></script>
+  <script src="js/print-pdf.js?v=25"></script>
+  <script src="js/email.js?v=25"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
   </script>
+  <button id="scroll-to-top-btn" aria-label="Volver arriba" title="Volver arriba">↑</button>
 </body>
 </html>

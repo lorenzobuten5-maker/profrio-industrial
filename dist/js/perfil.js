@@ -8,7 +8,8 @@ async function iniciarPerfil() {
   // Determine which profile to show
   const urlParams = new URLSearchParams(window.location.search);
   const targetUid = urlParams.get('uid');     // admin viewing another user
-  const myProfile = window.currentProfile || await window.getCurrentProfile?.();
+  const cachedProfile = window.ProfileCache?.get();
+  const myProfile = cachedProfile || window.currentProfile || await window.getCurrentProfile?.();
   if (!myProfile) {
     window.location.href = 'index.html';
     return;
@@ -61,9 +62,13 @@ async function iniciarPerfil() {
 
   const searchInput = document.getElementById('search-input');
   const btnSearch = document.getElementById('btn-search');
-  if (btnSearch && searchInput) {
-    btnSearch.addEventListener('click', () => aplicarFiltros());
+  if (searchInput) {
+    const debouncedFilter = window.debounce ? window.debounce(aplicarFiltros, 300) : aplicarFiltros;
+    searchInput.addEventListener('input', debouncedFilter);
     searchInput.addEventListener('keyup', (e) => { if (e.key === 'Enter') aplicarFiltros(); });
+  }
+  if (btnSearch) {
+    btnSearch.addEventListener('click', () => aplicarFiltros());
   }
 
   document.getElementById('filter-all')?.addEventListener('click', () => setFiltroTipo('todos'));
@@ -95,23 +100,35 @@ async function cargarFormularios(usuarioId) {
   if (loadingEl) loadingEl.style.display = 'block';
   
   try {
-    const { data: intervenciones, error: err1 } = await window.supabaseClient
+    const { data: intervenciones, count: countInt, error: err1 } = await window.supabaseClient
       .from('formularios_intervencion')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('usuario_id', usuarioId)
-      .order('numero', { ascending: false });
+      .order('numero', { ascending: false })
+      .range(0, 999);
       
-    const { data: materiales, error: err2 } = await window.supabaseClient
+    const { data: materiales, count: countMat, error: err2 } = await window.supabaseClient
       .from('formularios_materiales')
-      .select('*')
+      .select('*', { count: 'exact' })
       .eq('usuario_id', usuarioId)
-      .order('numero', { ascending: false });
+      .order('numero', { ascending: false })
+      .range(0, 999);
       
     if (err1) throw err1;
     if (err2) throw err2;
     
-    document.getElementById('stat-intervencion').textContent = (intervenciones || []).length;
-    document.getElementById('stat-materiales').textContent = (materiales || []).length;
+    const countIntVal = countInt ?? (intervenciones || []).length;
+    const countMatVal = countMat ?? (materiales || []).length;
+    const elInt = document.getElementById('stat-intervencion');
+    const elMat = document.getElementById('stat-materiales');
+
+    if (window.animateCounter) {
+      window.animateCounter(elInt, 0, countIntVal);
+      window.animateCounter(elMat, 0, countMatVal);
+    } else {
+      if (elInt) elInt.textContent = countIntVal;
+      if (elMat) elMat.textContent = countMatVal;
+    }
     
     const mapeadosIntervencion = (intervenciones || []).map(f => ({
       ...f,
@@ -169,10 +186,11 @@ function renderizarFormularios(formularios) {
     const tipoLabel = f._tipo === 'intervencion' ? 'Intervención' : 'Materiales';
     const badgeClass = f._tipo === 'intervencion' ? 'intervencion' : 'materiales';
     const sCliente = window.sanitizeHTML ? window.sanitizeHTML(f.cliente) : (f.cliente || 'Sin cliente');
+    const fechaTexto = window.timeAgo ? window.timeAgo(f.created_at) : f._fecha;
     div.innerHTML = `
       <div class="form-item-info">
         <strong>#${f.numero}<span class="badge-tipo ${badgeClass}">${tipoLabel}</span></strong>
-        <small>${sCliente} &bull; ${f._fecha}</small>
+        <small>${sCliente} &bull; ${fechaTexto}</small>
       </div>
       <a href="formulario-${f._tipo}.html?id=${f.id}" class="btn btn-secondary" style="flex-shrink:0;padding:0.4rem 0.9rem;font-size:0.82rem;">Ver</a>
     `;

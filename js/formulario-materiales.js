@@ -4,6 +4,55 @@
  */
 
 let fotosArray = [];
+const DRAFT_KEY = 'pf_draft_materiales';
+
+function guardarBorradorLocal() {
+  try {
+    const datos = recolectarDatos();
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(datos));
+  } catch (_) {}
+}
+
+function restaurarBorradorLocal() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!data) return;
+
+    if (data.fecha_dia) document.getElementById('inp-fecha-dia').value = data.fecha_dia;
+    if (data.fecha_mes) document.getElementById('inp-fecha-mes').value = data.fecha_mes;
+    if (data.fecha_anio) document.getElementById('inp-fecha-anio').value = data.fecha_anio;
+    if (data.cliente) document.getElementById('inp-cliente').value = data.cliente;
+    if (data.direccion) document.getElementById('inp-direccion').value = data.direccion;
+    if (data.telefono) document.getElementById('inp-telefono').value = data.telefono;
+    if (data.despachado_por) document.getElementById('inp-despachado').value = data.despachado_por;
+    if (data.recibido_conforme) document.getElementById('inp-recibido').value = data.recibido_conforme;
+    if (data.observaciones) document.getElementById('ta-observaciones').value = data.observaciones;
+
+    if (data.items) {
+      const items = typeof data.items === 'string' ? JSON.parse(data.items) : data.items;
+      const tbody = document.getElementById('items-tbody');
+      if (tbody && Array.isArray(items) && items.length > 0) {
+        tbody.innerHTML = '';
+        items.forEach(item => agregarFila(item));
+      }
+    }
+
+    if (data.fotos && Array.isArray(data.fotos)) {
+      fotosArray = data.fotos;
+      renderPhotos();
+    }
+
+    if (data.firma_despachado) document.getElementById('canvas-firma-despachado')?.loadSignature?.(data.firma_despachado);
+    if (data.firma_recibido) document.getElementById('canvas-firma-recibido')?.loadSignature?.(data.firma_recibido);
+
+  } catch (_) {}
+}
+
+function limpiarBorradorLocal() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (window.guardRoute) await window.guardRoute(['empleado', 'jefe']);
@@ -13,7 +62,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initPhotos();
 
-  // ── Inicializar canvas de firmas (igual que en intervenciones) ──
+  // Global Haptic Feedback listener for buttons and inputs
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('button, .btn, .btn-remove-row, input[type="checkbox"], input[type="radio"]');
+    if (target && window.hapticFeedback) {
+      window.hapticFeedback([30]);
+    }
+  });
+
+  // ── Inicializar canvas de firmas ──
   initSignaturePad('canvas-firma-despachado', 'inp-firma-despachado', 'btn-clear-despachado');
   initSignaturePad('canvas-firma-recibido',   'inp-firma-recibido',   'btn-clear-recibido');
 
@@ -32,6 +89,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     agregarFila();
     agregarFila();
     agregarFila();
+
+    restaurarBorradorLocal();
+
+    // Auto-save debounced listener for draft
+    const debouncedSave = window.debounce ? window.debounce(guardarBorradorLocal, 500) : guardarBorradorLocal;
+    document.addEventListener('input', debouncedSave);
+    document.addEventListener('change', debouncedSave);
   }
 
   const btnAdd = document.getElementById('btn-add-item');
@@ -114,6 +178,7 @@ function agregarFila(item = null) {
   tbody.appendChild(tr);
 
   tr.querySelector('.btn-remove-row').addEventListener('click', () => {
+    if (window.hapticFeedback) window.hapticFeedback([30]);
     tr.remove();
     recalcularTotal();
   });
@@ -269,6 +334,7 @@ async function guardarFormulario(usuarioId, formId) {
         .update(datos)
         .eq('id', formId);
       if (error) throw error;
+      limpiarBorradorLocal();
       showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
       datos.numero = parseInt(document.getElementById('form-numero')?.dataset?.value || '1', 10);
@@ -276,6 +342,7 @@ async function guardarFormulario(usuarioId, formId) {
         .from('formularios_materiales')
         .insert(datos);
       if (error) throw error;
+      limpiarBorradorLocal();
       showStatus('✅ Guardado exitosamente.', 'success');
     }
   } catch (err) {
@@ -322,6 +389,14 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     ctx.stroke();
   }
 
+  function saveSignatureValue() {
+    if (window.compressCanvas) {
+      input.value = window.compressCanvas(canvas, 0.72);
+    } else {
+      input.value = canvas.toDataURL('image/webp', 0.72);
+    }
+  }
+
   function draw(e) {
     if (!drawing) return;
     e.preventDefault();
@@ -331,10 +406,15 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     ctx.lineTo(newPos.x, newPos.y);
     ctx.stroke();
     lastPos = newPos;
-    input.value = canvas.toDataURL();
+    saveSignatureValue();
   }
 
-  function stopDrawing() { drawing = false; }
+  function stopDrawing() {
+    if (drawing) {
+      drawing = false;
+      saveSignatureValue();
+    }
+  }
 
   canvas.addEventListener('mousedown',  startDrawing);
   canvas.addEventListener('mousemove',  draw);

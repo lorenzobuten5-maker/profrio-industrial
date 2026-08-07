@@ -69,6 +69,11 @@ async function initAuth() {
     // Store profile globally for other scripts
     window.currentProfile = profile;
     window.authReady = true;
+
+    // Auto-logout por inactividad
+    if (window.initAutoLogout) {
+      window.initAutoLogout(handleLogout);
+    }
   }
 }
 
@@ -250,6 +255,9 @@ async function handleLogout() {
   if (user && window.setOffline) {
     await window.setOffline(user.id);
   }
+  if (window.ProfileCache) {
+    window.ProfileCache.clear();
+  }
   await window.supabaseClient.auth.signOut();
   window.location.href = 'index.html';
 }
@@ -259,10 +267,20 @@ async function getCurrentUser() {
   return user;
 }
 
-async function getCurrentProfile() {
+async function getCurrentProfile(forceRefresh = false) {
   const user = await getCurrentUser();
-  if (!user) return null;
+  if (!user) {
+    if (window.ProfileCache) window.ProfileCache.clear();
+    return null;
+  }
   
+  if (!forceRefresh && window.ProfileCache) {
+    const cached = window.ProfileCache.get();
+    if (cached && cached.id === user.id) {
+      return cached;
+    }
+  }
+
   let { data, error } = await window.supabaseClient.from('profiles').select('*').eq('id', user.id).single();
   
   if (error) {
@@ -294,6 +312,10 @@ async function getCurrentProfile() {
     }
   }
   
+  if (data && window.ProfileCache) {
+    window.ProfileCache.set(data);
+  }
+
   return data;
 }
 

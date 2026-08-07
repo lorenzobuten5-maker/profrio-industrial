@@ -37,18 +37,60 @@ async function iniciarHistorial() {
   // Botón logout
   document.getElementById('btn-logout')?.addEventListener('click', () => window.handleLogout?.());
 
-  // Banner admin
+  // Mode jefe UI & dropdown initialization
   if (perfilUsuario.rol === 'jefe') {
     const banner = document.getElementById('admin-banner-view');
     if (banner) banner.style.display = 'flex';
+
+    // Inject técnico dropdown into toolbar if not present
+    let selectTecnico = document.getElementById('filter-tecnico');
+    if (!selectTecnico) {
+      const toolbarRow = document.querySelector('.toolbar-box .toolbar-row:last-child') || document.querySelector('.toolbar-box');
+      if (toolbarRow) {
+        const group = document.createElement('div');
+        group.className = 'toolbar-group';
+        group.id = 'group-filter-tecnico';
+        group.innerHTML = `<label>Técnico</label><select id="filter-tecnico" class="form-input"><option value="">Todos los técnicos</option></select>`;
+        toolbarRow.appendChild(group);
+      }
+    }
     await cargarMapaPerfiles();
+  }
+
+  // Inject status filter dropdown if not present in HTML
+  let selectStatus = document.getElementById('filter-status');
+  if (!selectStatus) {
+    const toolbarRow = document.querySelector('.toolbar-box .toolbar-row:last-child') || document.querySelector('.toolbar-box');
+    if (toolbarRow) {
+      const group = document.createElement('div');
+      group.className = 'toolbar-group';
+      group.id = 'group-filter-status';
+      group.innerHTML = `
+        <label>Estado</label>
+        <select id="filter-status" class="form-input">
+          <option value="">Todos los estados</option>
+          <option value="activo">Activo</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="completado">Completado</option>
+          <option value="aprobado">Aprobado</option>
+          <option value="rechazado">Rechazado</option>
+        </select>`;
+      toolbarRow.appendChild(group);
+    }
   }
 
   // Cargar datos
   await cargarHistorial();
 
-  // Listeners de filtros y búsqueda
-  document.getElementById('search-input')?.addEventListener('input', filtrarYRenderizar);
+  // Listeners de filtros y búsqueda (debounced)
+  const searchInput = document.getElementById('search-input');
+  if (searchInput) {
+    const debouncedFilter = window.debounce ? window.debounce(filtrarYRenderizar, 300) : filtrarYRenderizar;
+    searchInput.addEventListener('input', debouncedFilter);
+  }
+
+  document.getElementById('filter-tecnico')?.addEventListener('change', filtrarYRenderizar);
+  document.getElementById('filter-status')?.addEventListener('change', filtrarYRenderizar);
   document.getElementById('filter-date-start')?.addEventListener('change', filtrarYRenderizar);
   document.getElementById('filter-date-end')?.addEventListener('change', filtrarYRenderizar);
 
@@ -99,9 +141,21 @@ async function cargarMapaPerfiles() {
   try {
     const { data, error } = await window.supabaseClient
       .from('profiles')
-      .select('id, nombre');
+      .select('id, nombre, email');
     if (!error && data) {
-      data.forEach(p => { mapaPerfiles[p.id] = p.nombre; });
+      const selectTecnico = document.getElementById('filter-tecnico');
+      if (selectTecnico) {
+        selectTecnico.innerHTML = '<option value="">Todos los técnicos</option>';
+      }
+      data.forEach(p => {
+        mapaPerfiles[p.id] = p.nombre || p.email;
+        if (selectTecnico) {
+          const opt = document.createElement('option');
+          opt.value = p.id;
+          opt.textContent = p.nombre || p.email || p.id;
+          selectTecnico.appendChild(opt);
+        }
+      });
     }
   } catch (err) {
     console.error('Error cargando perfiles:', err);
@@ -178,11 +232,23 @@ function filtrarYRenderizar() {
   const query = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
   const dateStartVal = document.getElementById('filter-date-start')?.value || '';
   const dateEndVal = document.getElementById('filter-date-end')?.value || '';
+  const tecnicoVal = document.getElementById('filter-tecnico')?.value || '';
+  const statusVal = (document.getElementById('filter-status')?.value || '').toLowerCase();
   const tipo = filtroTipoActual;
 
   const filtrados = todosLosFormularios.filter(f => {
     if (tipo !== 'todos' && f._tipo !== tipo) return false;
 
+    // Filtro técnico
+    if (tecnicoVal && f.usuario_id !== tecnicoVal) return false;
+
+    // Filtro estado
+    if (statusVal) {
+      const fStatus = (f.estado || f.status || 'completado').toLowerCase();
+      if (fStatus !== statusVal) return false;
+    }
+
+    // Filtro rango de fecha
     if (dateStartVal) {
       const start = new Date(dateStartVal + 'T00:00:00');
       if (f._fechaObj < start) return false;
@@ -192,6 +258,7 @@ function filtrarYRenderizar() {
       if (f._fechaObj > end) return false;
     }
 
+    // Búsqueda por texto
     if (query) {
       const creadorNombre = (mapaPerfiles[f.usuario_id] || '').toLowerCase();
       const cliente = (f.cliente || '').toLowerCase();
@@ -237,7 +304,7 @@ function renderCards(formularios) {
     const card = document.createElement('div');
     card.className = 'history-card';
 
-    const fechaFmt = f._fechaObj.toLocaleDateString('es-DO', {
+    const fechaRelativa = window.timeAgo ? window.timeAgo(f.created_at || f._fechaObj) : f._fechaObj.toLocaleDateString('es-DO', {
       day: '2-digit', month: '2-digit', year: 'numeric',
       hour: '2-digit', minute: '2-digit', hour12: true
     });
@@ -268,7 +335,7 @@ function renderCards(formularios) {
         </div>
         <div class="card-meta-row">
           <div class="meta-item"><span>🏢</span><span>Cliente: <strong>${sCliente || 'Sin Cliente'}</strong></span></div>
-          <div class="meta-item"><span>📅</span><span>${fechaFmt}</span></div>
+          <div class="meta-item"><span>📅</span><span>${fechaRelativa}</span></div>
           ${creadorHTML}
         </div>
       </div>

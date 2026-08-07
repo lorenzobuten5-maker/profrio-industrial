@@ -3,6 +3,91 @@
  */
 
 let fotosArray = [];
+const DRAFT_KEY = 'pf_draft_intervencion';
+
+function guardarBorradorLocal() {
+  try {
+    const datos = recolectarDatos();
+    localStorage.setItem(DRAFT_KEY, JSON.stringify(datos));
+  } catch (_) {}
+}
+
+function restaurarBorradorLocal() {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return;
+    const data = JSON.parse(raw);
+    if (!data) return;
+
+    const mapeo = {
+      'inp-nombre': data.nombre,
+      'inp-jornada': data.jornada,
+      'inp-desplazamiento': data.num_desplazamiento,
+      'inp-intervinientes': data.num_intervinientes,
+      'inp-cliente': data.cliente,
+      'inp-direccion': data.direccion,
+      'inp-telefono': data.telefono,
+      'chk-tecnico': data.chk_tecnico,
+      'chk-jefe-obra': data.chk_jefe_obra,
+      'chk-jefe-equipo': data.chk_jefe_equipo,
+      'inp-horas-tecnico': data.horas_tecnico,
+      'inp-horas-jefe-obra': data.horas_jefe_obra,
+      'inp-horas-jefe-equipo': data.horas_jefe_equipo,
+      'chk-aires': data.chk_aires,
+      'chk-rack': data.chk_rack,
+      'inp-nivel-liquido': data.inp_nivel_liquido,
+      'inp-nivel-aceite': data.inp_nivel_aceite,
+      'chk-correccion-fuga': data.chk_correccion_fuga,
+      'chk-carga-refrigerante': data.chk_carga_refrigerante,
+      'chk-cambio-compresor': data.chk_cambio_compresor,
+      'chk-mant-aa': data.chk_mant_aa,
+      'chk-mant-nevera': data.chk_mant_nevera,
+      'chk-cambio-solenoide': data.chk_cambio_solenoide,
+      'chk-cambio-abanico': data.chk_cambio_abanico,
+      'inp-temp-congelado': data.temp_congelado,
+      'inp-temp-deli-queso': data.temp_deli_queso,
+      'inp-temp-deli-carne': data.temp_deli_carne,
+      'inp-temp-salami': data.temp_salami,
+      'inp-temp-yogurt': data.temp_yogurt,
+      'inp-temp-vegetales-nev': data.temp_vegetales,
+      'inp-temp-jugos': data.temp_jugos,
+      'inp-cf-vegetales': data.cf_vegetales,
+      'inp-cf-congelado': data.cf_congelado,
+      'inp-cf-carnes': data.cf_carnes,
+      'inp-cf-pescados': data.cf_pescados,
+      'inp-cf-preparacion': data.cf_preparacion,
+      'ta-observaciones': data.observaciones,
+      'ta-pedido-materiales': data.pedido_materiales,
+      'inp-firma-interviniente': data.firma_interviniente,
+      'inp-firma-cliente': data.firma_cliente
+    };
+
+    for (const [idEl, val] of Object.entries(mapeo)) {
+      const el = document.getElementById(idEl);
+      if (el) {
+        if (el.type === 'checkbox') el.checked = !!val;
+        else el.value = val || '';
+      }
+    }
+
+    if (data.fotos && Array.isArray(data.fotos)) {
+      fotosArray = data.fotos;
+      renderPhotos();
+    }
+
+    if (data.tipo_servicio === 'Electricidad' && document.getElementById('radio-electricidad')) document.getElementById('radio-electricidad').checked = true;
+    if (data.tipo_servicio === 'Frio Comercial' && document.getElementById('radio-frio-comercial')) document.getElementById('radio-frio-comercial').checked = true;
+    if (data.tipo_servicio === 'Frio Industrial' && document.getElementById('radio-frio-industrial')) document.getElementById('radio-frio-industrial').checked = true;
+
+    if (data.firma_interviniente) document.getElementById('canvas-firma-interviniente')?.loadSignature?.(data.firma_interviniente);
+    if (data.firma_cliente) document.getElementById('canvas-firma-cliente')?.loadSignature?.(data.firma_cliente);
+
+  } catch (_) {}
+}
+
+function limpiarBorradorLocal() {
+  try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
   if (window.guardRoute) await window.guardRoute(['empleado', 'jefe']);
@@ -15,6 +100,14 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize signature pads
   initSignaturePad('canvas-firma-interviniente', 'inp-firma-interviniente', 'btn-clear-interviniente');
   initSignaturePad('canvas-firma-cliente', 'inp-firma-cliente', 'btn-clear-cliente');
+
+  // Global Haptic Feedback listener for buttons and checkboxes
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('button, .btn, input[type="checkbox"], input[type="radio"]');
+    if (target && window.hapticFeedback) {
+      window.hapticFeedback([30]);
+    }
+  });
   
   const urlParams = new URLSearchParams(window.location.search);
   const formId = urlParams.get('id');
@@ -23,6 +116,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     await cargarFormularioExistente(formId);
   } else {
     await generarSiguienteNumero(profile.id);
+    restaurarBorradorLocal();
+
+    // Debounced auto-save listener on form edits
+    const debouncedSave = window.debounce ? window.debounce(guardarBorradorLocal, 500) : guardarBorradorLocal;
+    document.addEventListener('input', debouncedSave);
+    document.addEventListener('change', debouncedSave);
   }
   
   const btnGuardar = document.getElementById('btn-guardar');
@@ -243,6 +342,7 @@ async function guardarFormulario(usuarioId, formId) {
         .update(datos)
         .eq('id', formId);
       if (error) throw error;
+      limpiarBorradorLocal();
       if (statusEl) statusEl.textContent = 'Actualizado exitosamente.';
     } else {
       datos.numero = parseInt(document.getElementById('form-numero')?.dataset?.value || '1', 10);
@@ -250,6 +350,7 @@ async function guardarFormulario(usuarioId, formId) {
         .from('formularios_intervencion')
         .insert(datos);
       if (error) throw error;
+      limpiarBorradorLocal();
       if (statusEl) statusEl.textContent = 'Guardado exitosamente.';
     }
   } catch (err) {
@@ -407,6 +508,14 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     ctx.stroke();
   }
 
+  function saveSignatureValue() {
+    if (window.compressCanvas) {
+      input.value = window.compressCanvas(canvas, 0.72);
+    } else {
+      input.value = canvas.toDataURL('image/webp', 0.72);
+    }
+  }
+
   function draw(e) {
     if (!drawing) return;
     e.preventDefault(); // prevent touch scroll
@@ -416,11 +525,14 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     ctx.lineTo(newPos.x, newPos.y);
     ctx.stroke();
     lastPos = newPos;
-    input.value = canvas.toDataURL();
+    saveSignatureValue();
   }
 
   function stopDrawing() {
-    drawing = false;
+    if (drawing) {
+      drawing = false;
+      saveSignatureValue();
+    }
   }
 
   // Mouse
