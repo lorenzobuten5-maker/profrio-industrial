@@ -11,12 +11,13 @@
   <link rel="stylesheet" href="css/global.css?v=23">
   <link rel="stylesheet" href="css/dashboard.css?v=23">
   <style>
-    body { display: block; }
+    body { display: block; min-height: 100vh; }
 
     .perfil-page {
       min-height: 100vh;
       background: linear-gradient(160deg, var(--off-white) 0%, #EBF2FF 100%);
       padding: clamp(1rem, 4vw, 2.5rem);
+      padding-bottom: calc(clamp(1rem, 4vw, 2.5rem) + 88px + env(safe-area-inset-bottom, 0px));
     }
 
     /* ── Topbar ── */
