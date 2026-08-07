@@ -15,7 +15,6 @@
   <link rel="stylesheet" href="css/dashboard.css?v=25">
   <link rel="stylesheet" href="css/admin.css?v=25">
   <script src="js/utils.js?v=25"></script>
-  <script src="js/darkmode.js?v=25"></script>
   <style>
     html, body { overflow-x: hidden; max-width: 100vw; }
     .main-wrapper { overflow-x: hidden; }
@@ -25,25 +24,26 @@
 
   <!-- ══ DESKTOP SIDEBAR ══ -->
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <span>❄️</span> ProFrio Admin
-    </div>
+    <div class="sidebar-header"><span>❄️</span> ProFrio</div>
     <nav class="sidebar-nav">
-      <a href="dashboard-jefe.html" class="active">🛡️ Administración</a>
-      <a href="historial-formularios.html">📂 Historial General</a>
-      <a href="perfil.html">👤 Mi Perfil</a>
+      <a href="dashboard-jefe.html" class="active">🛡️ Admin</a>
+      <a href="formulario-intervencion.html">📋 Intervención</a>
+      <a href="formulario-materiales.html">📦 Materiales</a>
+      <a href="historial-formularios.html">📂 Historial</a>
+      <a href="perfil.html">👤 Perfil</a>
     </nav>
     <div class="sidebar-footer">
-      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:rgba(255,255,255,0.4);">Cerrar Sesión</button>
+      <button id="btn-logout" class="btn btn-outline w-full" style="color:white;border-color:rgba(255,255,255,0.4);">Cerrar Sesión</button>
     </div>
   </aside>
 
   <!-- ══ MAIN ══ -->
   <main class="main-wrapper">
+
+    <!-- Top Header -->
     <header class="top-header">
       <div class="page-title" style="margin:0;">🛡️ Administración</div>
       <div class="user-info">
-        <button class="dark-mode-toggle btn btn-sm btn-outline" style="padding:0.35rem 0.75rem;font-size:0.8rem;border-radius:20px;">🌙 <span class="toggle-text">Oscuro</span></button>
         <span id="header-user-name" class="user-name">Jefe ProFrio</span>
         <div class="user-avatar" id="btn-ir-perfil-admin" title="Mi Perfil">👑</div>
       </div>
