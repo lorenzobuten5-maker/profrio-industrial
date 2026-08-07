@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   admin.css — ProFrio Industrial Claymorphism v21
+   admin.css — ProFrio Industrial Cryo-Blue & White v22
    ═══════════════════════════════════════════════════════════ */
 
 /* ── Tabs — Clay Pill Container ── */
@@ -10,10 +10,10 @@
   overflow-x: auto;
   scrollbar-width: none;
   padding: 0.4rem;
-  background: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.6);
   border-radius: var(--radius-full);
   box-shadow:
-    inset 4px 4px 10px rgba(110,86,207,0.1),
+    inset 4px 4px 10px rgba(37,99,235,0.1),
     inset -4px -4px 10px rgba(255,255,255,0.85);
   width: fit-content;
   max-width: 100%;
@@ -35,16 +35,16 @@
   font-family: inherit; letter-spacing: 0.01em;
 }
 .tab-btn:hover {
-  color: var(--clay-purple-600);
+  color: var(--clay-blue-600);
   background: rgba(255,255,255,0.6);
 }
 .tab-btn.active {
   color: #fff;
-  background: linear-gradient(135deg, var(--clay-purple-700), var(--clay-purple-500));
+  background: linear-gradient(135deg, var(--clay-blue-800), var(--clay-blue-600));
   box-shadow:
-    4px 4px 12px rgba(79,46,174,0.35),
-    inset -3px -3px 6px rgba(55,25,130,0.4),
-    inset 3px 3px 6px rgba(255,255,255,0.2);
+    4px 4px 12px rgba(37,99,235,0.35),
+    inset -3px -3px 6px rgba(30,58,138,0.4),
+    inset 3px 3px 6px rgba(255,255,255,0.25);
 }
 
 /* ── Tab Panels ── */
@@ -70,7 +70,7 @@
   background: var(--clay-white);
 }
 .admin-table thead th {
-  background: linear-gradient(135deg, var(--clay-purple-900), var(--clay-purple-700));
+  background: linear-gradient(135deg, var(--clay-blue-900), var(--clay-blue-700));
   color: #fff;
   text-align: left;
   padding: 1rem 1.1rem;
@@ -85,13 +85,13 @@
 
 .admin-table tbody td {
   padding: 0.9rem 1.1rem;
-  border-bottom: 1.5px solid var(--clay-purple-100);
+  border-bottom: 1.5px solid var(--clay-blue-100);
   vertical-align: middle;
-  color: var(--clay-purple-900);
+  color: var(--clay-blue-900);
 }
 .admin-table tbody tr:last-child td { border-bottom: none; }
 .admin-table tbody tr { transition: background 0.15s; }
-.admin-table tbody tr:hover { background: var(--clay-purple-50); }
+.admin-table tbody tr:hover { background: var(--clay-blue-50); }
 
 /* ── Action Buttons in Table ── */
 .table-actions { display: flex; gap: 0.4rem; flex-wrap: nowrap; }
@@ -104,13 +104,13 @@
   transition: transform 0.18s, box-shadow 0.18s;
   flex-shrink: 0;
   box-shadow:
-    3px 3px 8px rgba(0,0,0,0.2),
+    3px 3px 8px rgba(0,0,0,0.18),
     inset -2px -2px 4px rgba(0,0,0,0.15),
     inset 2px 2px 4px rgba(255,255,255,0.2);
 }
-.btn-icon:hover { transform: scale(1.14) rotate(-4deg); box-shadow: 5px 6px 14px rgba(0,0,0,0.25), inset -2px -2px 4px rgba(0,0,0,0.15), inset 2px 2px 4px rgba(255,255,255,0.2); }
+.btn-icon:hover { transform: scale(1.14) rotate(-4deg); box-shadow: 5px 6px 14px rgba(0,0,0,0.25); }
 .btn-block  { background: linear-gradient(135deg, var(--clay-lemon-dark), var(--clay-lemon)); }
-.btn-ban    { background: linear-gradient(135deg, var(--clay-purple-800), var(--clay-purple-500)); }
+.btn-ban    { background: linear-gradient(135deg, var(--clay-blue-800), var(--clay-blue-500)); }
 .btn-delete { background: linear-gradient(135deg, var(--clay-rose-dark), var(--clay-rose)); }
 
 /* ── Online User List ── */
@@ -147,7 +147,7 @@
   margin: 0 0 0.1rem 0;
   font-size: 0.92rem;
   font-weight: 700;
-  color: var(--clay-purple-900);
+  color: var(--clay-blue-900);
 }
 .online-card .user-info p {
   margin: 0; font-size: 0.76rem; color: var(--gray-400);
@@ -173,7 +173,7 @@
   content: '';
   position: absolute; top: 0; left: 0; right: 0;
   height: 4px;
-  background: linear-gradient(90deg, var(--clay-purple-500), var(--clay-purple-300));
+  background: linear-gradient(90deg, var(--clay-blue-500), var(--clay-blue-300));
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 .forms-stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
@@ -183,7 +183,7 @@
 }
 .forms-stat-card .stat-value {
   font-size: 2.1rem; font-weight: 800;
-  color: var(--clay-purple-600); line-height: 1;
+  color: var(--clay-blue-600); line-height: 1;
   letter-spacing: -0.03em;
 }
 
@@ -196,9 +196,6 @@
   margin-top: 1.5rem; flex-wrap: wrap;
 }
 
-/* ══════════════════════════════════════
-   RESPONSIVE MOBILE
-   ══════════════════════════════════════ */
 @media (max-width: 767px) {
   .tabs-container { width: 100%; overflow-x: auto; }
   .online-list { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
@@ -207,7 +204,6 @@
   #forms-stats-container { grid-template-columns: 1fr 1fr; gap: 0.75rem; }
   .forms-stat-card { padding: 1rem; }
   .forms-stat-card .stat-value { font-size: 1.65rem; }
-  .admin-table-container { border-radius: var(--radius-lg); }
 }
 
 @media (max-width: 479px) {
