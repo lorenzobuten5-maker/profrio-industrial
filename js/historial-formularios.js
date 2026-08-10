@@ -258,20 +258,16 @@ function filtrarYRenderizar() {
       if (f._fechaObj > end) return false;
     }
 
-    // Búsqueda por texto
+    // Búsqueda por texto (Fuzzy Match tolerante a errores ortográficos)
     if (query) {
-      const creadorNombre = (mapaPerfiles[f.usuario_id] || '').toLowerCase();
-      const cliente = (f.cliente || '').toLowerCase();
+      const creadorNombre = (mapaPerfiles[f.usuario_id] || '');
+      const cliente = (f.cliente || '');
       const numString = String(f.numero || '');
-      const fechaString = f._fechaObj.toLocaleDateString('es-DO').toLowerCase();
+      const fechaString = f._fechaObj.toLocaleDateString('es-DO');
       const tipoStr = f._tipo === 'intervencion' ? 'intervención' : 'materiales';
 
-      const coincide =
-        cliente.includes(query) ||
-        numString.includes(query) ||
-        fechaString.includes(query) ||
-        tipoStr.includes(query) ||
-        creadorNombre.includes(query);
+      const textTarget = `${cliente} ${creadorNombre} ${numString} ${fechaString} ${tipoStr}`;
+      const coincide = window.fuzzyMatch ? window.fuzzyMatch(query, textTarget) : textTarget.toLowerCase().includes(query);
 
       if (!coincide) return false;
     }
