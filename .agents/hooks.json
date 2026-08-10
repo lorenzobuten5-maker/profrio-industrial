@@ -1,0 +1,16 @@
+{
+  "hooks": [
+    {
+      "name": "version-guard",
+      "event": "pre_tool_call",
+      "match": { "tool": "write_to_file", "path_pattern": ".*\\.html$" },
+      "command": "echo 'REMINDER: Use ?v=25 on all CSS/JS assets in HTML files'"
+    },
+    {
+      "name": "no-darkmode-guard",
+      "event": "pre_tool_call",
+      "match": { "tool": "write_to_file" },
+      "command": "echo 'REMINDER: No dark mode — always maintain Light Mode Claymorphism design'"
+    }
+  ]
+}

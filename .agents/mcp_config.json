@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "supabase": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--access-token",
+        "YOUR_SUPABASE_ACCESS_TOKEN_HERE"
+      ],
+      "description": "Supabase MCP Server — execute SQL queries, manage schema, run migrations, and inspect data directly from the Antigravity chat. Get your token at: https://supabase.com/dashboard/account/tokens"
+    }
+  }
+}

@@ -62,16 +62,16 @@
   --primary-50:  var(--clay-blue-50);
 
   /* Legacy color aliases */
-  --clay-purple-900: #0F172A;
-  --clay-purple-800: #1E3A8A;
-  --clay-purple-700: #1D4ED8;
-  --clay-purple-600: #2563EB;
-  --clay-purple-500: #3B82F6;
-  --clay-purple-400: #60A5FA;
-  --clay-purple-300: #93C5FD;
-  --clay-purple-200: #BFDBFE;
-  --clay-purple-100: #EFF6FF;
-  --clay-purple-50:  #F8FAFC;
+  --clay-purple-900: var(--clay-blue-900);
+  --clay-purple-800: var(--clay-blue-800);
+  --clay-purple-700: var(--clay-blue-700);
+  --clay-purple-600: var(--clay-blue-600);
+  --clay-purple-500: var(--clay-blue-500);
+  --clay-purple-400: var(--clay-blue-400);
+  --clay-purple-300: var(--clay-blue-300);
+  --clay-purple-200: var(--clay-blue-200);
+  --clay-purple-100: var(--clay-blue-100);
+  --clay-purple-50:  var(--clay-blue-50);
 
   --white:     var(--clay-white);
   --off-white: var(--clay-off-white);
@@ -296,7 +296,7 @@ h1,h2,h3,h4,h5,h6 {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, var(--clay-blue-800), var(--clay-blue-600));
+  background: var(--grad-primary);
   color: #fff;
   box-shadow: var(--clay-shadow-blue);
 }

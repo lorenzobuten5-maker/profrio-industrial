@@ -39,10 +39,10 @@
 
     <!-- Top Header -->
     <header class="top-header">
-      <div class="page-title" style="margin:0;">❄️ ProFrio</div>
+      <h1 class="page-title" style="margin:0;">❄️ ProFrio</h1>
       <div class="user-info">
         <span id="header-user-name" class="user-name">Cargando...</span>
-        <div class="user-avatar" id="btn-ir-perfil" title="Mi Perfil">👷</div>
+        <div class="user-avatar" id="btn-ir-perfil" title="Mi Perfil" role="button" aria-label="Ver mi perfil">👷</div>
       </div>
     </header>
 
@@ -199,7 +199,7 @@
               <span class="recent-badge ${isInt ? '' : 'mint'}">${isInt ? 'Intervención' : 'Materiales'}</span>
             </a>`;
           }).join('') +
-          `<a href="historial-formularios.html" class="recent-item" style="justify-content:center;color:var(--clay-purple-600);font-weight:700;font-size:0.84rem;">Ver todo el historial →</a>
+          `<a href="historial-formularios.html" class="recent-item" style="justify-content:center;color:var(--clay-blue-600);font-weight:700;font-size:0.84rem;">Ver todo el historial →</a>
           </div>`;
       } catch (err) {
         console.error('Error cargando dashboard:', err);
