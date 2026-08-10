@@ -194,6 +194,40 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ═══════════════════════════════════
+   TOAST NOTIFICATION SYSTEM
+   ═══════════════════════════════════ */
+function showToast(message, type = 'info', duration = 3200) {
+  let container = document.getElementById('toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'toast-container';
+    document.body.appendChild(container);
+  }
+
+  const icons = {
+    success: '✅',
+    error: '❌',
+    warning: '⚠️',
+    info: 'ℹ️'
+  };
+
+  const toast = document.createElement('div');
+  toast.className = `toast-item toast-${type}`;
+  toast.innerHTML = `<span style="font-size:1.1rem;line-height:1;">${icons[type] || 'ℹ️'}</span> <div style="flex:1;">${window.sanitizeHTML ? window.sanitizeHTML(message) : message}</div>`;
+
+  container.appendChild(toast);
+
+  if (window.hapticFeedback) {
+    window.hapticFeedback(type === 'error' ? [50, 50, 50] : [30]);
+  }
+
+  setTimeout(() => {
+    toast.style.animation = 'toastSlideOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards';
+    setTimeout(() => toast.remove(), 250);
+  }, duration);
+}
+
+/* ═══════════════════════════════════
    EXPORTS GLOBALES
    ═══════════════════════════════════ */
 window.debounce          = debounce;
@@ -206,3 +240,5 @@ window.navigateTo        = navigateTo;
 window.compressCanvas    = compressCanvas;
 window.initAutoLogout    = initAutoLogout;
 window.showSkeleton      = showSkeleton;
+window.showToast         = showToast;
+
