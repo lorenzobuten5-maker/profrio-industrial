@@ -2,8 +2,7 @@
  * Autenticación y gestión de usuarios
  */
 const ADMIN_SECRET_CODE = 'PROFRIO_ADMIN_2024';
-const MAX_EMPLEADOS = 8;
-const MAX_JEFES = 2;
+// Sin límite de cuentas — el acceso de jefe se controla con el código secreto
 
 async function initAuth() {
   const { data: { session } } = await window.supabaseClient.auth.getSession();
@@ -170,27 +169,7 @@ async function handleRegister(nombre, email, password, rol, adminCode) {
       throw new Error("Código de administrador inválido");
     }
     
-    // Safety limit check (catches RLS errors if anonymous selection is blocked)
-    let limitReached = false;
-    try {
-      const { count, error: countErr } = await window.supabaseClient
-        .from('profiles')
-        .select('*', { count: 'exact', head: true })
-        .eq('rol', rol);
-        
-      if (countErr) {
-        console.warn("RLS block reading profiles count, skipping local count verification.", countErr);
-      } else {
-        if (rol === 'jefe'    && count >= MAX_JEFES)     limitReached = true;
-        if (rol === 'empleado' && count >= MAX_EMPLEADOS) limitReached = true;
-      }
-    } catch (e) {
-      console.warn("Could not check role limits, proceeding with registration.", e);
-    }
-    
-    if (limitReached) {
-      throw new Error(`Límite de cuentas para el rol '${rol === 'jefe' ? 'Jefe' : 'Empleado'}' alcanzado.`);
-    }
+    // No hay límite de cuentas — cualquiera con el código correcto puede ser jefe
     
     const { data, error } = await window.supabaseClient.auth.signUp({
       email, password, options: { data: { nombre, rol } }
