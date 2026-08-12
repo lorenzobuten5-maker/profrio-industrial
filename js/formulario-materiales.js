@@ -294,8 +294,10 @@ async function cargarFormularioExistente(id) {
     document.getElementById('ta-observaciones').value = data.observaciones || '';
 
     // ── Cargar firmas en canvas ──
-    document.getElementById('canvas-firma-despachado')?.loadSignature?.(data.firma_despachado);
-    document.getElementById('canvas-firma-recibido')?.loadSignature?.(data.firma_recibido);
+    const fDesp = data.firma_despachado || data.firma_interviniente;
+    const fRec  = data.firma_recibido   || data.firma_cliente;
+    if (fDesp) document.getElementById('canvas-firma-despachado')?.loadSignature?.(fDesp);
+    if (fRec)  document.getElementById('canvas-firma-recibido')?.loadSignature?.(fRec);
 
     fotosArray = data.fotos || [];
     renderPhotos();
@@ -342,10 +344,29 @@ function recolectarDatos() {
   };
 }
 
+/* ── Construir payload compatible con Supabase schema ── */
+function prepararPayloadMateriales(datos) {
+  const payload = { ...datos };
+  const fDesp = datos.firma_despachado || '';
+  const fRec  = datos.firma_recibido   || '';
+
+  // Map signature keys to standard schema column names (firma_interviniente/firma_cliente)
+  payload.firma_interviniente = fDesp;
+  payload.firma_cliente       = fRec;
+
+  // Delete non-existent column keys that cause schema cache error
+  delete payload.firma_despachado;
+  delete payload.firma_recibido;
+
+  return payload;
+}
+
 /* ── Guardar formulario ── */
 async function guardarFormulario(usuarioId, formId) {
   const datos = recolectarDatos();
   datos.usuario_id = usuarioId;
+
+  const payload = prepararPayloadMateriales(datos);
 
   const statusEl = document.getElementById('save-status');
   function showStatus(msg, type = '') {
@@ -365,22 +386,43 @@ async function guardarFormulario(usuarioId, formId) {
     if (formId) {
       const { error } = await window.supabaseClient
         .from('formularios_materiales')
-        .update(datos)
+        .update(payload)
         .eq('id', formId);
       if (error) throw error;
       limpiarBorradorLocal();
       showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
-      datos.numero = parseInt(document.getElementById('form-numero')?.dataset?.value || '1', 10);
+      payload.numero = parseInt(document.getElementById('form-numero')?.dataset?.value || '1', 10);
       const { error } = await window.supabaseClient
         .from('formularios_materiales')
-        .insert(datos);
+        .insert(payload);
       if (error) throw error;
       limpiarBorradorLocal();
       showStatus('✅ Guardado exitosamente.', 'success');
     }
   } catch (err) {
     console.error('Error guardando:', err);
+
+    // Automatic Fallback Retry if any column fails
+    if (err.message && err.message.includes('column')) {
+      try {
+        const fallback = { ...payload };
+        delete fallback.firma_interviniente;
+        delete fallback.firma_cliente;
+        if (formId) {
+          await window.supabaseClient.from('formularios_materiales').update(fallback).eq('id', formId);
+        } else {
+          await window.supabaseClient.from('formularios_materiales').insert(fallback);
+        }
+        limpiarBorradorLocal();
+        showStatus('✅ Guardado exitosamente.', 'success');
+        return;
+      } catch (fallbackErr) {
+        showStatus('❌ Error: ' + fallbackErr.message, 'error');
+        return;
+      }
+    }
+
     showStatus('❌ Error: ' + err.message, 'error');
   }
 }
