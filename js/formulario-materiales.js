@@ -241,17 +241,17 @@ function recalcularTotal() {
 /* ── Generar número ── */
 async function generarSiguienteNumero(usuarioId) {
   try {
+    // Número global por empresa, no por técnico
     const { data, error } = await window.supabaseClient
       .from('formularios_materiales')
       .select('numero')
-      .eq('usuario_id', usuarioId)
       .order('numero', { ascending: false })
       .limit(1);
 
     if (error) throw error;
 
     let nextNum = 1;
-    if (data && data.length > 0) nextNum = data[0].numero + 1;
+    if (data && data.length > 0) nextNum = (data[0].numero || 0) + 1;
 
     const numeroEl = document.getElementById('form-numero');
     if (numeroEl) {

@@ -217,10 +217,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function generarSiguienteNumero(usuarioId) {
   try {
+    // Número global por empresa, no por técnico
     const { data, error } = await window.supabaseClient
       .from('formularios_intervencion')
       .select('numero')
-      .eq('usuario_id', usuarioId)
       .order('numero', { ascending: false })
       .limit(1);
       
@@ -228,7 +228,7 @@ async function generarSiguienteNumero(usuarioId) {
     
     let nextNum = 1;
     if (data && data.length > 0) {
-      nextNum = data[0].numero + 1;
+      nextNum = (data[0].numero || 0) + 1;
     }
     
     const numeroEl = document.getElementById('form-numero');

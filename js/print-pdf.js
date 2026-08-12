@@ -23,7 +23,7 @@ function pdfHeader(doc, numero) {
   doc.text('ProFrio Industrial E.I.R.L.', 10, 10);
   doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
-  doc.text('Santo Domingo, D.N.  |  profrio.industrial@gmail.com  |  RNC 1-31754431-2  |  Tel: 829-727-0103', 10, 17);
+  doc.text('Santo Domingo, D.N.  |  profrio.industrial@gmail.com  |  RNC 1-3175431-7  |  Tel: 829-727-0103', 10, 17);
 
   // Número de formulario (derecha)
   doc.setFontSize(9);
