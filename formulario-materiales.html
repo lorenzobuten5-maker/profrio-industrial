@@ -10,12 +10,12 @@
   <link rel="manifest" href="manifest.json">
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=27">
-  <link rel="stylesheet" href="css/formularios.css?v=27">
-  <script src="js/utils.js?v=27"></script>
-  <script src="js/offline-sync.js?v=27"></script>
-  <script src="js/biometric-auth.js?v=27"></script>
-  <script src="js/fuzzy-search.js?v=27"></script>
+  <link rel="stylesheet" href="css/global.css?v=29">
+  <link rel="stylesheet" href="css/formularios.css?v=29">
+  <script src="js/utils.js?v=29"></script>
+  <script src="js/offline-sync.js?v=29"></script>
+  <script src="js/biometric-auth.js?v=29"></script>
+  <script src="js/fuzzy-search.js?v=29"></script>
 </head>
 <body>
 
@@ -61,7 +61,19 @@
         </div>
       </div>
 
-      <h2 class="form-title">SOLICITUD DE MATERIALES Y SUMINISTROS DE ALMACÉN</h2>
+      <!-- ── Selector Tipo de Solicitud ── -->
+      <div class="tipo-selector-wrap" style="display:flex;justify-content:center;gap:10px;margin:12px 0 4px;flex-wrap:wrap;">
+        <label class="tipo-option" style="display:flex;align-items:center;gap:8px;cursor:pointer;border:2px solid var(--clay-blue-300);border-radius:10px;padding:8px 18px;font-weight:700;font-size:0.95rem;transition:all 0.2s;">
+          <input type="radio" name="tipo_solicitud" id="tipo-pedido" value="pedido" style="accent-color:var(--clay-blue-700);" checked>
+          🧾 Pedido de Materiales
+        </label>
+        <label class="tipo-option" style="display:flex;align-items:center;gap:8px;cursor:pointer;border:2px solid var(--clay-blue-300);border-radius:10px;padding:8px 18px;font-weight:700;font-size:0.95rem;transition:all 0.2s;">
+          <input type="radio" name="tipo_solicitud" id="tipo-suministro" value="suministro" style="accent-color:var(--clay-blue-700);">
+          📦 Suministro de Almacén
+        </label>
+      </div>
+
+      <h2 class="form-title" id="form-title-materiales">PEDIDO DE MATERIALES</h2>
 
       <div class="section-box">
         <div class="form-grid grid-2">
@@ -198,8 +210,8 @@
   <script src="js/auth.js?v=27"></script>
   <script src="js/nav-router.js?v=25"></script>
   <script src="js/online-status.js?v=25"></script>
-  <script src="js/formulario-materiales.js?v=28"></script>
-  <script src="js/print-pdf.js?v=28"></script>
+  <script src="js/formulario-materiales.js?v=29"></script>
+  <script src="js/print-pdf.js?v=29"></script>
   <script src="js/email.js?v=25"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });

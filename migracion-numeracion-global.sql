@@ -1,26 +1,50 @@
 -- ════════════════════════════════════════════════════════
--- ProFrio Industrial — Migración: Numeración Global de Formularios
--- Ejecutar en Supabase Dashboard → SQL Editor
+-- ProFrio Industrial — Migración v2: Numeración Global
+-- EJECUTAR EN SUPABASE → SQL Editor
 -- ════════════════════════════════════════════════════════
 
--- ── 1. formularios_intervencion: cambiar UNIQUE a solo número ──
+-- ══ PASO 1: Renumerar formularios_intervencion globalmente ══
+-- Asigna números consecutivos ordenados por fecha de creación
+WITH ranked AS (
+  SELECT id, ROW_NUMBER() OVER (ORDER BY created_at ASC) AS new_numero
+  FROM formularios_intervencion
+)
+UPDATE formularios_intervencion fi
+SET numero = r.new_numero
+FROM ranked r
+WHERE fi.id = r.id;
+
+-- ══ PASO 2: Eliminar constraint antiguo (por usuario+numero) ══
 ALTER TABLE formularios_intervencion
   DROP CONSTRAINT IF EXISTS formularios_intervencion_usuario_id_numero_key;
 
+-- ══ PASO 3: Agregar constraint global (solo por numero) ══
 ALTER TABLE formularios_intervencion
   ADD CONSTRAINT formularios_intervencion_numero_key UNIQUE (numero);
 
--- ── 2. formularios_materiales: cambiar UNIQUE a solo número ──
+-- ══ PASO 4: Renumerar formularios_materiales globalmente ══
+WITH ranked2 AS (
+  SELECT id, ROW_NUMBER() OVER (ORDER BY created_at ASC) AS new_numero
+  FROM formularios_materiales
+)
+UPDATE formularios_materiales fm
+SET numero = r.new_numero
+FROM ranked2 r
+WHERE fm.id = r.id;
+
+-- ══ PASO 5: Eliminar constraint antiguo de materiales ══
 ALTER TABLE formularios_materiales
   DROP CONSTRAINT IF EXISTS formularios_materiales_usuario_id_numero_key;
 
+-- ══ PASO 6: Agregar constraint global de materiales ══
 ALTER TABLE formularios_materiales
   ADD CONSTRAINT formularios_materiales_numero_key UNIQUE (numero);
 
--- ── 3. Agregar columnas de firma si no existen ──
+-- ══ PASO 7: Agregar columnas de firma y tipo de solicitud ══
 ALTER TABLE formularios_materiales
   ADD COLUMN IF NOT EXISTS firma_interviniente TEXT,
-  ADD COLUMN IF NOT EXISTS firma_cliente TEXT;
+  ADD COLUMN IF NOT EXISTS firma_cliente TEXT,
+  ADD COLUMN IF NOT EXISTS tipo_solicitud TEXT DEFAULT 'pedido';
 
--- Verificar resultado
+-- Verificar
 SELECT 'Migración aplicada exitosamente ✅' AS resultado;

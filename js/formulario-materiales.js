@@ -27,6 +27,13 @@ function restaurarBorradorLocal() {
     if (data.direccion) document.getElementById('inp-direccion').value = data.direccion;
     if (data.telefono) document.getElementById('inp-telefono').value = data.telefono;
     if (data.despachado_por) document.getElementById('inp-despachado').value = data.despachado_por;
+    if (data.tipo_solicitud) {
+      const rad = document.querySelector(`input[name="tipo_solicitud"][value="${data.tipo_solicitud}"]`);
+      if (rad) {
+        rad.checked = true;
+        rad.dispatchEvent(new Event('change'));
+      }
+    }
     if (data.recibido_conforme) document.getElementById('inp-recibido').value = data.recibido_conforme;
     if (data.observaciones) document.getElementById('ta-observaciones').value = data.observaciones;
 
@@ -90,7 +97,27 @@ document.addEventListener('DOMContentLoaded', async () => {
   const profile = await window.getCurrentProfile?.();
   if (!profile) return;
 
-  initPhotos();
+  // Initialize signature pads
+  initSignaturePad('canvas-firma-despachado', 'inp-firma-despachado', 'btn-clear-despachado');
+  initSignaturePad('canvas-firma-recibido',   'inp-firma-recibido',   'btn-clear-recibido');
+
+  // Tipo selector title updater
+  function actualizarTituloPorTipo() {
+    const tipoVal = document.querySelector('input[name="tipo_solicitud"]:checked')?.value;
+    const titleEl = document.getElementById('form-title-materiales');
+    if (titleEl) {
+      if (tipoVal === 'suministro') {
+        titleEl.textContent = 'SOLICITUD DE SUMINISTROS DE ALMACÉN';
+      } else {
+        titleEl.textContent = 'PEDIDO DE MATERIALES';
+      }
+    }
+  }
+
+  document.querySelectorAll('input[name="tipo_solicitud"]').forEach(radio => {
+    radio.addEventListener('change', actualizarTituloPorTipo);
+  });
+  actualizarTituloPorTipo();
 
   // Global Haptic Feedback listener for buttons and inputs
   document.addEventListener('click', (e) => {
@@ -281,6 +308,13 @@ async function cargarFormularioExistente(id) {
       numeroEl.dataset.value = data.numero;
     }
 
+    const tipoVal = data.tipo_solicitud || 'pedido';
+    const rad = document.querySelector(`input[name="tipo_solicitud"][value="${tipoVal}"]`);
+    if (rad) {
+      rad.checked = true;
+      rad.dispatchEvent(new Event('change'));
+    }
+
     document.getElementById('inp-fecha-dia').value   = data.fecha_dia   || '';
     document.getElementById('inp-fecha-mes').value   = data.fecha_mes   || '';
     document.getElementById('inp-fecha-anio').value  = data.fecha_anio  || '';
@@ -326,7 +360,10 @@ function recolectarDatos() {
     });
   });
 
+  const tipo_solicitud = document.querySelector('input[name="tipo_solicitud"]:checked')?.value || 'pedido';
+
   return {
+    tipo_solicitud,
     fecha_dia:          parseInt(document.getElementById('inp-fecha-dia')?.value)  || null,
     fecha_mes:          parseInt(document.getElementById('inp-fecha-mes')?.value)  || null,
     fecha_anio:         parseInt(document.getElementById('inp-fecha-anio')?.value) || null,
