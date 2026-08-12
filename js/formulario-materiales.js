@@ -47,11 +47,41 @@ function restaurarBorradorLocal() {
     if (data.firma_despachado) document.getElementById('canvas-firma-despachado')?.loadSignature?.(data.firma_despachado);
     if (data.firma_recibido) document.getElementById('canvas-firma-recibido')?.loadSignature?.(data.firma_recibido);
 
+    if (window.showToast) {
+      window.showToast('📋 Se cargó tu borrador anterior. Usa "Nuevo en Blanco" para limpiar.', 'warning', 4500);
+    }
   } catch (_) {}
 }
 
 function limpiarBorradorLocal() {
   try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+}
+
+function limpiarFormularioCompleto(usuarioId) {
+  limpiarBorradorLocal();
+
+  ['inp-cliente', 'inp-direccion', 'inp-telefono', 'inp-despachado', 'inp-recibido', 'ta-observaciones', 'inp-firma-despachado', 'inp-firma-recibido'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  document.getElementById('btn-clear-despachado')?.click();
+  document.getElementById('btn-clear-recibido')?.click();
+
+  fotosArray = [];
+  renderPhotos();
+
+  const tbody = document.getElementById('items-tbody');
+  if (tbody) tbody.innerHTML = '';
+  agregarFila();
+  agregarFila();
+  agregarFila();
+
+  recalcularTotal();
+  autoFillFecha();
+  if (usuarioId) generarSiguienteNumero(usuarioId);
+
+  if (window.showToast) window.showToast('✨ Formulario en blanco listo', 'info');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -81,9 +111,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     await cargarFormularioExistente(formId);
   } else {
     await generarSiguienteNumero(profile.id);
-    // Auto-fill fecha actual
     autoFillFecha();
-    // Inicializar con 3 filas dinámicas vacías
+
     const tbody = document.getElementById('items-tbody');
     if (tbody) tbody.innerHTML = '';
     agregarFila();
@@ -92,11 +121,13 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     restaurarBorradorLocal();
 
-    // Auto-save debounced listener for draft
     const debouncedSave = window.debounce ? window.debounce(guardarBorradorLocal, 500) : guardarBorradorLocal;
     document.addEventListener('input', debouncedSave);
     document.addEventListener('change', debouncedSave);
   }
+
+  const btnNuevo = document.getElementById('btn-nuevo');
+  if (btnNuevo) btnNuevo.addEventListener('click', () => limpiarFormularioCompleto(profile.id));
 
   const btnAdd = document.getElementById('btn-add-item');
   if (btnAdd) btnAdd.addEventListener('click', agregarFila);
@@ -137,7 +168,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Close modal on backdrop click
   const emailModal = document.getElementById('email-modal');
   if (emailModal) {
     emailModal.addEventListener('click', (e) => {
@@ -319,10 +349,14 @@ async function guardarFormulario(usuarioId, formId) {
 
   const statusEl = document.getElementById('save-status');
   function showStatus(msg, type = '') {
-    if (!statusEl) return;
-    statusEl.textContent = msg;
-    statusEl.className = 'visible ' + type;
-    setTimeout(() => { statusEl.className = ''; }, 3500);
+    if (statusEl) {
+      statusEl.textContent = msg;
+      statusEl.className = 'visible ' + type;
+      setTimeout(() => { statusEl.className = ''; }, 3500);
+    }
+    if (window.showToast) {
+      window.showToast(msg, type === 'success' ? 'success' : (type === 'error' ? 'error' : 'info'));
+    }
   }
 
   showStatus('Guardando...');
@@ -370,13 +404,27 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   let lastPos = { x: 0, y: 0 };
 
   function getPos(e) {
-    const rect    = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const rect = canvas.getBoundingClientRect();
+    const w = (rect.width && rect.width > 0) ? rect.width : (canvas.offsetWidth || 300);
+    const h = (rect.height && rect.height > 0) ? rect.height : (canvas.offsetHeight || 125);
+    const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+    const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
     return {
-      x: ((clientX - rect.left) / rect.width)  * canvas.width,
-      y: ((clientY - rect.top)  / rect.height) * canvas.height
+      x: Math.max(0, Math.min(canvas.width,  ((clientX - rect.left) / w) * canvas.width)),
+      y: Math.max(0, Math.min(canvas.height, ((clientY - rect.top)  / h) * canvas.height))
     };
+  }
+
+  function saveSignatureValue() {
+    if (window.compressCanvas) {
+      input.value = window.compressCanvas(canvas, 0.72);
+    } else {
+      try {
+        input.value = canvas.toDataURL('image/png');
+      } catch (_) {
+        input.value = '';
+      }
+    }
   }
 
   function startDrawing(e) {
@@ -387,26 +435,18 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(lastPos.x, lastPos.y);
     ctx.stroke();
-  }
-
-  function saveSignatureValue() {
-    if (window.compressCanvas) {
-      input.value = window.compressCanvas(canvas, 0.72);
-    } else {
-      input.value = canvas.toDataURL('image/webp', 0.72);
-    }
+    saveSignatureValue();
   }
 
   function draw(e) {
     if (!drawing) return;
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     const newPos = getPos(e);
     ctx.beginPath();
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(newPos.x, newPos.y);
     ctx.stroke();
     lastPos = newPos;
-    saveSignatureValue();
   }
 
   function stopDrawing() {
@@ -420,9 +460,11 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   canvas.addEventListener('mousemove',  draw);
   canvas.addEventListener('mouseup',    stopDrawing);
   canvas.addEventListener('mouseleave', stopDrawing);
+
   canvas.addEventListener('touchstart', startDrawing, { passive: false });
   canvas.addEventListener('touchmove',  draw,         { passive: false });
-  canvas.addEventListener('touchend',   stopDrawing);
+  canvas.addEventListener('touchend',   stopDrawing,  { passive: true });
+  canvas.addEventListener('touchcancel',stopDrawing,  { passive: true });
 
   clearBtn?.addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);

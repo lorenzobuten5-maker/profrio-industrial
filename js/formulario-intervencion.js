@@ -82,11 +82,59 @@ function restaurarBorradorLocal() {
     if (data.firma_interviniente) document.getElementById('canvas-firma-interviniente')?.loadSignature?.(data.firma_interviniente);
     if (data.firma_cliente) document.getElementById('canvas-firma-cliente')?.loadSignature?.(data.firma_cliente);
 
+    if (window.showToast) {
+      window.showToast('📋 Se cargó tu borrador anterior. Usa "Nuevo en Blanco" para limpiar.', 'warning', 4500);
+    }
   } catch (_) {}
 }
 
 function limpiarBorradorLocal() {
   try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+}
+
+function limpiarFormularioCompleto(usuarioId) {
+  limpiarBorradorLocal();
+
+  const idsToClear = [
+    'inp-nombre', 'inp-jornada', 'inp-desplazamiento', 'inp-intervinientes',
+    'inp-cliente', 'inp-direccion', 'inp-telefono', 'inp-horas-tecnico',
+    'inp-horas-jefe-obra', 'inp-horas-jefe-equipo', 'inp-nivel-liquido',
+    'inp-nivel-aceite', 'inp-temp-congelado', 'inp-temp-deli-queso',
+    'inp-temp-deli-carne', 'inp-temp-salami', 'inp-temp-yogurt',
+    'inp-temp-vegetales-nev', 'inp-temp-jugos', 'inp-cf-vegetales',
+    'inp-cf-congelado', 'inp-cf-carnes', 'inp-cf-pescados', 'inp-cf-preparacion',
+    'ta-observaciones', 'ta-pedido-materiales', 'inp-firma-interviniente', 'inp-firma-cliente'
+  ];
+
+  idsToClear.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  const chkIds = [
+    'chk-tecnico', 'chk-jefe-obra', 'chk-jefe-equipo', 'chk-aires', 'chk-rack',
+    'chk-correccion-fuga', 'chk-carga-refrigerante', 'chk-cambio-compresor',
+    'chk-mant-aa', 'chk-mant-nevera', 'chk-cambio-solenoide', 'chk-cambio-abanico'
+  ];
+  chkIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+
+  ['radio-electricidad', 'radio-frio-comercial', 'radio-frio-industrial'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+
+  document.getElementById('btn-clear-interviniente')?.click();
+  document.getElementById('btn-clear-cliente')?.click();
+
+  fotosArray = [];
+  renderPhotos();
+
+  if (usuarioId) generarSiguienteNumero(usuarioId);
+
+  if (window.showToast) window.showToast('✨ Formulario de Intervención limpio', 'info');
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -123,6 +171,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('input', debouncedSave);
     document.addEventListener('change', debouncedSave);
   }
+
+  const btnNuevo = document.getElementById('btn-nuevo');
+  if (btnNuevo) btnNuevo.addEventListener('click', () => limpiarFormularioCompleto(profile.id));
   
   const btnGuardar = document.getElementById('btn-guardar');
   if (btnGuardar) {
@@ -333,8 +384,20 @@ async function guardarFormulario(usuarioId, formId) {
   const datos = recolectarDatos();
   datos.usuario_id = usuarioId;
   const statusEl = document.getElementById('save-status');
-  if (statusEl) statusEl.textContent = 'Guardando...';
-  
+
+  function showStatus(msg, type = '') {
+    if (statusEl) {
+      statusEl.textContent = msg;
+      statusEl.className = 'visible ' + type;
+      setTimeout(() => { statusEl.className = ''; }, 3500);
+    }
+    if (window.showToast) {
+      window.showToast(msg, type === 'success' ? 'success' : (type === 'error' ? 'error' : 'info'));
+    }
+  }
+
+  showStatus('Guardando...');
+
   try {
     if (formId) {
       const { error } = await window.supabaseClient
@@ -343,7 +406,7 @@ async function guardarFormulario(usuarioId, formId) {
         .eq('id', formId);
       if (error) throw error;
       limpiarBorradorLocal();
-      if (statusEl) statusEl.textContent = 'Actualizado exitosamente.';
+      showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
       datos.numero = parseInt(document.getElementById('form-numero')?.dataset?.value || '1', 10);
       const { error } = await window.supabaseClient
@@ -351,11 +414,11 @@ async function guardarFormulario(usuarioId, formId) {
         .insert(datos);
       if (error) throw error;
       limpiarBorradorLocal();
-      if (statusEl) statusEl.textContent = 'Guardado exitosamente.';
+      showStatus('✅ Guardado exitosamente.', 'success');
     }
   } catch (err) {
     console.error('Error guardando:', err);
-    if (statusEl) statusEl.textContent = 'Error: ' + err.message;
+    showStatus('❌ Error: ' + err.message, 'error');
   }
 }
 
@@ -365,7 +428,6 @@ function initPhotos() {
   const inpCamera = document.getElementById('inp-camera');
   const inpUpload = document.getElementById('inp-upload');
   const lightbox = document.getElementById('lightbox-modal');
-  const lightboxImg = document.getElementById('lightbox-img');
   const lightboxClose = document.getElementById('lightbox-close');
 
   if (btnCamera && inpCamera) {
@@ -400,7 +462,7 @@ function initPhotos() {
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const max_size = 800; // max size in px
+          const max_size = 800;
           
           if (width > height) {
             if (width > max_size) {
@@ -480,7 +542,7 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   if (!canvas || !input) return;
 
   const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = '#0C2340'; // Matches primary dark
+  ctx.strokeStyle = '#0C2340';
   ctx.lineWidth = 2.5;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -490,12 +552,26 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
 
   function getPos(e) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const w = (rect.width && rect.width > 0) ? rect.width : (canvas.offsetWidth || 300);
+    const h = (rect.height && rect.height > 0) ? rect.height : (canvas.offsetHeight || 125);
+    const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+    const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
     return {
-      x: ((clientX - rect.left) / rect.width) * canvas.width,
-      y: ((clientY - rect.top) / rect.height) * canvas.height
+      x: Math.max(0, Math.min(canvas.width,  ((clientX - rect.left) / w) * canvas.width)),
+      y: Math.max(0, Math.min(canvas.height, ((clientY - rect.top)  / h) * canvas.height))
     };
+  }
+
+  function saveSignatureValue() {
+    if (window.compressCanvas) {
+      input.value = window.compressCanvas(canvas, 0.72);
+    } else {
+      try {
+        input.value = canvas.toDataURL('image/png');
+      } catch (_) {
+        input.value = '';
+      }
+    }
   }
 
   function startDrawing(e) {
@@ -506,26 +582,18 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(lastPos.x, lastPos.y);
     ctx.stroke();
-  }
-
-  function saveSignatureValue() {
-    if (window.compressCanvas) {
-      input.value = window.compressCanvas(canvas, 0.72);
-    } else {
-      input.value = canvas.toDataURL('image/webp', 0.72);
-    }
+    saveSignatureValue();
   }
 
   function draw(e) {
     if (!drawing) return;
-    e.preventDefault(); // prevent touch scroll
+    if (e.cancelable) e.preventDefault();
     const newPos = getPos(e);
     ctx.beginPath();
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(newPos.x, newPos.y);
     ctx.stroke();
     lastPos = newPos;
-    saveSignatureValue();
   }
 
   function stopDrawing() {
@@ -544,7 +612,8 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   // Touch
   canvas.addEventListener('touchstart', startDrawing, { passive: false });
   canvas.addEventListener('touchmove', draw, { passive: false });
-  canvas.addEventListener('touchend', stopDrawing);
+  canvas.addEventListener('touchend', stopDrawing, { passive: true });
+  canvas.addEventListener('touchcancel', stopDrawing, { passive: true });
 
   // Clear
   clearBtn?.addEventListener('click', () => {

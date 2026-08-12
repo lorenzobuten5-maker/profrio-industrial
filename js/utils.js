@@ -128,10 +128,35 @@ function initPageTransitions() {
 }
 
 /* ═══════════════════════════════════
-   COMPRESIÓN DE CANVAS (WebP)
+   COMPRESIÓN DE CANVAS (WebP + PNG Fallback)
    ═══════════════════════════════════ */
 function compressCanvas(canvas, quality = 0.72) {
-  return canvas.toDataURL('image/webp', quality);
+  if (!canvas) return '';
+  try {
+    const ctx = canvas.getContext('2d');
+    const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    let hasPixels = false;
+    // Check alpha channel for non-transparent pixels
+    for (let i = 3; i < imgData.data.length; i += 4) {
+      if (imgData.data[i] > 10) {
+        hasPixels = true;
+        break;
+      }
+    }
+    if (!hasPixels) return '';
+
+    const webp = canvas.toDataURL('image/webp', quality);
+    if (webp && webp.startsWith('data:image/webp') && webp.length > 50) {
+      return webp;
+    }
+  } catch (_) {}
+
+  try {
+    const png = canvas.toDataURL('image/png');
+    return (png && png.length > 50) ? png : '';
+  } catch (_) {
+    return '';
+  }
 }
 
 /* ═══════════════════════════════════
