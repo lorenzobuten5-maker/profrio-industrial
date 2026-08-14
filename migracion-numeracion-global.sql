@@ -46,5 +46,18 @@ ALTER TABLE formularios_materiales
   ADD COLUMN IF NOT EXISTS firma_cliente TEXT,
   ADD COLUMN IF NOT EXISTS tipo_solicitud TEXT DEFAULT 'pedido';
 
+-- ══ PASO 8: Permitir lectura (SELECT) a todos los empleados para numeración global ══
+DROP POLICY IF EXISTS "fi_select_authenticated" ON formularios_intervencion;
+CREATE POLICY "fi_select_authenticated"
+  ON formularios_intervencion FOR SELECT
+  TO authenticated
+  USING (true);
+
+DROP POLICY IF EXISTS "fm_select_authenticated" ON formularios_materiales;
+CREATE POLICY "fm_select_authenticated"
+  ON formularios_materiales FOR SELECT
+  TO authenticated
+  USING (true);
+
 -- Verificar
 SELECT 'Migración aplicada exitosamente ✅' AS resultado;

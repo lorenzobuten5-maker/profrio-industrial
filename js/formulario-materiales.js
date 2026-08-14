@@ -65,7 +65,66 @@ function limpiarBorradorLocal() {
   try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
 }
 
+let lastMaterialesBackup = null;
+
+function restaurarBackupMateriales() {
+  if (!lastMaterialesBackup) return;
+  const { datos, formId, fotos } = lastMaterialesBackup;
+
+  currentFormId = formId;
+  if (formId && window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname + '?id=' + formId);
+  }
+
+  if (datos.fecha_dia) document.getElementById('inp-fecha-dia').value = datos.fecha_dia;
+  if (datos.fecha_mes) document.getElementById('inp-fecha-mes').value = datos.fecha_mes;
+  if (datos.fecha_anio) document.getElementById('inp-fecha-anio').value = datos.fecha_anio;
+  if (datos.cliente) document.getElementById('inp-cliente').value = datos.cliente;
+  if (datos.direccion) document.getElementById('inp-direccion').value = datos.direccion;
+  if (datos.telefono) document.getElementById('inp-telefono').value = datos.telefono;
+  if (datos.despachado_por) document.getElementById('inp-despachado').value = datos.despachado_por;
+  if (datos.tipo_solicitud) {
+    const rad = document.querySelector(`input[name="tipo_solicitud"][value="${datos.tipo_solicitud}"]`);
+    if (rad) {
+      rad.checked = true;
+      rad.dispatchEvent(new Event('change'));
+    }
+  }
+  if (datos.recibido_conforme) document.getElementById('inp-recibido').value = datos.recibido_conforme;
+  if (datos.observaciones) document.getElementById('ta-observaciones').value = datos.observaciones;
+
+  if (datos.items) {
+    const items = typeof datos.items === 'string' ? JSON.parse(datos.items) : datos.items;
+    const tbody = document.getElementById('items-tbody');
+    if (tbody && Array.isArray(items) && items.length > 0) {
+      tbody.innerHTML = '';
+      items.forEach(item => agregarFila(item));
+    }
+  }
+
+  fotosArray = fotos || [];
+  renderPhotos();
+
+  if (datos.firma_despachado) document.getElementById('canvas-firma-despachado')?.loadSignature?.(datos.firma_despachado);
+  if (datos.firma_recibido) document.getElementById('canvas-firma-recibido')?.loadSignature?.(datos.firma_recibido);
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.style.display = 'none';
+
+  if (window.showToast) window.showToast('↩️ Formulario restaurado exitosamente', 'success');
+}
+
 function limpiarFormularioCompleto(usuarioId) {
+  // Backup before clear so user can undo
+  lastMaterialesBackup = {
+    datos: recolectarDatos(),
+    formId: currentFormId,
+    fotos: [...fotosArray]
+  };
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.style.display = 'inline-flex';
+
   currentFormId = null;
   if (window.history && window.history.replaceState) {
     window.history.replaceState({}, '', window.location.pathname);
@@ -99,7 +158,7 @@ function limpiarFormularioCompleto(usuarioId) {
   autoFillFecha();
   if (usuarioId) generarSiguienteNumero(usuarioId);
 
-  if (window.showToast) window.showToast('✨ Formulario en blanco listo', 'info');
+  if (window.showToast) window.showToast('🧹 Formulario limpio. ¿Fue un error? Presiona ↩️ Deshacer Limpieza', 'warning', 6000);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -164,6 +223,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const btnNuevo = document.getElementById('btn-nuevo');
   if (btnNuevo) btnNuevo.addEventListener('click', () => limpiarFormularioCompleto(profile.id));
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.addEventListener('click', restaurarBackupMateriales);
 
   const btnAdd = document.getElementById('btn-add-item');
   if (btnAdd) btnAdd.addEventListener('click', agregarFila);

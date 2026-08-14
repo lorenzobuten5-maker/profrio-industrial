@@ -87,11 +87,97 @@ function restaurarBorradorLocal() {
   } catch (_) {}
 }
 
+let lastIntervencionBackup = null;
+
+function restaurarBackupIntervencion() {
+  if (!lastIntervencionBackup) return;
+  const { datos, formId, fotos } = lastIntervencionBackup;
+
+  currentFormId = formId;
+  if (formId && window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname + '?id=' + formId);
+  }
+
+  const mapeo = {
+    'inp-nombre': datos.nombre,
+    'inp-jornada': datos.jornada,
+    'inp-desplazamiento': datos.num_desplazamiento,
+    'inp-intervinientes': datos.num_intervinientes,
+    'inp-cliente': datos.cliente,
+    'inp-direccion': datos.direccion,
+    'inp-telefono': datos.telefono,
+    'chk-tecnico': datos.chk_tecnico,
+    'chk-jefe-obra': datos.chk_jefe_obra,
+    'chk-jefe-equipo': datos.chk_jefe_equipo,
+    'inp-horas-tecnico': datos.horas_tecnico,
+    'inp-horas-jefe-obra': datos.horas_jefe_obra,
+    'inp-horas-jefe-equipo': datos.horas_jefe_equipo,
+    'chk-aires': datos.chk_aires,
+    'chk-rack': datos.chk_rack,
+    'inp-nivel-liquido': datos.inp_nivel_liquido,
+    'inp-nivel-aceite': datos.inp_nivel_aceite,
+    'chk-correccion-fuga': datos.chk_correccion_fuga,
+    'chk-carga-refrigerante': datos.chk_carga_refrigerante,
+    'chk-cambio-compresor': datos.chk_cambio_compresor,
+    'chk-mant-aa': datos.chk_mant_aa,
+    'chk-mant-nevera': datos.chk_mant_nevera,
+    'chk-cambio-solenoide': datos.chk_cambio_solenoide,
+    'chk-cambio-abanico': datos.chk_cambio_abanico,
+    'inp-temp-congelado': datos.temp_congelado,
+    'inp-temp-deli-queso': datos.temp_deli_queso,
+    'inp-temp-deli-carne': datos.temp_deli_carne,
+    'inp-temp-salami': datos.temp_salami,
+    'inp-temp-yogurt': datos.temp_yogurt,
+    'inp-temp-vegetales-nev': data => data.temp_vegetales,
+    'inp-temp-jugos': datos.temp_jugos,
+    'inp-cf-vegetales': datos.cf_vegetales,
+    'inp-cf-congelado': datos.cf_congelado,
+    'inp-cf-carnes': datos.cf_carnes,
+    'inp-cf-pescados': datos.cf_pescados,
+    'inp-cf-preparacion': datos.cf_preparacion,
+    'ta-observaciones': datos.observaciones,
+    'ta-pedido-materiales': datos.pedido_materiales
+  };
+
+  Object.entries(mapeo).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!val;
+    else if (val !== undefined && val !== null) el.value = val;
+  });
+
+  if (datos.tipo_servicio) {
+    const rad = document.querySelector(`input[name="tipo_servicio"][value="${datos.tipo_servicio}"]`);
+    if (rad) rad.checked = true;
+  }
+
+  fotosArray = fotos || [];
+  renderPhotos();
+
+  if (datos.firma_interviniente) document.getElementById('canvas-firma-interviniente')?.loadSignature?.(datos.firma_interviniente);
+  if (datos.firma_cliente) document.getElementById('canvas-firma-cliente')?.loadSignature?.(datos.firma_cliente);
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.style.display = 'none';
+
+  if (window.showToast) window.showToast('↩️ Formulario restaurado exitosamente', 'success');
+}
+
 function limpiarBorradorLocal() {
   try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
 }
 
 function limpiarFormularioCompleto(usuarioId) {
+  // Backup before clear so user can undo
+  lastIntervencionBackup = {
+    datos: recolectarDatos(),
+    formId: currentFormId,
+    fotos: [...fotosArray]
+  };
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.style.display = 'inline-flex';
+
   currentFormId = null;
   if (window.history && window.history.replaceState) {
     window.history.replaceState({}, '', window.location.pathname);
@@ -134,7 +220,7 @@ function limpiarFormularioCompleto(usuarioId) {
 
   if (usuarioId) generarSiguienteNumero(usuarioId);
 
-  if (window.showToast) window.showToast('✨ Formulario de Intervención limpio', 'info');
+  if (window.showToast) window.showToast('🧹 Formulario limpio. ¿Fue un error? Presiona ↩️ Deshacer Limpieza', 'warning', 6000);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -174,6 +260,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const btnNuevo = document.getElementById('btn-nuevo');
   if (btnNuevo) btnNuevo.addEventListener('click', () => limpiarFormularioCompleto(profile.id));
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.addEventListener('click', restaurarBackupIntervencion);
   
   const btnGuardar = document.getElementById('btn-guardar');
   if (btnGuardar) {
