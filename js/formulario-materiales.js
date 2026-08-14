@@ -398,6 +398,53 @@ function prepararPayloadMateriales(datos) {
   return payload;
 }
 
+async function obtenerSiguienteNumeroMateriales() {
+  try {
+    const { data } = await window.supabaseClient
+      .from('formularios_materiales')
+      .select('numero')
+      .order('numero', { ascending: false })
+      .limit(1);
+    return (data && data.length > 0 && data[0].numero) ? data[0].numero + 1 : 1;
+  } catch (_) {
+    return 1;
+  }
+}
+
+async function insertarMaterialesConRetry(payload, maxIntentos = 5) {
+  let intento = 0;
+  while (intento < maxIntentos) {
+    intento++;
+    const nextNum = await obtenerSiguienteNumeroMateriales();
+    payload.numero = nextNum;
+
+    const { error } = await window.supabaseClient
+      .from('formularios_materiales')
+      .insert(payload);
+
+    if (!error) {
+      const numeroEl = document.getElementById('form-numero');
+      if (numeroEl) {
+        numeroEl.textContent = nextNum;
+        numeroEl.dataset.value = nextNum;
+      }
+      return { ok: true, numero: nextNum };
+    }
+
+    const isDuplicate = error.message && (
+      error.message.includes('unique constraint') ||
+      error.message.includes('duplicate key') ||
+      error.message.includes('numero_key') ||
+      error.code === '23505'
+    );
+
+    if (!isDuplicate || intento >= maxIntentos) {
+      throw error;
+    }
+    await new Promise(r => setTimeout(r, 150));
+  }
+}
+
 /* ── Guardar formulario ── */
 async function guardarFormulario(usuarioId, formId) {
   const datos = recolectarDatos();
@@ -429,13 +476,9 @@ async function guardarFormulario(usuarioId, formId) {
       limpiarBorradorLocal();
       showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
-      payload.numero = parseInt(document.getElementById('form-numero')?.dataset?.value || '1', 10);
-      const { error } = await window.supabaseClient
-        .from('formularios_materiales')
-        .insert(payload);
-      if (error) throw error;
+      const res = await insertarMaterialesConRetry(payload);
       limpiarBorradorLocal();
-      showStatus('✅ Guardado exitosamente.', 'success');
+      showStatus(`✅ Guardado exitosamente (No. ${res.numero}).`, 'success');
     }
   } catch (err) {
     console.error('Error guardando:', err);
