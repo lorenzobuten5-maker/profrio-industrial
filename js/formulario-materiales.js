@@ -4,6 +4,7 @@
  */
 
 let fotosArray = [];
+let currentFormId = null;
 const DRAFT_KEY = 'pf_draft_materiales';
 
 function guardarBorradorLocal() {
@@ -65,12 +66,22 @@ function limpiarBorradorLocal() {
 }
 
 function limpiarFormularioCompleto(usuarioId) {
+  currentFormId = null;
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname);
+  }
   limpiarBorradorLocal();
 
   ['inp-cliente', 'inp-direccion', 'inp-telefono', 'inp-despachado', 'inp-recibido', 'ta-observaciones', 'inp-firma-despachado', 'inp-firma-recibido'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
+
+  const rad = document.querySelector('input[name="tipo_solicitud"][value="pedido"]');
+  if (rad) {
+    rad.checked = true;
+    rad.dispatchEvent(new Event('change'));
+  }
 
   document.getElementById('btn-clear-despachado')?.click();
   document.getElementById('btn-clear-recibido')?.click();
@@ -96,6 +107,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const profile = await window.getCurrentProfile?.();
   if (!profile) return;
+
+  initPhotos();
 
   // Initialize signature pads
   initSignaturePad('canvas-firma-despachado', 'inp-firma-despachado', 'btn-clear-despachado');
@@ -127,15 +140,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // ── Inicializar canvas de firmas ──
-  initSignaturePad('canvas-firma-despachado', 'inp-firma-despachado', 'btn-clear-despachado');
-  initSignaturePad('canvas-firma-recibido',   'inp-firma-recibido',   'btn-clear-recibido');
-
   const urlParams = new URLSearchParams(window.location.search);
-  const formId = urlParams.get('id');
+  currentFormId = urlParams.get('id') || null;
 
-  if (formId) {
-    await cargarFormularioExistente(formId);
+  if (currentFormId) {
+    await cargarFormularioExistente(currentFormId);
   } else {
     await generarSiguienteNumero(profile.id);
     autoFillFecha();
@@ -160,7 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (btnAdd) btnAdd.addEventListener('click', agregarFila);
 
   const btnGuardar = document.getElementById('btn-guardar');
-  if (btnGuardar) btnGuardar.addEventListener('click', () => guardarFormulario(profile.id, formId));
+  if (btnGuardar) btnGuardar.addEventListener('click', () => guardarFormulario(profile.id));
 
   const btnImprimir = document.getElementById('btn-imprimir');
   if (btnImprimir) btnImprimir.addEventListener('click', () => window.printForm?.() || window.print());
@@ -418,20 +427,22 @@ async function insertarMaterialesConRetry(payload, maxIntentos = 5) {
     const nextNum = await obtenerSiguienteNumeroMateriales();
     payload.numero = nextNum;
 
-    const { error } = await window.supabaseClient
+    const { data, error } = await window.supabaseClient
       .from('formularios_materiales')
-      .insert(payload);
+      .insert(payload)
+      .select('id')
+      .single();
 
-    if (!error) {
+    if (!error && data) {
       const numeroEl = document.getElementById('form-numero');
       if (numeroEl) {
         numeroEl.textContent = nextNum;
         numeroEl.dataset.value = nextNum;
       }
-      return { ok: true, numero: nextNum };
+      return { ok: true, id: data.id, numero: nextNum };
     }
 
-    const isDuplicate = error.message && (
+    const isDuplicate = error && error.message && (
       error.message.includes('unique constraint') ||
       error.message.includes('duplicate key') ||
       error.message.includes('numero_key') ||
@@ -439,14 +450,14 @@ async function insertarMaterialesConRetry(payload, maxIntentos = 5) {
     );
 
     if (!isDuplicate || intento >= maxIntentos) {
-      throw error;
+      throw error || new Error('Error al insertar formulario');
     }
     await new Promise(r => setTimeout(r, 150));
   }
 }
 
 /* ── Guardar formulario ── */
-async function guardarFormulario(usuarioId, formId) {
+async function guardarFormulario(usuarioId) {
   const datos = recolectarDatos();
   datos.usuario_id = usuarioId;
 
@@ -467,16 +478,20 @@ async function guardarFormulario(usuarioId, formId) {
   showStatus('Guardando...');
 
   try {
-    if (formId) {
+    if (currentFormId) {
       const { error } = await window.supabaseClient
         .from('formularios_materiales')
         .update(payload)
-        .eq('id', formId);
+        .eq('id', currentFormId);
       if (error) throw error;
       limpiarBorradorLocal();
       showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
       const res = await insertarMaterialesConRetry(payload);
+      currentFormId = res.id;
+      if (window.history && window.history.replaceState && res.id) {
+        window.history.replaceState({}, '', window.location.pathname + '?id=' + res.id);
+      }
       limpiarBorradorLocal();
       showStatus(`✅ Guardado exitosamente (No. ${res.numero}).`, 'success');
     }
@@ -489,8 +504,8 @@ async function guardarFormulario(usuarioId, formId) {
         const fallback = { ...payload };
         delete fallback.firma_interviniente;
         delete fallback.firma_cliente;
-        if (formId) {
-          await window.supabaseClient.from('formularios_materiales').update(fallback).eq('id', formId);
+        if (currentFormId) {
+          await window.supabaseClient.from('formularios_materiales').update(fallback).eq('id', currentFormId);
         } else {
           await window.supabaseClient.from('formularios_materiales').insert(fallback);
         }

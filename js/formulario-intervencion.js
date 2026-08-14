@@ -3,6 +3,7 @@
  */
 
 let fotosArray = [];
+let currentFormId = null;
 const DRAFT_KEY = 'pf_draft_intervencion';
 
 function guardarBorradorLocal() {
@@ -57,27 +58,25 @@ function restaurarBorradorLocal() {
       'inp-cf-pescados': data.cf_pescados,
       'inp-cf-preparacion': data.cf_preparacion,
       'ta-observaciones': data.observaciones,
-      'ta-pedido-materiales': data.pedido_materiales,
-      'inp-firma-interviniente': data.firma_interviniente,
-      'inp-firma-cliente': data.firma_cliente
+      'ta-pedido-materiales': data.pedido_materiales
     };
 
-    for (const [idEl, val] of Object.entries(mapeo)) {
-      const el = document.getElementById(idEl);
-      if (el) {
-        if (el.type === 'checkbox') el.checked = !!val;
-        else el.value = val || '';
-      }
+    Object.entries(mapeo).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = !!val;
+      else if (val !== undefined && val !== null) el.value = val;
+    });
+
+    if (data.tipo_servicio) {
+      const rad = document.querySelector(`input[name="tipo_servicio"][value="${data.tipo_servicio}"]`);
+      if (rad) rad.checked = true;
     }
 
     if (data.fotos && Array.isArray(data.fotos)) {
       fotosArray = data.fotos;
       renderPhotos();
     }
-
-    if (data.tipo_servicio === 'Electricidad' && document.getElementById('radio-electricidad')) document.getElementById('radio-electricidad').checked = true;
-    if (data.tipo_servicio === 'Frio Comercial' && document.getElementById('radio-frio-comercial')) document.getElementById('radio-frio-comercial').checked = true;
-    if (data.tipo_servicio === 'Frio Industrial' && document.getElementById('radio-frio-industrial')) document.getElementById('radio-frio-industrial').checked = true;
 
     if (data.firma_interviniente) document.getElementById('canvas-firma-interviniente')?.loadSignature?.(data.firma_interviniente);
     if (data.firma_cliente) document.getElementById('canvas-firma-cliente')?.loadSignature?.(data.firma_cliente);
@@ -93,6 +92,10 @@ function limpiarBorradorLocal() {
 }
 
 function limpiarFormularioCompleto(usuarioId) {
+  currentFormId = null;
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname);
+  }
   limpiarBorradorLocal();
 
   const idsToClear = [
@@ -121,10 +124,7 @@ function limpiarFormularioCompleto(usuarioId) {
     if (el) el.checked = false;
   });
 
-  ['radio-electricidad', 'radio-frio-comercial', 'radio-frio-industrial'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) el.checked = false;
-  });
+  document.querySelectorAll('input[name="tipo_servicio"]').forEach(el => el.checked = false);
 
   document.getElementById('btn-clear-interviniente')?.click();
   document.getElementById('btn-clear-cliente')?.click();
@@ -158,10 +158,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   
   const urlParams = new URLSearchParams(window.location.search);
-  const formId = urlParams.get('id');
+  currentFormId = urlParams.get('id') || null;
   
-  if (formId) {
-    await cargarFormularioExistente(formId);
+  if (currentFormId) {
+    await cargarFormularioExistente(currentFormId);
   } else {
     await generarSiguienteNumero(profile.id);
     restaurarBorradorLocal();
@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   
   const btnGuardar = document.getElementById('btn-guardar');
   if (btnGuardar) {
-    btnGuardar.addEventListener('click', () => guardarFormulario(profile.id, formId));
+    btnGuardar.addEventListener('click', () => guardarFormulario(profile.id));
   }
   
   const btnImprimir = document.getElementById('btn-imprimir');
@@ -400,20 +400,22 @@ async function insertarIntervencionConRetry(datos, maxIntentos = 5) {
     const nextNum = await obtenerSiguienteNumeroIntervencion();
     datos.numero = nextNum;
 
-    const { error } = await window.supabaseClient
+    const { data, error } = await window.supabaseClient
       .from('formularios_intervencion')
-      .insert(datos);
+      .insert(datos)
+      .select('id')
+      .single();
 
-    if (!error) {
+    if (!error && data) {
       const numeroEl = document.getElementById('form-numero');
       if (numeroEl) {
         numeroEl.textContent = nextNum;
         numeroEl.dataset.value = nextNum;
       }
-      return { ok: true, numero: nextNum };
+      return { ok: true, id: data.id, numero: nextNum };
     }
 
-    const isDuplicate = error.message && (
+    const isDuplicate = error && error.message && (
       error.message.includes('unique constraint') ||
       error.message.includes('duplicate key') ||
       error.message.includes('numero_key') ||
@@ -421,14 +423,14 @@ async function insertarIntervencionConRetry(datos, maxIntentos = 5) {
     );
 
     if (!isDuplicate || intento >= maxIntentos) {
-      throw error;
+      throw error || new Error('Error al insertar formulario');
     }
     // Short pause before retrying
     await new Promise(r => setTimeout(r, 150));
   }
 }
 
-async function guardarFormulario(usuarioId, formId) {
+async function guardarFormulario(usuarioId) {
   const datos = recolectarDatos();
   datos.usuario_id = usuarioId;
   const statusEl = document.getElementById('save-status');
@@ -447,16 +449,20 @@ async function guardarFormulario(usuarioId, formId) {
   showStatus('Guardando...');
 
   try {
-    if (formId) {
+    if (currentFormId) {
       const { error } = await window.supabaseClient
         .from('formularios_intervencion')
         .update(datos)
-        .eq('id', formId);
+        .eq('id', currentFormId);
       if (error) throw error;
       limpiarBorradorLocal();
       showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
       const res = await insertarIntervencionConRetry(datos);
+      currentFormId = res.id;
+      if (window.history && window.history.replaceState && res.id) {
+        window.history.replaceState({}, '', window.location.pathname + '?id=' + res.id);
+      }
       limpiarBorradorLocal();
       showStatus(`✅ Guardado exitosamente (No. ${res.numero}).`, 'success');
     }
