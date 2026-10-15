@@ -772,7 +772,7 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     input.value = '';
   });
 
-  // Load Base64 onto canvas
+  // Load Base64 onto canvas (fondo blanco garantizado → no negro en PDF)
   canvas.loadSignature = (base64Data) => {
     if (!base64Data || !base64Data.startsWith('data:image')) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -782,6 +782,8 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     const img = new Image();
     img.onload = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
       input.value = base64Data;
     };
