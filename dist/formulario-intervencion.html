@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0C2340">
+  <meta name="theme-color" content="#1E3A8A">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Hoja de Intervención</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=19">
-  <link rel="stylesheet" href="css/formularios.css?v=19">
-  <link rel="stylesheet" href="css/responsive.css?v=19">
+  <meta name="description" content="Hoja de Intervención — ProFrio Industrial E.I.R.L. Reporte de servicio técnico.">
+  <title>Hoja de Intervención — ProFrio Industrial</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" as="style">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/global.css?v=27">
+  <link rel="stylesheet" href="css/formularios.css?v=27">
+  <script src="js/utils.js?v=27"></script>
+  <script src="js/offline-sync.js?v=27"></script>
+  <script src="js/biometric-auth.js?v=27"></script>
+  <script src="js/fuzzy-search.js?v=27"></script>
 </head>
 <body>
 
@@ -18,6 +24,8 @@
   <div class="action-toolbar">
     <button id="btn-back" class="btn btn-secondary">← Volver</button>
     <div class="toolbar-actions">
+      <button id="btn-nuevo" type="button" class="btn btn-secondary" style="background:#fff;border:2px solid var(--clay-blue-300);color:var(--clay-blue-800);font-weight:700;">🧹 Nuevo en Blanco</button>
+      <button id="btn-deshacer" type="button" class="btn btn-warning" style="display:none;background:#F59E0B;color:#fff;font-weight:700;">↩️ Deshacer Limpieza</button>
       <button id="btn-guardar" class="btn btn-success">💾 Guardar</button>
       <button id="btn-imprimir" class="btn btn-secondary">🖨️ Imprimir</button>
       <button id="btn-pdf" class="btn btn-primary">📄 PDF</button>
@@ -27,7 +35,7 @@
 
   <div class="form-wrapper">
     <form id="form-intervencion">
-      
+
       <div class="form-header-print">
         <div>
           <div class="form-logo">❄️ ProFrio Industrial</div>
@@ -35,17 +43,27 @@
             ProFrio Industrial E.I.R.L.<br>
             Santo Domingo, D.N.<br>
             profrio.industrial@gmail.com<br>
-            RNC 1-31754431-2<br>
+            RNC 1-3175431-7<br>
             Tel: 829-727-0103
           </div>
         </div>
         <div class="form-number-box">
           No. <span id="form-numero">00000</span>
         </div>
+        <div id="status-box-wrap" style="display:flex; justify-content:flex-end; margin-top:6px;">
+          <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.95); border:1.5px solid var(--clay-blue-300); border-radius:8px; padding:4px 8px;">
+            <label for="select-form-estado" style="font-size:0.75rem; font-weight:800; color:var(--clay-blue-900);">ESTADO:</label>
+            <select id="select-form-estado" style="font-size:0.75rem; font-weight:700; border:none; background:transparent; cursor:pointer; color:var(--clay-blue-800); outline:none;">
+              <option value="pendiente">⏳ Pendiente</option>
+              <option value="facturado">✅ Enviado ya / Facturado</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <h2 class="form-title">HOJA DE INTERVENCIÓN</h2>
 
+      <!-- Datos Generales -->
       <div class="section-box">
         <div class="form-grid grid-2">
           <div class="input-line">
@@ -65,13 +83,14 @@
             <input type="number" id="inp-intervinientes">
           </div>
         </div>
-        <div class="flex gap-4 mt-4 justify-center" style="font-weight: 600;">
+        <div class="radio-options-row">
           <label class="radio-group"><input type="radio" name="tipo_frio" id="radio-electricidad"> ELECTRICIDAD-CLIMATIZACIÓN</label>
           <label class="radio-group"><input type="radio" name="tipo_frio" id="radio-frio-comercial"> FRIO COMERCIAL</label>
           <label class="radio-group"><input type="radio" name="tipo_frio" id="radio-frio-industrial"> FRIO INDUSTRIAL</label>
         </div>
       </div>
 
+      <!-- Cliente -->
       <div class="section-box">
         <div class="form-grid grid-3">
           <div class="input-line" style="grid-column: span 2;">
@@ -89,47 +108,50 @@
         </div>
       </div>
 
-      <div class="form-grid grid-2">
-        <!-- Roles -->
-        <div class="section-box" style="padding: 1.25rem;">
-          <div class="section-title" style="margin-bottom: 0.75rem;">ROLES Y HORAS</div>
-          <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--gray-100); padding-bottom: 0.5rem;">
-              <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-tecnico"> Técnico</label>
-              <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">Horas:</span>
-                <input type="number" id="inp-horas-tecnico" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem;">
-              </div>
+      <!-- Roles -->
+      <div class="section-box">
+        <div class="section-title">ROLES Y HORAS</div>
+        <div class="form-grid grid-3">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; background: var(--clay-blue-50); padding: 0.5rem 0.85rem; border-radius: var(--radius-md);">
+            <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-tecnico"> Técnico</label>
+            <div style="display: flex; align-items: center; gap: 0.3rem;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--clay-blue-700);">Horas:</span>
+              <input type="number" id="inp-horas-tecnico" style="width: 55px; border: none; border-bottom: 1.5px solid var(--clay-blue-400); text-align: center; font-size: 0.88rem; background:transparent;">
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-bottom: 1px solid var(--gray-100); padding-bottom: 0.5rem;">
-              <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-jefe-obra"> Jefe de obra</label>
-              <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">Horas:</span>
-                <input type="number" id="inp-horas-jefe-obra" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem;">
-              </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; background: var(--clay-blue-50); padding: 0.5rem 0.85rem; border-radius: var(--radius-md);">
+            <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-jefe-obra"> Jefe de obra</label>
+            <div style="display: flex; align-items: center; gap: 0.3rem;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--clay-blue-700);">Horas:</span>
+              <input type="number" id="inp-horas-jefe-obra" style="width: 55px; border: none; border-bottom: 1.5px solid var(--clay-blue-400); text-align: center; font-size: 0.88rem; background:transparent;">
             </div>
-            <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-bottom: 0.25rem;">
-              <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-jefe-equipo"> Jefe de equipo</label>
-              <div style="display: flex; align-items: center; gap: 0.4rem;">
-                <span style="font-size: 0.8rem; font-weight: 600; color: var(--gray-600);">Horas:</span>
-                <input type="number" id="inp-horas-jefe-equipo" style="width: 60px; border: none; border-bottom: 1px solid #000; text-align: center; padding: 2px; font-size: 0.9rem;">
-              </div>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; background: var(--clay-blue-50); padding: 0.5rem 0.85rem; border-radius: var(--radius-md);">
+            <label class="chk-group" style="margin:0;"><input type="checkbox" id="chk-jefe-equipo"> Jefe de equipo</label>
+            <div style="display: flex; align-items: center; gap: 0.3rem;">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--clay-blue-700);">Horas:</span>
+              <input type="number" id="inp-horas-jefe-equipo" style="width: 55px; border: none; border-bottom: 1.5px solid var(--clay-blue-400); text-align: center; font-size: 0.88rem; background:transparent;">
             </div>
           </div>
         </div>
-
-        <!-- Space holder or extra info if needed -->
-        <div></div>
       </div>
 
-      <!-- Equipos — ancho completo -->
+      <!-- Equipos -->
       <div class="section-box">
         <div class="section-title">EQUIPOS</div>
         <div class="equipos-grid">
           <label class="chk-group"><input type="checkbox" id="chk-aires"> Chequeo de aires acondicionados</label>
           <label class="chk-group"><input type="checkbox" id="chk-rack"> Chequeo del rack</label>
-          <div class="input-line"><label class="chk-group"><input type="checkbox" id="chk-nivel-liquido"> Nivel de líquido</label><input type="text" id="inp-nivel-liquido"></div>
-          <div class="input-line"><label class="chk-group"><input type="checkbox" id="chk-nivel-aceite"> Nivel de aceite</label><input type="text" id="inp-nivel-aceite"></div>
+          <label class="chk-group chk-group-input">
+            <input type="checkbox" id="chk-nivel-liquido">
+            <span>Nivel de líquido</span>
+            <input type="text" id="inp-nivel-liquido" class="inp-equipos-line">
+          </label>
+          <label class="chk-group chk-group-input">
+            <input type="checkbox" id="chk-nivel-aceite">
+            <span>Nivel de aceite</span>
+            <input type="text" id="inp-nivel-aceite" class="inp-equipos-line">
+          </label>
           <label class="chk-group"><input type="checkbox" id="chk-correccion-fuga"> Corrección de fuga</label>
           <label class="chk-group"><input type="checkbox" id="chk-carga-refrigerante"> Carga de refrigerante</label>
           <label class="chk-group"><input type="checkbox" id="chk-cambio-compresor"> Cambio compresor</label>
@@ -140,7 +162,7 @@
         </div>
       </div>
 
-      <!-- Temperaturas — ancho completo debajo de Equipos -->
+      <!-- Temperaturas -->
       <div class="section-box">
         <div class="section-title">TEMPERATURA DE LA NEVERA Y CUARTO FRÍO</div>
         <div class="table-responsive">
@@ -181,6 +203,7 @@
         </div>
       </div>
 
+      <!-- Observaciones & Pedido de Materiales -->
       <div class="form-grid grid-2">
         <div class="textarea-container">
           <label>OBSERVACIONES:</label>
@@ -203,11 +226,12 @@
         <div class="photos-grid" id="photos-preview"></div>
       </div>
 
+      <!-- Firmas -->
       <div class="signatures">
         <div class="sig-box">
-          <label class="sig-label">FIRMA INTERVINIENTE</label>
+          <label class="sig-label">FIRMA INTERVENIENTE</label>
           <div class="canvas-container">
-            <canvas id="canvas-firma-interviniente" class="sig-canvas" width="300" height="120"></canvas>
+            <canvas id="canvas-firma-interviniente" class="sig-canvas" width="300" height="130"></canvas>
             <button type="button" class="btn-clear-canvas" id="btn-clear-interviniente">Limpiar Firma</button>
           </div>
           <input type="hidden" id="inp-firma-interviniente">
@@ -215,7 +239,7 @@
         <div class="sig-box">
           <label class="sig-label">FIRMA CLIENTE (CON SU SELLO)</label>
           <div class="canvas-container">
-            <canvas id="canvas-firma-cliente" class="sig-canvas" width="300" height="120"></canvas>
+            <canvas id="canvas-firma-cliente" class="sig-canvas" width="300" height="130"></canvas>
             <button type="button" class="btn-clear-canvas" id="btn-clear-cliente">Limpiar Firma</button>
           </div>
           <input type="hidden" id="inp-firma-cliente">
@@ -228,36 +252,66 @@
   <!-- Email Modal -->
   <div id="email-modal" class="modal-overlay">
     <div class="modal-content">
-      <h3>Enviar por Email</h3>
+      <h3>✉️ Enviar por Email</h3>
       <div class="form-group mt-4">
         <label for="email-destino" class="form-label">Correo del destinatario:</label>
         <input type="email" id="email-destino" class="form-input" placeholder="cliente@correo.com">
       </div>
-      <div class="modal-actions" style="display:flex; justify-content:flex-end; gap:10px;">
+      <div class="modal-actions">
         <button id="btn-cancel-email" class="btn btn-secondary">Cancelar</button>
         <button id="btn-enviar-email" class="btn btn-primary">Enviar</button>
       </div>
     </div>
   </div>
 
-  <!-- Lightbox Modal for Photo Preview -->
+  <!-- Lightbox -->
   <div id="lightbox-modal" class="lightbox-modal">
     <span class="lightbox-close" id="lightbox-close">&times;</span>
     <img class="lightbox-content" id="lightbox-img" src="" alt="Vista previa">
   </div>
 
+  <!-- ══ BOTTOM NAV (MOBILE) ══ -->
+  <nav class="bottom-nav" role="navigation" aria-label="Navegación principal">
+    <a href="dashboard-empleado.html" class="nav-item">
+      <div class="nav-icon-wrap">🏠</div>
+      <span class="nav-label">Inicio</span>
+    </a>
+    <a href="formulario-intervencion.html" class="nav-item active">
+      <div class="nav-icon-wrap">📋</div>
+      <span class="nav-label">Intervención</span>
+    </a>
+    <a href="formulario-materiales.html" class="nav-item">
+      <div class="nav-icon-wrap">📦</div>
+      <span class="nav-label">Materiales</span>
+    </a>
+    <a href="historial-formularios.html" class="nav-item">
+      <div class="nav-icon-wrap">📂</div>
+      <span class="nav-label">Historial</span>
+    </a>
+    <a href="perfil.html" class="nav-item">
+      <div class="nav-icon-wrap">👤</div>
+      <span class="nav-label">Perfil</span>
+    </a>
+  </nav>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-  <script src="js/security.js?v=19"></script>
-  <script src="js/supabase-config.js?v=19"></script>
-  <script src="js/auth.js?v=19"></script>
-  <script src="js/online-status.js?v=19"></script>
-  <script src="js/formulario-intervencion.js?v=19"></script>
-  <script src="js/print-pdf.js?v=19"></script>
-  <script src="js/email.js?v=19"></script>
+  <script src="js/security.js?v=25"></script>
+  <script src="js/supabase-config.js?v=25"></script>
+  <script src="js/auth.js?v=27"></script>
+  <script src="js/nav-router.js?v=25"></script>
+  <script src="js/online-status.js?v=25"></script>
+  <script src="js/formulario-intervencion.js?v=33"></script>
+  <script src="js/print-pdf.js?v=33"></script>
+  <script src="js/email.js?v=25"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });
+    // Modal open with class toggle
+    document.getElementById('btn-email')?.addEventListener('click', () => {
+      document.getElementById('email-modal')?.classList.add('active');
+    });
   </script>
+  <button id="scroll-to-top-btn" aria-label="Volver arriba" title="Volver arriba">↑</button>
 </body>
 </html>

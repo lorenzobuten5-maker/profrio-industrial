@@ -405,22 +405,26 @@ async function cargarFormulariosStats() {
       const div = document.createElement('div');
       div.className = 'forms-stat-card';
       div.innerHTML = `
-        <div class="forms-stat-avatar">${initials}</div>
-        <div class="forms-stat-info">
-          <strong>${p.nombre}</strong>
-          <span class="forms-stat-email">${p.email}</span>
-        </div>
-        <div class="forms-stat-counts">
-          <div class="forms-stat-count">
-            <span class="count-number">${totalInterv}</span>
-            <span class="count-label">Intervenciones</span>
-          </div>
-          <div class="forms-stat-count">
-            <span class="count-number">${totalMat}</span>
-            <span class="count-label">Materiales</span>
+        <div class="forms-stat-header">
+          <div class="forms-stat-avatar">${initials}</div>
+          <div class="forms-stat-info">
+            <strong>${p.nombre}</strong>
+            <span class="forms-stat-email">${p.email}</span>
           </div>
         </div>
-        <a href="perfil.html?uid=${p.id}" class="btn btn-secondary btn-ver-perfil">Ver Perfil →</a>
+        <div class="forms-stat-body">
+          <div class="forms-stat-counts">
+            <div class="forms-stat-count">
+              <span class="count-number">${totalInterv}</span>
+              <span class="count-label">Intervenciones</span>
+            </div>
+            <div class="forms-stat-count">
+              <span class="count-number">${totalMat}</span>
+              <span class="count-label">Materiales</span>
+            </div>
+          </div>
+          <a href="perfil.html?uid=${p.id}" class="btn btn-secondary btn-ver-perfil">Ver Perfil →</a>
+        </div>
       `;
       container.appendChild(div);
     }

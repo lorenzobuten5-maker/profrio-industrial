@@ -23,7 +23,7 @@ function pdfHeader(doc, numero) {
   doc.text('ProFrio Industrial E.I.R.L.', 10, 10);
   doc.setFontSize(7);
   doc.setFont('helvetica', 'normal');
-  doc.text('Santo Domingo, D.N.  |  profrio.industrial@gmail.com  |  RNC 1-31754431-2  |  Tel: 829-727-0103', 10, 17);
+  doc.text('Santo Domingo, D.N.  |  profrio.industrial@gmail.com  |  RNC 1-3175431-7  |  Tel: 829-727-0103', 10, 17);
 
   // Número de formulario (derecha)
   doc.setFontSize(9);
@@ -79,7 +79,7 @@ function pdfCheckbox(doc, x, y, label, checked) {
 }
 
 /* ===== PDF INTERVENCIÓN ===== */
-function generatePDFIntervencion() {
+async function generatePDFIntervencion() {
   const doc = initPDFDoc();
   if (!doc) return;
 
@@ -246,43 +246,175 @@ function generatePDFIntervencion() {
   // ---- FIRMAS ----
   const sigW = (W - 16) / 2 - 8;
   doc.setLineWidth(0.5); doc.setDrawColor(0);
-  doc.line(12, y + 12, 12 + sigW, y + 12);
-  doc.line(12 + colW, y + 12, 12 + colW + sigW, y + 12);
-  doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(0, 0, 0);
+  doc.line(12, y + 16, 12 + sigW, y + 16);
+  doc.line(12 + colW, y + 16, 12 + colW + sigW, y + 16);
+  doc.setFontSize(7); doc.setFont('helvetica', 'bold'); doc.setTextColor(0, 0, 0);
 
   const firmaInt = getVal('inp-firma-interviniente');
   const firmaCli = getVal('inp-firma-cliente');
 
-  // Draw interviniente signature if it's a base64 image, otherwise fall back to text
-  if (firmaInt && firmaInt.startsWith('data:image')) {
-    try {
-      doc.addImage(firmaInt, 'PNG', 12 + (sigW - 35) / 2, y + 1, 35, 10);
-    } catch (e) {
-      console.error('Error drawing technician signature:', e);
-    }
-    doc.text('FIRMA INTERVINIENTE', 12 + sigW / 2, y + 16, { align: 'center' });
-  } else {
-    doc.text(firmaInt || 'FIRMA INTERVINIENTE', 12 + sigW / 2, y + 16, { align: 'center' });
-  }
+  const [firmaIntClean, firmaCliClean] = await Promise.all([
+    prepareSignatureForPDF(firmaInt),
+    prepareSignatureForPDF(firmaCli)
+  ]);
 
-  // Draw client signature if it's a base64 image, otherwise fall back to text
-  if (firmaCli && firmaCli.startsWith('data:image')) {
+  if (firmaIntClean) {
     try {
-      doc.addImage(firmaCli, 'PNG', 12 + colW + (sigW - 35) / 2, y + 1, 35, 10);
+      doc.addImage(firmaIntClean, 'JPEG', 12 + (sigW - 42) / 2, y + 1, 42, 14);
     } catch (e) {
-      console.error('Error drawing client signature:', e);
+      console.warn('Error drawing technician signature:', e);
     }
-    doc.text('FIRMA CLIENTE (CON SELLO)', 12 + colW + sigW / 2, y + 16, { align: 'center' });
-  } else {
-    doc.text(firmaCli || 'FIRMA CLIENTE (CON SELLO)', 12 + colW + sigW / 2, y + 16, { align: 'center' });
   }
+  doc.text('FIRMA INTERVINIENTE', 12 + sigW / 2, y + 20, { align: 'center' });
+
+  if (firmaCliClean) {
+    try {
+      doc.addImage(firmaCliClean, 'JPEG', 12 + colW + (sigW - 42) / 2, y + 1, 42, 14);
+    } catch (e) {
+      console.warn('Error drawing client signature:', e);
+    }
+  }
+  doc.text('FIRMA CLIENTE (CON SELLO)', 12 + colW + sigW / 2, y + 20, { align: 'center' });
+  y += 24;
+
+  // Fotos en Intervención si existen
+  await appendPhotosSectionToPDF(doc, num, W);
 
   const cliente = getVal('inp-cliente') || 'Cliente';
   doc.save(`Intervencion_No${num}_${cliente}.pdf`);
 }
 
-/* ===== PDF MATERIALES ===== */
-function generatePDFMateriales() {
+/* ===== PREPARACIÓN DE FIRMAS (FONDO BLANCO GARANTIZADO) ===== */
+async function prepareSignatureForPDF(base64) {
+  if (!base64 || typeof base64 !== 'string' || !base64.startsWith('data:image')) {
+    return null;
+  }
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(img.naturalWidth || img.width || 300, 300);
+        canvas.height = Math.max(img.naturalHeight || img.height || 130, 130);
+        const ctx = canvas.getContext('2d');
+        // Fondo blanco sólido puro: previene fondo negro en JPEG / jsPDF
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.95));
+      } catch (err) {
+        console.warn('Error processing signature canvas:', err);
+        resolve(base64);
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = base64;
+  });
+}
+
+/* ===== PREPARACIÓN DE FOTOS ===== */
+async function preparePhotoForPDF(src) {
+  if (!src || typeof src !== 'string') return null;
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        let w = img.naturalWidth || img.width || 800;
+        let h = img.naturalHeight || img.height || 600;
+        const max = 1200;
+        if (w > max || h > max) {
+          if (w > h) { h = Math.round(h * max / w); w = max; }
+          else { w = Math.round(w * max / h); h = max; }
+        }
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillRect(0, 0, w, h);
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve({
+          dataUrl: canvas.toDataURL('image/jpeg', 0.85),
+          width: w,
+          height: h
+        });
+      } catch (err) {
+        console.warn('Error processing photo for PDF:', err);
+        resolve({ dataUrl: src, width: 800, height: 600 });
+      }
+    };
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+/* ===== SECCIÓN DE FOTOS ADJUNTAS ===== */
+async function appendPhotosSectionToPDF(doc, num, W) {
+  let fotos = [];
+  if (typeof window.getFotosFormulario === 'function') {
+    fotos = window.getFotosFormulario() || [];
+  }
+  if (!fotos || fotos.length === 0) {
+    if (Array.isArray(window.fotosArray) && window.fotosArray.length > 0) {
+      fotos = window.fotosArray;
+    } else {
+      const previewImgs = document.querySelectorAll('#photos-preview img');
+      if (previewImgs && previewImgs.length > 0) {
+        fotos = Array.from(previewImgs).map(img => img.src);
+      }
+    }
+  }
+
+  if (fotos && fotos.length > 0) {
+    doc.addPage();
+    let py = pdfHeader(doc, num);
+    py = pdfSectionTitle(doc, py, 'REGISTRO FOTOGRÁFICO / CAPTURAS EN OBSERVACIONES', W);
+    py += 3;
+
+    const photoColW = (W - 24) / 2; // ~93mm por columna
+    const photoH = 65; // Altura en mm
+
+    for (let i = 0; i < fotos.length; i++) {
+      const col = i % 2;
+      const posX = 10 + col * (photoColW + 4);
+
+      if (col === 0 && i > 0) {
+        py += photoH + 12;
+        if (py + photoH > 275) {
+          doc.addPage();
+          py = pdfHeader(doc, num);
+          py = pdfSectionTitle(doc, py, 'REGISTRO FOTOGRÁFICO (CONTINUACIÓN)', W);
+          py += 3;
+        }
+      }
+
+      const pData = await preparePhotoForPDF(fotos[i]);
+      if (pData && pData.dataUrl) {
+        // Marco de foto
+        doc.setDrawColor(200, 215, 230);
+        doc.setFillColor(248, 250, 252);
+        doc.roundedRect(posX, py, photoColW, photoH + 7, 2, 2, 'FD');
+
+        try {
+          doc.addImage(pData.dataUrl, 'JPEG', posX + 1.5, py + 1.5, photoColW - 3, photoH);
+        } catch (err) {
+          console.warn('Error dibujando foto en PDF:', err);
+        }
+
+        // Título de la captura
+        doc.setFontSize(7);
+        doc.setFont('helvetica', 'bold');
+        doc.setTextColor(30, 58, 138);
+        doc.text(`Captura #${i + 1}`, posX + photoColW / 2, py + photoH + 5.5, { align: 'center' });
+      }
+    }
+  }
+}
+
+/* ===== PDF MATERIALES Y SUMINISTROS ===== */
+async function generatePDFMateriales() {
   const doc = initPDFDoc();
   if (!doc) return;
 
@@ -298,9 +430,12 @@ function generatePDFMateriales() {
   doc.text(`FECHA: ${dia || 'DD'}/${mes || 'MM'}/${anio || 'AAAA'}`, W - 10, y, { align: 'right' });
   y += 5;
 
-  // Título
-  doc.setFontSize(11); doc.setFont('helvetica', 'bold'); doc.setTextColor(12, 35, 64);
-  doc.text('SOLICITUD DE MATERIALES Y SUMINISTROS DE ALMACÉN', W / 2, y, { align: 'center' });
+  // Título según tipo de solicitud seleccionado
+  const isSuministro = document.getElementById('tipo-suministro')?.checked;
+  const titulo = isSuministro ? 'HOJA DE SUMINISTRO DE ALMACÉN' : 'PEDIDO DE MATERIALES';
+
+  doc.setFontSize(11.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(12, 35, 64);
+  doc.text(titulo, W / 2, y, { align: 'center' });
   y += 7;
 
   // Cliente
@@ -313,26 +448,30 @@ function generatePDFMateriales() {
   pdfField(doc, y, 'Dirección:', getVal('inp-direccion'), 10, 192);
   y += 10;
 
-  // Tabla items
+  // Helper para pintar encabezado de la tabla
   const colWidths = [18, 96, 38, 38]; // CANT, DESC, P.UNIT, TOTAL
   const headers = ['CANT.', 'DESCRIPCIÓN', 'PRECIO UNITARIO', 'TOTAL'];
   const startX = 8;
 
-  // Header de tabla
-  doc.setFillColor(12, 35, 64);
-  doc.rect(startX, y, W - 16, 6, 'F');
-  doc.setTextColor(255, 255, 255); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
-  let cx2 = startX;
-  headers.forEach((h, i) => {
-    doc.text(h, cx2 + colWidths[i] / 2, y + 4, { align: 'center' });
-    cx2 += colWidths[i];
-  });
-  y += 6;
+  function drawTableHeader(atY) {
+    doc.setFillColor(12, 35, 64);
+    doc.rect(startX, atY, W - 16, 6, 'F');
+    doc.setTextColor(255, 255, 255); doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+    let cx2 = startX;
+    headers.forEach((h, i) => {
+      doc.text(h, cx2 + colWidths[i] / 2, atY + 4, { align: 'center' });
+      cx2 += colWidths[i];
+    });
+    return atY + 6;
+  }
+
+  y = drawTableHeader(y);
 
   // Filas de items
   const rows = document.querySelectorAll('#items-tbody tr');
   let total = 0;
   doc.setTextColor(0, 0, 0); doc.setFont('helvetica', 'normal'); doc.setFontSize(7);
+
   rows.forEach((row, idx) => {
     const cant = row.querySelector('.inp-cantidad')?.value || '';
     const desc = row.querySelector('.inp-descripcion')?.value || '';
@@ -340,6 +479,14 @@ function generatePDFMateriales() {
     const rowTotal = row.querySelector('.td-total')?.textContent || '';
     if (!cant && !desc && !precio) return;
     total += parseFloat(rowTotal || 0);
+
+    // Salto de página inteligente si la tabla desborda
+    if (y > 265) {
+      doc.addPage();
+      y = pdfHeader(doc, num);
+      y = drawTableHeader(y);
+    }
+
     const bg = idx % 2 === 0 ? [248, 250, 252] : [255, 255, 255];
     doc.setFillColor(...bg);
     doc.rect(startX, y, W - 16, 6, 'F');
@@ -356,27 +503,105 @@ function generatePDFMateriales() {
   });
 
   // Total
+  if (y > 255) {
+    doc.addPage();
+    y = pdfHeader(doc, num);
+  }
   doc.setFillColor(12, 35, 64);
   doc.rect(startX, y, W - 16, 7, 'F');
   doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(8);
   doc.text('TOTAL:', startX + 140, y + 5);
   doc.text(`$ ${total.toFixed(2)}`, startX + W - 26, y + 5, { align: 'right' });
-  y += 10;
+  y += 11;
 
-  // Firmas
+  // ---- OBSERVACIONES (SECCIÓN COMPLETA AHORA INCLUIDA) ----
+  const obsValue = getVal('ta-observaciones');
+  if (y > 230) {
+    doc.addPage();
+    y = pdfHeader(doc, num);
+  }
+
+  doc.setFillColor(248, 250, 252);
+  doc.setDrawColor(200, 215, 230);
+  doc.setLineWidth(0.3);
+  doc.rect(8, y, W - 16, 20, 'FD');
+
+  doc.setFontSize(7.5); doc.setFont('helvetica', 'bold'); doc.setTextColor(12, 35, 64);
+  doc.text('OBSERVACIONES:', 11, y + 4.5);
+
+  doc.setFont('helvetica', 'normal'); doc.setFontSize(7); doc.setTextColor(30, 41, 59);
+  const obsLines = doc.splitTextToSize(obsValue || 'Ninguna observación registrada.', W - 22);
+  doc.text(obsLines, 11, y + 9);
+  y += 24;
+
+  // ---- FIRMAS (CON FONDO BLANCO GARANTIZADO) ----
+  if (y > 235) {
+    doc.addPage();
+    y = pdfHeader(doc, num);
+  }
+
   const sigW = (W - 16) / 2 - 8;
   doc.setLineWidth(0.5); doc.setDrawColor(0); doc.setTextColor(0, 0, 0);
-  doc.line(12, y + 12, 12 + sigW, y + 12);
-  doc.line(12 + sigW + 16, y + 12, 12 + sigW * 2 + 16, y + 12);
-  doc.setFontSize(7); doc.setFont('helvetica', 'normal');
-  doc.text(getVal('inp-despachado') || 'DESPACHADO POR', 12 + sigW / 2, y + 16, { align: 'center' });
-  doc.text(getVal('inp-recibido') || 'RECIBIDO CONFORME', 12 + sigW * 1.5 + 16, y + 16, { align: 'center' });
+  doc.line(12, y + 16, 12 + sigW, y + 16);
+  doc.line(12 + sigW + 16, y + 16, 12 + sigW * 2 + 16, y + 16);
+  doc.setFontSize(7); doc.setFont('helvetica', 'bold');
+
+  const firmaDesp = getVal('inp-firma-despachado');
+  const firmaRec  = getVal('inp-firma-recibido');
+
+  const [firmaDespClean, firmaRecClean] = await Promise.all([
+    prepareSignatureForPDF(firmaDesp),
+    prepareSignatureForPDF(firmaRec)
+  ]);
+
+  if (firmaDespClean) {
+    try {
+      doc.addImage(firmaDespClean, 'JPEG', 12 + (sigW - 42) / 2, y + 1, 42, 14);
+    } catch (e) {
+      console.warn('Error dibujando firma despachado:', e);
+    }
+  }
+  if (firmaRecClean) {
+    try {
+      doc.addImage(firmaRecClean, 'JPEG', 12 + sigW + 16 + (sigW - 42) / 2, y + 1, 42, 14);
+    } catch (e) {
+      console.warn('Error dibujando firma recibido:', e);
+    }
+  }
+
+  doc.text(getVal('inp-despachado') || 'DESPACHADO POR', 12 + sigW / 2, y + 20, { align: 'center' });
+  doc.text(getVal('inp-recibido') || 'RECIBIDO CONFORME', 12 + sigW * 1.5 + 16, y + 20, { align: 'center' });
+  y += 24;
+
+  // ---- REGISTRO FOTOGRÁFICO EN EL PDF DE SUMINISTROS/MATERIALES ----
+  await appendPhotosSectionToPDF(doc, num, W);
 
   const cliente = getVal('inp-cliente') || 'Cliente';
-  doc.save(`Materiales_No${num}_${cliente}.pdf`);
+  doc.save(`${titulo.replace(/\s+/g, '_')}_No${num}_${cliente}.pdf`);
 }
 
-function printForm() { window.print(); }
+function prepareTextareasForPrint() {
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.style.height = 'auto';
+    ta.style.height = Math.max(ta.scrollHeight + 6, 32) + 'px';
+  });
+}
+
+function restoreTextareasAfterPrint() {
+  document.querySelectorAll('textarea').forEach(ta => {
+    ta.style.height = '';
+  });
+}
+
+window.addEventListener('beforeprint', prepareTextareasForPrint);
+window.addEventListener('afterprint', restoreTextareasAfterPrint);
+
+function printForm() {
+  prepareTextareasForPrint();
+  setTimeout(() => {
+    window.print();
+  }, 100);
+}
 
 window.generatePDFIntervencion = generatePDFIntervencion;
 window.generatePDFMateriales = generatePDFMateriales;

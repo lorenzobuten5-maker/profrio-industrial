@@ -415,6 +415,11 @@ async function cargarFormularioExistente(id) {
     const totalEl = document.getElementById('total-display');
     if (totalEl) totalEl.textContent = parseFloat(data.total || 0).toFixed(2);
 
+    const localEst = localStorage.getItem(`pf_status_materiales_${id}`);
+    const estadoFinal = localEst || data.estado || 'pendiente';
+    const selEst = document.getElementById('select-form-estado');
+    if (selEst) selEst.value = estadoFinal;
+
   } catch (err) {
     console.error('Error cargando formulario:', err);
   }
@@ -432,8 +437,10 @@ function recolectarDatos() {
   });
 
   const tipo_solicitud = document.querySelector('input[name="tipo_solicitud"]:checked')?.value || 'pedido';
+  const estado = document.getElementById('select-form-estado')?.value || 'pendiente';
 
   return {
+    estado,
     tipo_solicitud,
     fecha_dia:          parseInt(document.getElementById('inp-fecha-dia')?.value)  || null,
     fecha_mes:          parseInt(document.getElementById('inp-fecha-mes')?.value)  || null,
@@ -546,11 +553,17 @@ async function guardarFormulario(usuarioId) {
         .update(payload)
         .eq('id', currentFormId);
       if (error) throw error;
+      if (datos.estado) {
+        localStorage.setItem(`pf_status_materiales_${currentFormId}`, datos.estado);
+      }
       limpiarBorradorLocal();
       showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
       const res = await insertarMaterialesConRetry(payload);
       currentFormId = res.id;
+      if (datos.estado && res.id) {
+        localStorage.setItem(`pf_status_materiales_${res.id}`, datos.estado);
+      }
       if (window.history && window.history.replaceState && res.id) {
         window.history.replaceState({}, '', window.location.pathname + '?id=' + res.id);
       }
@@ -776,3 +789,5 @@ function renderPhotos() {
 }
 
 window.recolectarDatosMateriales = recolectarDatos;
+window.getFotosFormulario = () => fotosArray;
+

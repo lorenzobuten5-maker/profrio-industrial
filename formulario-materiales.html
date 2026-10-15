@@ -51,6 +51,15 @@
           <div class="form-number-box mb-4">
             No. <span id="form-numero">00000</span>
           </div>
+          <div id="status-box-wrap" style="display:flex; justify-content:flex-end; margin-bottom:6px;">
+            <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(255,255,255,0.95); border:1.5px solid var(--clay-blue-300); border-radius:8px; padding:4px 8px;">
+              <label for="select-form-estado" style="font-size:0.75rem; font-weight:800; color:var(--clay-blue-900);">ESTADO:</label>
+              <select id="select-form-estado" style="font-size:0.75rem; font-weight:700; border:none; background:transparent; cursor:pointer; color:var(--clay-blue-800); outline:none;">
+                <option value="pendiente">⏳ Pendiente</option>
+                <option value="facturado">✅ Enviado ya / Facturado</option>
+              </select>
+            </div>
+          </div>
           <div style="display:flex; align-items:center; gap:5px; border:1.5px solid var(--primary-800); border-radius:6px; padding:6px 10px; margin-top:8px;">
             <b style="font-size:0.85rem;">FECHA:</b>
             <input type="text" id="inp-fecha-dia" style="width:30px; text-align:center; border:none; border-bottom:1px solid #000;" placeholder="DD">
@@ -211,8 +220,8 @@
   <script src="js/auth.js?v=27"></script>
   <script src="js/nav-router.js?v=25"></script>
   <script src="js/online-status.js?v=25"></script>
-  <script src="js/formulario-materiales.js?v=32"></script>
-  <script src="js/print-pdf.js?v=29"></script>
+  <script src="js/formulario-materiales.js?v=33"></script>
+  <script src="js/print-pdf.js?v=33"></script>
   <script src="js/email.js?v=25"></script>
   <script>
     document.getElementById('btn-back').addEventListener('click', () => { window.history.back(); });

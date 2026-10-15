@@ -11,8 +11,8 @@
   <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/global.css?v=27">
-  <link rel="stylesheet" href="css/dashboard.css?v=27">
-  <script src="js/utils.js?v=27"></script>
+  <link rel="stylesheet" href="css/dashboard.css?v=33">
+  <script src="js/utils.js?v=33"></script>
   <script src="js/offline-sync.js?v=27"></script>
   <script src="js/biometric-auth.js?v=27"></script>
   <script src="js/fuzzy-search.js?v=27"></script>
@@ -45,6 +45,25 @@
     <div class="content-area">
       <div id="admin-banner-view" class="admin-banner" style="display:none;">
         🛡️ <strong>Modo Administrador</strong> — Acceso a formularios de todos los empleados.
+      </div>
+
+      <!-- ── Carpetas de Trabajo (Pendientes vs Facturados/Trabajados) ── -->
+      <div class="folder-tabs-wrapper" role="tablist" aria-label="Carpetas de formularios">
+        <button id="folder-tab-pendientes" class="folder-tab active" data-folder="pendiente" role="tab" aria-selected="true" title="Formularios pendientes de enviar o facturar">
+          <span class="folder-icon">⏳</span>
+          <span class="folder-title">Pendientes / Por Facturar</span>
+          <span id="badge-count-pendientes" class="folder-badge">0</span>
+        </button>
+        <button id="folder-tab-facturados" class="folder-tab" data-folder="facturado" role="tab" aria-selected="false" title="Formularios ya trabajados, enviados o facturados">
+          <span class="folder-icon">✅</span>
+          <span class="folder-title">Enviados / Facturados (Trabajados)</span>
+          <span id="badge-count-facturados" class="folder-badge">0</span>
+        </button>
+        <button id="folder-tab-todos" class="folder-tab" data-folder="todos" role="tab" aria-selected="false" title="Ver todos los formularios juntos">
+          <span class="folder-icon">📁</span>
+          <span class="folder-title">Todos</span>
+          <span id="badge-count-todos" class="folder-badge">0</span>
+        </button>
       </div>
 
       <div class="toolbar-box">
@@ -132,7 +151,7 @@
   <script src="js/auth.js?v=27"></script>
   <script src="js/nav-router.js?v=25"></script>
   <script src="js/online-status.js?v=25"></script>
-  <script src="js/historial-formularios.js?v=25"></script>
+  <script src="js/historial-formularios.js?v=33"></script>
   <button id="scroll-to-top-btn" aria-label="Volver arriba" title="Volver arriba">↑</button>
 </body>
 </html>

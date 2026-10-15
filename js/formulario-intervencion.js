@@ -408,6 +408,11 @@ async function cargarFormularioExistente(id) {
     // Load signatures onto the canvases
     document.getElementById('canvas-firma-interviniente')?.loadSignature?.(data.firma_interviniente);
     document.getElementById('canvas-firma-cliente')?.loadSignature?.(data.firma_cliente);
+
+    const localEst = localStorage.getItem(`pf_status_intervencion_${id}`);
+    const estadoFinal = localEst || data.estado || 'pendiente';
+    const selEst = document.getElementById('select-form-estado');
+    if (selEst) selEst.value = estadoFinal;
     
   } catch (err) {
     console.error('Error cargando formulario:', err);
@@ -424,6 +429,7 @@ function recolectarDatos() {
   if (document.getElementById('radio-frio-industrial')?.checked) tipoServicio = 'Frio Industrial';
 
   return {
+    estado: getVal('select-form-estado') || 'pendiente',
     nombre: getVal('inp-nombre'),
     jornada: getVal('inp-jornada'),
     num_desplazamiento: getVal('inp-desplazamiento'),
@@ -544,11 +550,17 @@ async function guardarFormulario(usuarioId) {
         .update(datos)
         .eq('id', currentFormId);
       if (error) throw error;
+      if (datos.estado) {
+        localStorage.setItem(`pf_status_intervencion_${currentFormId}`, datos.estado);
+      }
       limpiarBorradorLocal();
       showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
       const res = await insertarIntervencionConRetry(datos);
       currentFormId = res.id;
+      if (datos.estado && res.id) {
+        localStorage.setItem(`pf_status_intervencion_${res.id}`, datos.estado);
+      }
       if (window.history && window.history.replaceState && res.id) {
         window.history.replaceState({}, '', window.location.pathname + '?id=' + res.id);
       }
@@ -776,3 +788,6 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     img.src = base64Data;
   };
 }
+
+window.getFotosFormulario = () => fotosArray;
+

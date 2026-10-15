@@ -128,7 +128,7 @@ function initPageTransitions() {
 }
 
 /* ═══════════════════════════════════
-   COMPRESIÓN DE CANVAS (WebP + PNG Fallback)
+   COMPRESIÓN DE CANVAS (Fondo blanco + WebP/JPEG)
    ═══════════════════════════════════ */
 function compressCanvas(canvas, quality = 0.72) {
   if (!canvas) return '';
@@ -145,15 +145,36 @@ function compressCanvas(canvas, quality = 0.72) {
     }
     if (!hasPixels) return '';
 
-    const webp = canvas.toDataURL('image/webp', quality);
+    // Renderizar sobre fondo blanco sólido para que las transparencias
+    // nunca se vuelvan negras al convertir a JPEG o al imprimir en PDF
+    const whiteCanvas = document.createElement('canvas');
+    whiteCanvas.width = canvas.width;
+    whiteCanvas.height = canvas.height;
+    const wCtx = whiteCanvas.getContext('2d');
+    wCtx.fillStyle = '#FFFFFF';
+    wCtx.fillRect(0, 0, whiteCanvas.width, whiteCanvas.height);
+    wCtx.drawImage(canvas, 0, 0);
+
+    const webp = whiteCanvas.toDataURL('image/webp', quality);
     if (webp && webp.startsWith('data:image/webp') && webp.length > 50) {
       return webp;
+    }
+    const jpeg = whiteCanvas.toDataURL('image/jpeg', quality);
+    if (jpeg && jpeg.startsWith('data:image/jpeg') && jpeg.length > 50) {
+      return jpeg;
     }
   } catch (_) {}
 
   try {
-    const png = canvas.toDataURL('image/png');
-    return (png && png.length > 50) ? png : '';
+    const whiteCanvas = document.createElement('canvas');
+    whiteCanvas.width = canvas.width;
+    whiteCanvas.height = canvas.height;
+    const wCtx = whiteCanvas.getContext('2d');
+    wCtx.fillStyle = '#FFFFFF';
+    wCtx.fillRect(0, 0, whiteCanvas.width, whiteCanvas.height);
+    wCtx.drawImage(canvas, 0, 0);
+    const jpeg = whiteCanvas.toDataURL('image/jpeg', 0.85);
+    return (jpeg && jpeg.length > 50) ? jpeg : '';
   } catch (_) {
     return '';
   }

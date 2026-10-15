@@ -3,209 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0C2340">
+  <meta name="theme-color" content="#1E3A8A">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Historial de Formularios — ProFrio Industrial</title>
   <meta name="description" content="Historial completo de reportes de intervención y solicitudes de materiales de ProFrio Industrial.">
+  <title>Historial de Formularios — ProFrio Industrial</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/global.css?v=13">
-  <link rel="stylesheet" href="css/dashboard.css?v=12">
-  <link rel="stylesheet" href="css/responsive.css?v=12">
-  <style>
-    /* Prevent page-wide horizontal scroll */
-    html, body { overflow-x: hidden; max-width: 100vw; }
-    
-    /* Toolbar filters */
-    .toolbar-box {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      box-shadow: var(--shadow-sm);
-      margin-bottom: 1.5rem;
-      border: 1px solid var(--gray-200);
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .toolbar-row {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-    }
-    
-    .toolbar-group {
-      flex: 1;
-      min-width: 200px;
-      display: flex;
-      flex-direction: column;
-      gap: 0.4rem;
-    }
-    
-    .toolbar-group label {
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--primary-900);
-    }
-
-    .filter-pills {
-      display: flex;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-    .filter-pill {
-      background: var(--white);
-      border: 1.5px solid var(--primary-200);
-      color: var(--primary-700);
-      padding: 0.5rem 1rem;
-      font-size: 0.85rem;
-      font-weight: 600;
-      border-radius: 99px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .filter-pill.active {
-      background: var(--primary-600);
-      color: var(--white);
-      border-color: var(--primary-600);
-    }
-
-    /* Form List Cards */
-    .history-list {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .history-card {
-      background: var(--white);
-      border-radius: var(--radius-lg);
-      padding: 1.25rem 1.5rem;
-      box-shadow: var(--shadow-sm);
-      border: 1px solid var(--gray-200);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 1rem;
-      transition: all 0.3s ease;
-      animation: fadeIn 0.4s ease;
-    }
-    .history-card:hover {
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
-      border-color: var(--primary-300);
-    }
-    
-    .card-main-info {
-      flex: 1;
-      min-width: 0;
-    }
-    
-    .card-title-row {
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-      margin-bottom: 0.35rem;
-      flex-wrap: wrap;
-    }
-    
-    .card-title-row strong {
-      font-size: 1.05rem;
-      color: var(--primary-900);
-    }
-    
-    .badge-tipo {
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 0.2rem 0.6rem;
-      border-radius: 99px;
-      display: inline-flex;
-      align-items: center;
-    }
-    .badge-tipo.intervencion {
-      background: var(--primary-50);
-      color: var(--primary-700);
-    }
-    .badge-tipo.materiales {
-      background: #f0fdf4;
-      color: #15803d;
-    }
-    
-    .card-meta-row {
-      display: flex;
-      gap: 1rem;
-      color: var(--gray-600);
-      font-size: 0.85rem;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-    
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 0.3rem;
-    }
-
-    .card-right-info {
-      text-align: right;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 0.5rem;
-      flex-shrink: 0;
-    }
-    
-    .card-total {
-      font-size: 1.2rem;
-      font-weight: 800;
-      color: var(--primary-600);
-    }
-
-    .admin-banner {
-      background: var(--primary-50);
-      border: 1px solid var(--primary-200);
-      color: var(--primary-800);
-      padding: 0.6rem 1rem;
-      border-radius: var(--radius-md);
-      font-size: 0.85rem;
-      margin-bottom: 1.5rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    @media (max-width: 768px) {
-      .history-card {
-        flex-direction: column;
-        align-items: stretch;
-        padding: 1.25rem;
-      }
-      .card-right-info {
-        text-align: left;
-        align-items: flex-start;
-        border-top: 1px solid var(--gray-100);
-        padding-top: 0.75rem;
-        margin-top: 0.5rem;
-      }
-      .card-total {
-        font-size: 1.1rem;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="css/global.css?v=27">
+  <link rel="stylesheet" href="css/dashboard.css?v=33">
+  <script src="js/utils.js?v=33"></script>
+  <script src="js/offline-sync.js?v=27"></script>
+  <script src="js/biometric-auth.js?v=27"></script>
+  <script src="js/fuzzy-search.js?v=27"></script>
 </head>
 <body>
 
   <aside class="sidebar">
-    <div class="sidebar-header">
-      <span>❄️</span> ProFrio Admin
-    </div>
+    <div class="sidebar-header"><span>❄️</span> ProFrio</div>
     <nav class="sidebar-nav">
       <a href="#" id="sidebar-dash-link">🏠 Panel Principal</a>
-      <a href="historial-formularios.html" class="active">📂 Historial General</a>
+      <a href="historial-formularios.html" class="active">📂 Historial</a>
     </nav>
     <div class="sidebar-footer">
-      <button id="btn-logout" class="btn btn-outline w-full" style="color:white; border-color:white;">Cerrar Sesión</button>
+      <button id="btn-logout" class="btn btn-outline w-full">Cerrar Sesión</button>
     </div>
   </aside>
 
@@ -213,74 +34,124 @@
     <header class="top-header">
       <div style="display:flex; align-items:center; gap:10px;">
         <button id="btn-toggle-sidebar" class="sidebar-toggle-btn">☰</button>
-        <div class="page-title" style="margin:0;">Historial de Formularios</div>
+        <h1 class="page-title" style="margin:0;">📂 Historial de Formularios</h1>
       </div>
       <div class="user-info">
-        <span id="header-user-name">Usuario</span>
+        <span id="header-user-name" class="user-name">Usuario</span>
         <div class="user-avatar" id="header-user-avatar">👷</div>
       </div>
     </header>
 
     <div class="content-area">
-      <!-- Admin banner if Jefe is logging in -->
       <div id="admin-banner-view" class="admin-banner" style="display:none;">
-        🛡️ <strong>Modo Administrador</strong> — Tienes acceso a ver y buscar los formularios de todos los empleados de la empresa.
+        🛡️ <strong>Modo Administrador</strong> — Acceso a formularios de todos los empleados.
       </div>
 
-      <!-- Filters & Toolbar -->
+      <!-- ── Carpetas de Trabajo (Pendientes vs Facturados/Trabajados) ── -->
+      <div class="folder-tabs-wrapper" role="tablist" aria-label="Carpetas de formularios">
+        <button id="folder-tab-pendientes" class="folder-tab active" data-folder="pendiente" role="tab" aria-selected="true" title="Formularios pendientes de enviar o facturar">
+          <span class="folder-icon">⏳</span>
+          <span class="folder-title">Pendientes / Por Facturar</span>
+          <span id="badge-count-pendientes" class="folder-badge">0</span>
+        </button>
+        <button id="folder-tab-facturados" class="folder-tab" data-folder="facturado" role="tab" aria-selected="false" title="Formularios ya trabajados, enviados o facturados">
+          <span class="folder-icon">✅</span>
+          <span class="folder-title">Enviados / Facturados (Trabajados)</span>
+          <span id="badge-count-facturados" class="folder-badge">0</span>
+        </button>
+        <button id="folder-tab-todos" class="folder-tab" data-folder="todos" role="tab" aria-selected="false" title="Ver todos los formularios juntos">
+          <span class="folder-icon">📁</span>
+          <span class="folder-title">Todos</span>
+          <span id="badge-count-todos" class="folder-badge">0</span>
+        </button>
+      </div>
+
       <div class="toolbar-box">
         <div class="toolbar-row">
           <div class="toolbar-group">
-            <label>BUSCAR</label>
-            <input type="text" id="search-input" class="form-input" placeholder="Buscar por cliente, número, técnico...">
+            <label>Buscar</label>
+            <input type="text" id="search-input" class="form-input" placeholder="Cliente, número, técnico...">
           </div>
-          
           <div class="toolbar-group">
-            <label>TIPO DE FORMULARIO</label>
+            <label>Tipo</label>
             <div class="filter-pills">
               <button id="pill-all" class="filter-pill active">Todos</button>
-              <button id="pill-intervencion" class="filter-pill">Intervención</button>
-              <button id="pill-materiales" class="filter-pill">Materiales</button>
+              <button id="pill-intervencion" class="filter-pill">🔧 Intervención</button>
+              <button id="pill-materiales" class="filter-pill">📦 Materiales</button>
             </div>
           </div>
         </div>
-
         <div class="toolbar-row">
           <div class="toolbar-group">
-            <label>FECHA INICIAL</label>
+            <label>Técnico</label>
+            <select id="filter-tecnico" class="form-input">
+              <option value="">Todos los técnicos</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <label>Estado</label>
+            <select id="filter-status" class="form-input">
+              <option value="">Todos los estados</option>
+              <option value="completo">Completo</option>
+              <option value="pendiente">Pendiente</option>
+            </select>
+          </div>
+          <div class="toolbar-group">
+            <label>Fecha inicial</label>
             <input type="date" id="filter-date-start" class="form-input">
           </div>
-          
           <div class="toolbar-group">
-            <label>FECHA FINAL</label>
+            <label>Fecha final</label>
             <input type="date" id="filter-date-end" class="form-input">
           </div>
         </div>
       </div>
 
-      <!-- Forms Container -->
-      <div id="loading-spinner" style="text-align:center; padding:3rem 0;">
+      <div id="loading-spinner" style="text-align:center; padding:4rem 0;">
         <div class="spinner" style="margin: 0 auto;"></div>
       </div>
 
-      <div id="empty-state" style="display:none; text-align:center; padding:4rem 1rem; color:var(--gray-600);">
-        <div style="font-size:3rem; margin-bottom:1rem;">📂</div>
-        <h3>No se encontraron formularios</h3>
-        <p style="font-size:0.9rem; color:var(--gray-400); margin-top:0.25rem;">Intenta cambiar los parámetros de búsqueda o filtros.</p>
+      <div id="empty-state" style="display:none; text-align:center; padding:5rem 1rem; color:var(--gray-500);">
+        <div style="font-size:3.5rem; margin-bottom:1rem; opacity:0.35; filter:drop-shadow(0 4px 8px rgba(110,86,207,0.2));">📂</div>
+        <h3 style="font-size:1.2rem; margin-bottom:0.5rem; color:var(--clay-purple-800);">No se encontraron formularios</h3>
+        <p style="font-size:0.9rem;">Cambia los parámetros de búsqueda o filtros.</p>
       </div>
 
-      <div id="history-list-container" class="history-list" style="display:none;">
-        <!-- Filled dynamically by JS -->
-      </div>
-
+      <div id="history-list-container" class="history-list" style="display:none;"></div>
     </div>
   </main>
 
+  <!-- ══ BOTTOM NAV (MOBILE) ══ -->
+  <nav class="bottom-nav" role="navigation" aria-label="Navegación principal">
+    <a href="dashboard-empleado.html" class="nav-item">
+      <div class="nav-icon-wrap">🏠</div>
+      <span class="nav-label">Inicio</span>
+    </a>
+    <a href="formulario-intervencion.html" class="nav-item">
+      <div class="nav-icon-wrap">📋</div>
+      <span class="nav-label">Intervención</span>
+    </a>
+    <a href="formulario-materiales.html" class="nav-item">
+      <div class="nav-icon-wrap">📦</div>
+      <span class="nav-label">Materiales</span>
+    </a>
+    <a href="historial-formularios.html" class="nav-item active">
+      <div class="nav-icon-wrap">📂</div>
+      <span class="nav-label">Historial</span>
+    </a>
+    <a href="perfil.html" class="nav-item">
+      <div class="nav-icon-wrap">👤</div>
+      <span class="nav-label">Perfil</span>
+    </a>
+  </nav>
+
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/security.js?v=12"></script>
-  <script src="js/supabase-config.js?v=12"></script>
-  <script src="js/auth.js?v=14"></script>
-  <script src="js/online-status.js?v=12"></script>
-  <script src="js/historial-formularios.js?v=14"></script>
+  <script src="js/security.js?v=25"></script>
+  <script src="js/supabase-config.js?v=25"></script>
+  <script src="js/auth.js?v=27"></script>
+  <script src="js/nav-router.js?v=25"></script>
+  <script src="js/online-status.js?v=25"></script>
+  <script src="js/historial-formularios.js?v=33"></script>
+  <button id="scroll-to-top-btn" aria-label="Volver arriba" title="Volver arriba">↑</button>
 </body>
 </html>

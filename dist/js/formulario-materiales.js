@@ -4,6 +4,7 @@
  */
 
 let fotosArray = [];
+let currentFormId = null;
 const DRAFT_KEY = 'pf_draft_materiales';
 
 function guardarBorradorLocal() {
@@ -27,6 +28,13 @@ function restaurarBorradorLocal() {
     if (data.direccion) document.getElementById('inp-direccion').value = data.direccion;
     if (data.telefono) document.getElementById('inp-telefono').value = data.telefono;
     if (data.despachado_por) document.getElementById('inp-despachado').value = data.despachado_por;
+    if (data.tipo_solicitud) {
+      const rad = document.querySelector(`input[name="tipo_solicitud"][value="${data.tipo_solicitud}"]`);
+      if (rad) {
+        rad.checked = true;
+        rad.dispatchEvent(new Event('change'));
+      }
+    }
     if (data.recibido_conforme) document.getElementById('inp-recibido').value = data.recibido_conforme;
     if (data.observaciones) document.getElementById('ta-observaciones').value = data.observaciones;
 
@@ -47,11 +55,110 @@ function restaurarBorradorLocal() {
     if (data.firma_despachado) document.getElementById('canvas-firma-despachado')?.loadSignature?.(data.firma_despachado);
     if (data.firma_recibido) document.getElementById('canvas-firma-recibido')?.loadSignature?.(data.firma_recibido);
 
+    if (window.showToast) {
+      window.showToast('📋 Se cargó tu borrador anterior. Usa "Nuevo en Blanco" para limpiar.', 'warning', 4500);
+    }
   } catch (_) {}
 }
 
 function limpiarBorradorLocal() {
   try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+}
+
+let lastMaterialesBackup = null;
+
+function restaurarBackupMateriales() {
+  if (!lastMaterialesBackup) return;
+  const { datos, formId, fotos } = lastMaterialesBackup;
+
+  currentFormId = formId;
+  if (formId && window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname + '?id=' + formId);
+  }
+
+  if (datos.fecha_dia) document.getElementById('inp-fecha-dia').value = datos.fecha_dia;
+  if (datos.fecha_mes) document.getElementById('inp-fecha-mes').value = datos.fecha_mes;
+  if (datos.fecha_anio) document.getElementById('inp-fecha-anio').value = datos.fecha_anio;
+  if (datos.cliente) document.getElementById('inp-cliente').value = datos.cliente;
+  if (datos.direccion) document.getElementById('inp-direccion').value = datos.direccion;
+  if (datos.telefono) document.getElementById('inp-telefono').value = datos.telefono;
+  if (datos.despachado_por) document.getElementById('inp-despachado').value = datos.despachado_por;
+  if (datos.tipo_solicitud) {
+    const rad = document.querySelector(`input[name="tipo_solicitud"][value="${datos.tipo_solicitud}"]`);
+    if (rad) {
+      rad.checked = true;
+      rad.dispatchEvent(new Event('change'));
+    }
+  }
+  if (datos.recibido_conforme) document.getElementById('inp-recibido').value = datos.recibido_conforme;
+  if (datos.observaciones) document.getElementById('ta-observaciones').value = datos.observaciones;
+
+  if (datos.items) {
+    const items = typeof datos.items === 'string' ? JSON.parse(datos.items) : datos.items;
+    const tbody = document.getElementById('items-tbody');
+    if (tbody && Array.isArray(items) && items.length > 0) {
+      tbody.innerHTML = '';
+      items.forEach(item => agregarFila(item));
+    }
+  }
+
+  fotosArray = fotos || [];
+  renderPhotos();
+
+  if (datos.firma_despachado) document.getElementById('canvas-firma-despachado')?.loadSignature?.(datos.firma_despachado);
+  if (datos.firma_recibido) document.getElementById('canvas-firma-recibido')?.loadSignature?.(datos.firma_recibido);
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.style.display = 'none';
+
+  if (window.showToast) window.showToast('↩️ Formulario restaurado exitosamente', 'success');
+}
+
+function limpiarFormularioCompleto(usuarioId) {
+  // Backup before clear so user can undo
+  lastMaterialesBackup = {
+    datos: recolectarDatos(),
+    formId: currentFormId,
+    fotos: [...fotosArray]
+  };
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.style.display = 'inline-flex';
+
+  currentFormId = null;
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+  limpiarBorradorLocal();
+
+  ['inp-cliente', 'inp-direccion', 'inp-telefono', 'inp-despachado', 'inp-recibido', 'ta-observaciones', 'inp-firma-despachado', 'inp-firma-recibido'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  const rad = document.querySelector('input[name="tipo_solicitud"][value="pedido"]');
+  if (rad) {
+    rad.checked = true;
+    rad.dispatchEvent(new Event('change'));
+  }
+
+  document.getElementById('btn-clear-despachado')?.click();
+  document.getElementById('btn-clear-recibido')?.click();
+
+  fotosArray = [];
+  renderPhotos();
+
+  const tbody = document.getElementById('items-tbody');
+  if (tbody) tbody.innerHTML = '';
+  agregarFila();
+  agregarFila();
+  agregarFila();
+
+  recalcularTotal();
+  autoFillFecha();
+  if (usuarioId) generarSiguienteNumero(usuarioId);
+
+  if (window.showToast) window.showToast('🧹 Formulario limpio. ¿Fue un error? Presiona ↩️ Deshacer Limpieza', 'warning', 6000);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -62,6 +169,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   initPhotos();
 
+  // Initialize signature pads
+  initSignaturePad('canvas-firma-despachado', 'inp-firma-despachado', 'btn-clear-despachado');
+  initSignaturePad('canvas-firma-recibido',   'inp-firma-recibido',   'btn-clear-recibido');
+
+  // Tipo selector title updater
+  function actualizarTituloPorTipo() {
+    const tipoVal = document.querySelector('input[name="tipo_solicitud"]:checked')?.value;
+    const titleEl = document.getElementById('form-title-materiales');
+    if (titleEl) {
+      if (tipoVal === 'suministro') {
+        titleEl.textContent = 'SOLICITUD DE SUMINISTROS DE ALMACÉN';
+      } else {
+        titleEl.textContent = 'PEDIDO DE MATERIALES';
+      }
+    }
+  }
+
+  document.querySelectorAll('input[name="tipo_solicitud"]').forEach(radio => {
+    radio.addEventListener('change', actualizarTituloPorTipo);
+  });
+  actualizarTituloPorTipo();
+
   // Global Haptic Feedback listener for buttons and inputs
   document.addEventListener('click', (e) => {
     const target = e.target.closest('button, .btn, .btn-remove-row, input[type="checkbox"], input[type="radio"]');
@@ -70,20 +199,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // ── Inicializar canvas de firmas ──
-  initSignaturePad('canvas-firma-despachado', 'inp-firma-despachado', 'btn-clear-despachado');
-  initSignaturePad('canvas-firma-recibido',   'inp-firma-recibido',   'btn-clear-recibido');
-
   const urlParams = new URLSearchParams(window.location.search);
-  const formId = urlParams.get('id');
+  currentFormId = urlParams.get('id') || null;
 
-  if (formId) {
-    await cargarFormularioExistente(formId);
+  if (currentFormId) {
+    await cargarFormularioExistente(currentFormId);
   } else {
     await generarSiguienteNumero(profile.id);
-    // Auto-fill fecha actual
     autoFillFecha();
-    // Inicializar con 3 filas dinámicas vacías
+
     const tbody = document.getElementById('items-tbody');
     if (tbody) tbody.innerHTML = '';
     agregarFila();
@@ -92,17 +216,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     restaurarBorradorLocal();
 
-    // Auto-save debounced listener for draft
     const debouncedSave = window.debounce ? window.debounce(guardarBorradorLocal, 500) : guardarBorradorLocal;
     document.addEventListener('input', debouncedSave);
     document.addEventListener('change', debouncedSave);
   }
 
+  const btnNuevo = document.getElementById('btn-nuevo');
+  if (btnNuevo) btnNuevo.addEventListener('click', () => limpiarFormularioCompleto(profile.id));
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.addEventListener('click', restaurarBackupMateriales);
+
   const btnAdd = document.getElementById('btn-add-item');
   if (btnAdd) btnAdd.addEventListener('click', agregarFila);
 
   const btnGuardar = document.getElementById('btn-guardar');
-  if (btnGuardar) btnGuardar.addEventListener('click', () => guardarFormulario(profile.id, formId));
+  if (btnGuardar) btnGuardar.addEventListener('click', () => guardarFormulario(profile.id));
 
   const btnImprimir = document.getElementById('btn-imprimir');
   if (btnImprimir) btnImprimir.addEventListener('click', () => window.printForm?.() || window.print());
@@ -137,7 +266,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  // Close modal on backdrop click
   const emailModal = document.getElementById('email-modal');
   if (emailModal) {
     emailModal.addEventListener('click', (e) => {
@@ -211,17 +339,17 @@ function recalcularTotal() {
 /* ── Generar número ── */
 async function generarSiguienteNumero(usuarioId) {
   try {
+    // Número global por empresa, no por técnico
     const { data, error } = await window.supabaseClient
       .from('formularios_materiales')
       .select('numero')
-      .eq('usuario_id', usuarioId)
       .order('numero', { ascending: false })
       .limit(1);
 
     if (error) throw error;
 
     let nextNum = 1;
-    if (data && data.length > 0) nextNum = data[0].numero + 1;
+    if (data && data.length > 0) nextNum = (data[0].numero || 0) + 1;
 
     const numeroEl = document.getElementById('form-numero');
     if (numeroEl) {
@@ -251,6 +379,13 @@ async function cargarFormularioExistente(id) {
       numeroEl.dataset.value = data.numero;
     }
 
+    const tipoVal = data.tipo_solicitud || 'pedido';
+    const rad = document.querySelector(`input[name="tipo_solicitud"][value="${tipoVal}"]`);
+    if (rad) {
+      rad.checked = true;
+      rad.dispatchEvent(new Event('change'));
+    }
+
     document.getElementById('inp-fecha-dia').value   = data.fecha_dia   || '';
     document.getElementById('inp-fecha-mes').value   = data.fecha_mes   || '';
     document.getElementById('inp-fecha-anio').value  = data.fecha_anio  || '';
@@ -264,8 +399,10 @@ async function cargarFormularioExistente(id) {
     document.getElementById('ta-observaciones').value = data.observaciones || '';
 
     // ── Cargar firmas en canvas ──
-    document.getElementById('canvas-firma-despachado')?.loadSignature?.(data.firma_despachado);
-    document.getElementById('canvas-firma-recibido')?.loadSignature?.(data.firma_recibido);
+    const fDesp = data.firma_despachado || data.firma_interviniente;
+    const fRec  = data.firma_recibido   || data.firma_cliente;
+    if (fDesp) document.getElementById('canvas-firma-despachado')?.loadSignature?.(fDesp);
+    if (fRec)  document.getElementById('canvas-firma-recibido')?.loadSignature?.(fRec);
 
     fotosArray = data.fotos || [];
     renderPhotos();
@@ -277,6 +414,11 @@ async function cargarFormularioExistente(id) {
 
     const totalEl = document.getElementById('total-display');
     if (totalEl) totalEl.textContent = parseFloat(data.total || 0).toFixed(2);
+
+    const localEst = localStorage.getItem(`pf_status_materiales_${id}`);
+    const estadoFinal = localEst || data.estado || 'pendiente';
+    const selEst = document.getElementById('select-form-estado');
+    if (selEst) selEst.value = estadoFinal;
 
   } catch (err) {
     console.error('Error cargando formulario:', err);
@@ -294,7 +436,12 @@ function recolectarDatos() {
     });
   });
 
+  const tipo_solicitud = document.querySelector('input[name="tipo_solicitud"]:checked')?.value || 'pedido';
+  const estado = document.getElementById('select-form-estado')?.value || 'pendiente';
+
   return {
+    estado,
+    tipo_solicitud,
     fecha_dia:          parseInt(document.getElementById('inp-fecha-dia')?.value)  || null,
     fecha_mes:          parseInt(document.getElementById('inp-fecha-mes')?.value)  || null,
     fecha_anio:         parseInt(document.getElementById('inp-fecha-anio')?.value) || null,
@@ -312,41 +459,140 @@ function recolectarDatos() {
   };
 }
 
+/* ── Construir payload compatible con Supabase schema ── */
+function prepararPayloadMateriales(datos) {
+  const payload = { ...datos };
+  const fDesp = datos.firma_despachado || '';
+  const fRec  = datos.firma_recibido   || '';
+
+  // Map signature keys to standard schema column names (firma_interviniente/firma_cliente)
+  payload.firma_interviniente = fDesp;
+  payload.firma_cliente       = fRec;
+
+  // Delete non-existent column keys that cause schema cache error
+  delete payload.firma_despachado;
+  delete payload.firma_recibido;
+
+  return payload;
+}
+
+async function obtenerSiguienteNumeroMateriales() {
+  try {
+    const { data } = await window.supabaseClient
+      .from('formularios_materiales')
+      .select('numero')
+      .order('numero', { ascending: false })
+      .limit(1);
+    return (data && data.length > 0 && data[0].numero) ? data[0].numero + 1 : 1;
+  } catch (_) {
+    return 1;
+  }
+}
+
+async function insertarMaterialesConRetry(payload, maxIntentos = 5) {
+  let intento = 0;
+  while (intento < maxIntentos) {
+    intento++;
+    const nextNum = await obtenerSiguienteNumeroMateriales();
+    payload.numero = nextNum;
+
+    const { data, error } = await window.supabaseClient
+      .from('formularios_materiales')
+      .insert(payload)
+      .select('id')
+      .single();
+
+    if (!error && data) {
+      const numeroEl = document.getElementById('form-numero');
+      if (numeroEl) {
+        numeroEl.textContent = nextNum;
+        numeroEl.dataset.value = nextNum;
+      }
+      return { ok: true, id: data.id, numero: nextNum };
+    }
+
+    const isDuplicate = error && error.message && (
+      error.message.includes('unique constraint') ||
+      error.message.includes('duplicate key') ||
+      error.message.includes('numero_key') ||
+      error.code === '23505'
+    );
+
+    if (!isDuplicate || intento >= maxIntentos) {
+      throw error || new Error('Error al insertar formulario');
+    }
+    await new Promise(r => setTimeout(r, 150));
+  }
+}
+
 /* ── Guardar formulario ── */
-async function guardarFormulario(usuarioId, formId) {
+async function guardarFormulario(usuarioId) {
   const datos = recolectarDatos();
   datos.usuario_id = usuarioId;
 
+  const payload = prepararPayloadMateriales(datos);
+
   const statusEl = document.getElementById('save-status');
   function showStatus(msg, type = '') {
-    if (!statusEl) return;
-    statusEl.textContent = msg;
-    statusEl.className = 'visible ' + type;
-    setTimeout(() => { statusEl.className = ''; }, 3500);
+    if (statusEl) {
+      statusEl.textContent = msg;
+      statusEl.className = 'visible ' + type;
+      setTimeout(() => { statusEl.className = ''; }, 3500);
+    }
+    if (window.showToast) {
+      window.showToast(msg, type === 'success' ? 'success' : (type === 'error' ? 'error' : 'info'));
+    }
   }
 
   showStatus('Guardando...');
 
   try {
-    if (formId) {
+    if (currentFormId) {
       const { error } = await window.supabaseClient
         .from('formularios_materiales')
-        .update(datos)
-        .eq('id', formId);
+        .update(payload)
+        .eq('id', currentFormId);
       if (error) throw error;
+      if (datos.estado) {
+        localStorage.setItem(`pf_status_materiales_${currentFormId}`, datos.estado);
+      }
       limpiarBorradorLocal();
       showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
-      datos.numero = parseInt(document.getElementById('form-numero')?.dataset?.value || '1', 10);
-      const { error } = await window.supabaseClient
-        .from('formularios_materiales')
-        .insert(datos);
-      if (error) throw error;
+      const res = await insertarMaterialesConRetry(payload);
+      currentFormId = res.id;
+      if (datos.estado && res.id) {
+        localStorage.setItem(`pf_status_materiales_${res.id}`, datos.estado);
+      }
+      if (window.history && window.history.replaceState && res.id) {
+        window.history.replaceState({}, '', window.location.pathname + '?id=' + res.id);
+      }
       limpiarBorradorLocal();
-      showStatus('✅ Guardado exitosamente.', 'success');
+      showStatus(`✅ Guardado exitosamente (No. ${res.numero}).`, 'success');
     }
   } catch (err) {
     console.error('Error guardando:', err);
+
+    // Automatic Fallback Retry if any column fails
+    if (err.message && err.message.includes('column')) {
+      try {
+        const fallback = { ...payload };
+        delete fallback.firma_interviniente;
+        delete fallback.firma_cliente;
+        if (currentFormId) {
+          await window.supabaseClient.from('formularios_materiales').update(fallback).eq('id', currentFormId);
+        } else {
+          await window.supabaseClient.from('formularios_materiales').insert(fallback);
+        }
+        limpiarBorradorLocal();
+        showStatus('✅ Guardado exitosamente.', 'success');
+        return;
+      } catch (fallbackErr) {
+        showStatus('❌ Error: ' + fallbackErr.message, 'error');
+        return;
+      }
+    }
+
     showStatus('❌ Error: ' + err.message, 'error');
   }
 }
@@ -370,13 +616,27 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   let lastPos = { x: 0, y: 0 };
 
   function getPos(e) {
-    const rect    = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const rect = canvas.getBoundingClientRect();
+    const w = (rect.width && rect.width > 0) ? rect.width : (canvas.offsetWidth || 300);
+    const h = (rect.height && rect.height > 0) ? rect.height : (canvas.offsetHeight || 125);
+    const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+    const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
     return {
-      x: ((clientX - rect.left) / rect.width)  * canvas.width,
-      y: ((clientY - rect.top)  / rect.height) * canvas.height
+      x: Math.max(0, Math.min(canvas.width,  ((clientX - rect.left) / w) * canvas.width)),
+      y: Math.max(0, Math.min(canvas.height, ((clientY - rect.top)  / h) * canvas.height))
     };
+  }
+
+  function saveSignatureValue() {
+    if (window.compressCanvas) {
+      input.value = window.compressCanvas(canvas, 0.72);
+    } else {
+      try {
+        input.value = canvas.toDataURL('image/png');
+      } catch (_) {
+        input.value = '';
+      }
+    }
   }
 
   function startDrawing(e) {
@@ -387,26 +647,18 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(lastPos.x, lastPos.y);
     ctx.stroke();
-  }
-
-  function saveSignatureValue() {
-    if (window.compressCanvas) {
-      input.value = window.compressCanvas(canvas, 0.72);
-    } else {
-      input.value = canvas.toDataURL('image/webp', 0.72);
-    }
+    saveSignatureValue();
   }
 
   function draw(e) {
     if (!drawing) return;
-    e.preventDefault();
+    if (e.cancelable) e.preventDefault();
     const newPos = getPos(e);
     ctx.beginPath();
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(newPos.x, newPos.y);
     ctx.stroke();
     lastPos = newPos;
-    saveSignatureValue();
   }
 
   function stopDrawing() {
@@ -420,9 +672,11 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   canvas.addEventListener('mousemove',  draw);
   canvas.addEventListener('mouseup',    stopDrawing);
   canvas.addEventListener('mouseleave', stopDrawing);
+
   canvas.addEventListener('touchstart', startDrawing, { passive: false });
   canvas.addEventListener('touchmove',  draw,         { passive: false });
-  canvas.addEventListener('touchend',   stopDrawing);
+  canvas.addEventListener('touchend',   stopDrawing,  { passive: true });
+  canvas.addEventListener('touchcancel',stopDrawing,  { passive: true });
 
   clearBtn?.addEventListener('click', () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -444,3 +698,96 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     img.src = base64Data;
   };
 }
+
+/* ════════════════════════════════════════
+   PHOTOS
+   ════════════════════════════════════════ */
+function initPhotos() {
+  const btnCamera  = document.getElementById('btn-camera');
+  const btnUpload  = document.getElementById('btn-upload');
+  const inpCamera  = document.getElementById('inp-camera');
+  const inpUpload  = document.getElementById('inp-upload');
+  const lightbox   = document.getElementById('lightbox-modal');
+  const lightboxClose = document.getElementById('lightbox-close');
+
+  if (btnCamera && inpCamera) {
+    btnCamera.addEventListener('click', () => inpCamera.click());
+    inpCamera.addEventListener('change', handlePhotoSelection);
+  }
+  if (btnUpload && inpUpload) {
+    btnUpload.addEventListener('click', () => inpUpload.click());
+    inpUpload.addEventListener('change', handlePhotoSelection);
+  }
+
+  if (lightboxClose) lightboxClose.addEventListener('click', () => lightbox?.classList.remove('active'));
+  if (lightbox) lightbox.addEventListener('click', (e) => { if (e.target === lightbox) lightbox.classList.remove('active'); });
+
+  function handlePhotoSelection(e) {
+    const files = e.target.files;
+    if (!files) return;
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      if (!file.type.startsWith('image/')) continue;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let w = img.width, h = img.height;
+          const max = 800;
+          if (w > h) { if (w > max) { h *= max / w; w = max; } }
+          else        { if (h > max) { w *= max / h; h = max; } }
+          canvas.width  = w;
+          canvas.height = h;
+          canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+          fotosArray.push(canvas.toDataURL('image/jpeg', 0.6));
+          renderPhotos();
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+    if (inpCamera) inpCamera.value = '';
+    if (inpUpload) inpUpload.value = '';
+  }
+}
+
+function renderPhotos() {
+  const previewContainer = document.getElementById('photos-preview');
+  if (!previewContainer) return;
+  previewContainer.innerHTML = '';
+
+  fotosArray.forEach((base64, index) => {
+    const container = document.createElement('div');
+    container.className = 'photo-thumbnail-container';
+
+    const img = document.createElement('img');
+    img.src = base64;
+    img.addEventListener('click', () => {
+      const lightbox    = document.getElementById('lightbox-modal');
+      const lightboxImg = document.getElementById('lightbox-img');
+      if (lightbox && lightboxImg) {
+        lightboxImg.src = base64;
+        lightbox.classList.add('active');
+      }
+    });
+
+    const btnDelete = document.createElement('button');
+    btnDelete.type      = 'button';
+    btnDelete.className = 'btn-delete-photo';
+    btnDelete.innerHTML = '&times;';
+    btnDelete.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fotosArray.splice(index, 1);
+      renderPhotos();
+    });
+
+    container.appendChild(img);
+    container.appendChild(btnDelete);
+    previewContainer.appendChild(container);
+  });
+}
+
+window.recolectarDatosMateriales = recolectarDatos;
+window.getFotosFormulario = () => fotosArray;
+

@@ -3,6 +3,7 @@
  */
 
 let fotosArray = [];
+let currentFormId = null;
 const DRAFT_KEY = 'pf_draft_intervencion';
 
 function guardarBorradorLocal() {
@@ -57,17 +58,19 @@ function restaurarBorradorLocal() {
       'inp-cf-pescados': data.cf_pescados,
       'inp-cf-preparacion': data.cf_preparacion,
       'ta-observaciones': data.observaciones,
-      'ta-pedido-materiales': data.pedido_materiales,
-      'inp-firma-interviniente': data.firma_interviniente,
-      'inp-firma-cliente': data.firma_cliente
+      'ta-pedido-materiales': data.pedido_materiales
     };
 
-    for (const [idEl, val] of Object.entries(mapeo)) {
-      const el = document.getElementById(idEl);
-      if (el) {
-        if (el.type === 'checkbox') el.checked = !!val;
-        else el.value = val || '';
-      }
+    Object.entries(mapeo).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      if (el.type === 'checkbox') el.checked = !!val;
+      else if (val !== undefined && val !== null) el.value = val;
+    });
+
+    if (data.tipo_servicio) {
+      const rad = document.querySelector(`input[name="tipo_servicio"][value="${data.tipo_servicio}"]`);
+      if (rad) rad.checked = true;
     }
 
     if (data.fotos && Array.isArray(data.fotos)) {
@@ -75,18 +78,149 @@ function restaurarBorradorLocal() {
       renderPhotos();
     }
 
-    if (data.tipo_servicio === 'Electricidad' && document.getElementById('radio-electricidad')) document.getElementById('radio-electricidad').checked = true;
-    if (data.tipo_servicio === 'Frio Comercial' && document.getElementById('radio-frio-comercial')) document.getElementById('radio-frio-comercial').checked = true;
-    if (data.tipo_servicio === 'Frio Industrial' && document.getElementById('radio-frio-industrial')) document.getElementById('radio-frio-industrial').checked = true;
-
     if (data.firma_interviniente) document.getElementById('canvas-firma-interviniente')?.loadSignature?.(data.firma_interviniente);
     if (data.firma_cliente) document.getElementById('canvas-firma-cliente')?.loadSignature?.(data.firma_cliente);
 
+    if (window.showToast) {
+      window.showToast('📋 Se cargó tu borrador anterior. Usa "Nuevo en Blanco" para limpiar.', 'warning', 4500);
+    }
   } catch (_) {}
+}
+
+let lastIntervencionBackup = null;
+
+function restaurarBackupIntervencion() {
+  if (!lastIntervencionBackup) return;
+  const { datos, formId, fotos } = lastIntervencionBackup;
+
+  currentFormId = formId;
+  if (formId && window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname + '?id=' + formId);
+  }
+
+  const mapeo = {
+    'inp-nombre': datos.nombre,
+    'inp-jornada': datos.jornada,
+    'inp-desplazamiento': datos.num_desplazamiento,
+    'inp-intervinientes': datos.num_intervinientes,
+    'inp-cliente': datos.cliente,
+    'inp-direccion': datos.direccion,
+    'inp-telefono': datos.telefono,
+    'chk-tecnico': datos.chk_tecnico,
+    'chk-jefe-obra': datos.chk_jefe_obra,
+    'chk-jefe-equipo': datos.chk_jefe_equipo,
+    'inp-horas-tecnico': datos.horas_tecnico,
+    'inp-horas-jefe-obra': datos.horas_jefe_obra,
+    'inp-horas-jefe-equipo': datos.horas_jefe_equipo,
+    'chk-aires': datos.chk_aires,
+    'chk-rack': datos.chk_rack,
+    'inp-nivel-liquido': datos.inp_nivel_liquido,
+    'inp-nivel-aceite': datos.inp_nivel_aceite,
+    'chk-correccion-fuga': datos.chk_correccion_fuga,
+    'chk-carga-refrigerante': datos.chk_carga_refrigerante,
+    'chk-cambio-compresor': datos.chk_cambio_compresor,
+    'chk-mant-aa': datos.chk_mant_aa,
+    'chk-mant-nevera': datos.chk_mant_nevera,
+    'chk-cambio-solenoide': datos.chk_cambio_solenoide,
+    'chk-cambio-abanico': datos.chk_cambio_abanico,
+    'inp-temp-congelado': datos.temp_congelado,
+    'inp-temp-deli-queso': datos.temp_deli_queso,
+    'inp-temp-deli-carne': datos.temp_deli_carne,
+    'inp-temp-salami': datos.temp_salami,
+    'inp-temp-yogurt': datos.temp_yogurt,
+    'inp-temp-vegetales-nev': data => data.temp_vegetales,
+    'inp-temp-jugos': datos.temp_jugos,
+    'inp-cf-vegetales': datos.cf_vegetales,
+    'inp-cf-congelado': datos.cf_congelado,
+    'inp-cf-carnes': datos.cf_carnes,
+    'inp-cf-pescados': datos.cf_pescados,
+    'inp-cf-preparacion': datos.cf_preparacion,
+    'ta-observaciones': datos.observaciones,
+    'ta-pedido-materiales': datos.pedido_materiales
+  };
+
+  Object.entries(mapeo).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (el.type === 'checkbox') el.checked = !!val;
+    else if (val !== undefined && val !== null) el.value = val;
+  });
+
+  if (datos.tipo_servicio) {
+    const rad = document.querySelector(`input[name="tipo_servicio"][value="${datos.tipo_servicio}"]`);
+    if (rad) rad.checked = true;
+  }
+
+  fotosArray = fotos || [];
+  renderPhotos();
+
+  if (datos.firma_interviniente) document.getElementById('canvas-firma-interviniente')?.loadSignature?.(datos.firma_interviniente);
+  if (datos.firma_cliente) document.getElementById('canvas-firma-cliente')?.loadSignature?.(datos.firma_cliente);
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.style.display = 'none';
+
+  if (window.showToast) window.showToast('↩️ Formulario restaurado exitosamente', 'success');
 }
 
 function limpiarBorradorLocal() {
   try { localStorage.removeItem(DRAFT_KEY); } catch (_) {}
+}
+
+function limpiarFormularioCompleto(usuarioId) {
+  // Backup before clear so user can undo
+  lastIntervencionBackup = {
+    datos: recolectarDatos(),
+    formId: currentFormId,
+    fotos: [...fotosArray]
+  };
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.style.display = 'inline-flex';
+
+  currentFormId = null;
+  if (window.history && window.history.replaceState) {
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+  limpiarBorradorLocal();
+
+  const idsToClear = [
+    'inp-nombre', 'inp-jornada', 'inp-desplazamiento', 'inp-intervinientes',
+    'inp-cliente', 'inp-direccion', 'inp-telefono', 'inp-horas-tecnico',
+    'inp-horas-jefe-obra', 'inp-horas-jefe-equipo', 'inp-nivel-liquido',
+    'inp-nivel-aceite', 'inp-temp-congelado', 'inp-temp-deli-queso',
+    'inp-temp-deli-carne', 'inp-temp-salami', 'inp-temp-yogurt',
+    'inp-temp-vegetales-nev', 'inp-temp-jugos', 'inp-cf-vegetales',
+    'inp-cf-congelado', 'inp-cf-carnes', 'inp-cf-pescados', 'inp-cf-preparacion',
+    'ta-observaciones', 'ta-pedido-materiales', 'inp-firma-interviniente', 'inp-firma-cliente'
+  ];
+
+  idsToClear.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  const chkIds = [
+    'chk-tecnico', 'chk-jefe-obra', 'chk-jefe-equipo', 'chk-aires', 'chk-rack',
+    'chk-correccion-fuga', 'chk-carga-refrigerante', 'chk-cambio-compresor',
+    'chk-mant-aa', 'chk-mant-nevera', 'chk-cambio-solenoide', 'chk-cambio-abanico'
+  ];
+  chkIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.checked = false;
+  });
+
+  document.querySelectorAll('input[name="tipo_servicio"]').forEach(el => el.checked = false);
+
+  document.getElementById('btn-clear-interviniente')?.click();
+  document.getElementById('btn-clear-cliente')?.click();
+
+  fotosArray = [];
+  renderPhotos();
+
+  if (usuarioId) generarSiguienteNumero(usuarioId);
+
+  if (window.showToast) window.showToast('🧹 Formulario limpio. ¿Fue un error? Presiona ↩️ Deshacer Limpieza', 'warning', 6000);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -110,10 +244,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   
   const urlParams = new URLSearchParams(window.location.search);
-  const formId = urlParams.get('id');
+  currentFormId = urlParams.get('id') || null;
   
-  if (formId) {
-    await cargarFormularioExistente(formId);
+  if (currentFormId) {
+    await cargarFormularioExistente(currentFormId);
   } else {
     await generarSiguienteNumero(profile.id);
     restaurarBorradorLocal();
@@ -123,10 +257,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.addEventListener('input', debouncedSave);
     document.addEventListener('change', debouncedSave);
   }
+
+  const btnNuevo = document.getElementById('btn-nuevo');
+  if (btnNuevo) btnNuevo.addEventListener('click', () => limpiarFormularioCompleto(profile.id));
+
+  const btnUndo = document.getElementById('btn-deshacer');
+  if (btnUndo) btnUndo.addEventListener('click', restaurarBackupIntervencion);
   
   const btnGuardar = document.getElementById('btn-guardar');
   if (btnGuardar) {
-    btnGuardar.addEventListener('click', () => guardarFormulario(profile.id, formId));
+    btnGuardar.addEventListener('click', () => guardarFormulario(profile.id));
   }
   
   const btnImprimir = document.getElementById('btn-imprimir');
@@ -166,10 +306,10 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function generarSiguienteNumero(usuarioId) {
   try {
+    // Número global por empresa, no por técnico
     const { data, error } = await window.supabaseClient
       .from('formularios_intervencion')
       .select('numero')
-      .eq('usuario_id', usuarioId)
       .order('numero', { ascending: false })
       .limit(1);
       
@@ -177,7 +317,7 @@ async function generarSiguienteNumero(usuarioId) {
     
     let nextNum = 1;
     if (data && data.length > 0) {
-      nextNum = data[0].numero + 1;
+      nextNum = (data[0].numero || 0) + 1;
     }
     
     const numeroEl = document.getElementById('form-numero');
@@ -268,6 +408,11 @@ async function cargarFormularioExistente(id) {
     // Load signatures onto the canvases
     document.getElementById('canvas-firma-interviniente')?.loadSignature?.(data.firma_interviniente);
     document.getElementById('canvas-firma-cliente')?.loadSignature?.(data.firma_cliente);
+
+    const localEst = localStorage.getItem(`pf_status_intervencion_${id}`);
+    const estadoFinal = localEst || data.estado || 'pendiente';
+    const selEst = document.getElementById('select-form-estado');
+    if (selEst) selEst.value = estadoFinal;
     
   } catch (err) {
     console.error('Error cargando formulario:', err);
@@ -284,6 +429,7 @@ function recolectarDatos() {
   if (document.getElementById('radio-frio-industrial')?.checked) tipoServicio = 'Frio Industrial';
 
   return {
+    estado: getVal('select-form-estado') || 'pendiente',
     nombre: getVal('inp-nombre'),
     jornada: getVal('inp-jornada'),
     num_desplazamiento: getVal('inp-desplazamiento'),
@@ -329,33 +475,101 @@ function recolectarDatos() {
   };
 }
 
-async function guardarFormulario(usuarioId, formId) {
+async function obtenerSiguienteNumeroIntervencion() {
+  try {
+    const { data } = await window.supabaseClient
+      .from('formularios_intervencion')
+      .select('numero')
+      .order('numero', { ascending: false })
+      .limit(1);
+    return (data && data.length > 0 && data[0].numero) ? data[0].numero + 1 : 1;
+  } catch (_) {
+    return 1;
+  }
+}
+
+async function insertarIntervencionConRetry(datos, maxIntentos = 5) {
+  let intento = 0;
+  while (intento < maxIntentos) {
+    intento++;
+    const nextNum = await obtenerSiguienteNumeroIntervencion();
+    datos.numero = nextNum;
+
+    const { data, error } = await window.supabaseClient
+      .from('formularios_intervencion')
+      .insert(datos)
+      .select('id')
+      .single();
+
+    if (!error && data) {
+      const numeroEl = document.getElementById('form-numero');
+      if (numeroEl) {
+        numeroEl.textContent = nextNum;
+        numeroEl.dataset.value = nextNum;
+      }
+      return { ok: true, id: data.id, numero: nextNum };
+    }
+
+    const isDuplicate = error && error.message && (
+      error.message.includes('unique constraint') ||
+      error.message.includes('duplicate key') ||
+      error.message.includes('numero_key') ||
+      error.code === '23505'
+    );
+
+    if (!isDuplicate || intento >= maxIntentos) {
+      throw error || new Error('Error al insertar formulario');
+    }
+    // Short pause before retrying
+    await new Promise(r => setTimeout(r, 150));
+  }
+}
+
+async function guardarFormulario(usuarioId) {
   const datos = recolectarDatos();
   datos.usuario_id = usuarioId;
   const statusEl = document.getElementById('save-status');
-  if (statusEl) statusEl.textContent = 'Guardando...';
-  
+
+  function showStatus(msg, type = '') {
+    if (statusEl) {
+      statusEl.textContent = msg;
+      statusEl.className = 'visible ' + type;
+      setTimeout(() => { statusEl.className = ''; }, 3500);
+    }
+    if (window.showToast) {
+      window.showToast(msg, type === 'success' ? 'success' : (type === 'error' ? 'error' : 'info'));
+    }
+  }
+
+  showStatus('Guardando...');
+
   try {
-    if (formId) {
+    if (currentFormId) {
       const { error } = await window.supabaseClient
         .from('formularios_intervencion')
         .update(datos)
-        .eq('id', formId);
+        .eq('id', currentFormId);
       if (error) throw error;
+      if (datos.estado) {
+        localStorage.setItem(`pf_status_intervencion_${currentFormId}`, datos.estado);
+      }
       limpiarBorradorLocal();
-      if (statusEl) statusEl.textContent = 'Actualizado exitosamente.';
+      showStatus('✅ Actualizado exitosamente.', 'success');
     } else {
-      datos.numero = parseInt(document.getElementById('form-numero')?.dataset?.value || '1', 10);
-      const { error } = await window.supabaseClient
-        .from('formularios_intervencion')
-        .insert(datos);
-      if (error) throw error;
+      const res = await insertarIntervencionConRetry(datos);
+      currentFormId = res.id;
+      if (datos.estado && res.id) {
+        localStorage.setItem(`pf_status_intervencion_${res.id}`, datos.estado);
+      }
+      if (window.history && window.history.replaceState && res.id) {
+        window.history.replaceState({}, '', window.location.pathname + '?id=' + res.id);
+      }
       limpiarBorradorLocal();
-      if (statusEl) statusEl.textContent = 'Guardado exitosamente.';
+      showStatus(`✅ Guardado exitosamente (No. ${res.numero}).`, 'success');
     }
   } catch (err) {
     console.error('Error guardando:', err);
-    if (statusEl) statusEl.textContent = 'Error: ' + err.message;
+    showStatus('❌ Error: ' + err.message, 'error');
   }
 }
 
@@ -365,7 +579,6 @@ function initPhotos() {
   const inpCamera = document.getElementById('inp-camera');
   const inpUpload = document.getElementById('inp-upload');
   const lightbox = document.getElementById('lightbox-modal');
-  const lightboxImg = document.getElementById('lightbox-img');
   const lightboxClose = document.getElementById('lightbox-close');
 
   if (btnCamera && inpCamera) {
@@ -400,7 +613,7 @@ function initPhotos() {
           const canvas = document.createElement('canvas');
           let width = img.width;
           let height = img.height;
-          const max_size = 800; // max size in px
+          const max_size = 800;
           
           if (width > height) {
             if (width > max_size) {
@@ -480,7 +693,7 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   if (!canvas || !input) return;
 
   const ctx = canvas.getContext('2d');
-  ctx.strokeStyle = '#0C2340'; // Matches primary dark
+  ctx.strokeStyle = '#0C2340';
   ctx.lineWidth = 2.5;
   ctx.lineCap = 'round';
   ctx.lineJoin = 'round';
@@ -490,12 +703,26 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
 
   function getPos(e) {
     const rect = canvas.getBoundingClientRect();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const w = (rect.width && rect.width > 0) ? rect.width : (canvas.offsetWidth || 300);
+    const h = (rect.height && rect.height > 0) ? rect.height : (canvas.offsetHeight || 125);
+    const clientX = (e.touches && e.touches.length > 0) ? e.touches[0].clientX : e.clientX;
+    const clientY = (e.touches && e.touches.length > 0) ? e.touches[0].clientY : e.clientY;
     return {
-      x: ((clientX - rect.left) / rect.width) * canvas.width,
-      y: ((clientY - rect.top) / rect.height) * canvas.height
+      x: Math.max(0, Math.min(canvas.width,  ((clientX - rect.left) / w) * canvas.width)),
+      y: Math.max(0, Math.min(canvas.height, ((clientY - rect.top)  / h) * canvas.height))
     };
+  }
+
+  function saveSignatureValue() {
+    if (window.compressCanvas) {
+      input.value = window.compressCanvas(canvas, 0.72);
+    } else {
+      try {
+        input.value = canvas.toDataURL('image/png');
+      } catch (_) {
+        input.value = '';
+      }
+    }
   }
 
   function startDrawing(e) {
@@ -506,26 +733,18 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(lastPos.x, lastPos.y);
     ctx.stroke();
-  }
-
-  function saveSignatureValue() {
-    if (window.compressCanvas) {
-      input.value = window.compressCanvas(canvas, 0.72);
-    } else {
-      input.value = canvas.toDataURL('image/webp', 0.72);
-    }
+    saveSignatureValue();
   }
 
   function draw(e) {
     if (!drawing) return;
-    e.preventDefault(); // prevent touch scroll
+    if (e.cancelable) e.preventDefault();
     const newPos = getPos(e);
     ctx.beginPath();
     ctx.moveTo(lastPos.x, lastPos.y);
     ctx.lineTo(newPos.x, newPos.y);
     ctx.stroke();
     lastPos = newPos;
-    saveSignatureValue();
   }
 
   function stopDrawing() {
@@ -544,7 +763,8 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
   // Touch
   canvas.addEventListener('touchstart', startDrawing, { passive: false });
   canvas.addEventListener('touchmove', draw, { passive: false });
-  canvas.addEventListener('touchend', stopDrawing);
+  canvas.addEventListener('touchend', stopDrawing, { passive: true });
+  canvas.addEventListener('touchcancel', stopDrawing, { passive: true });
 
   // Clear
   clearBtn?.addEventListener('click', () => {
@@ -568,3 +788,6 @@ function initSignaturePad(canvasId, inputId, clearBtnId) {
     img.src = base64Data;
   };
 }
+
+window.getFotosFormulario = () => fotosArray;
+

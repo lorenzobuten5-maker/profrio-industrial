@@ -647,5 +647,150 @@ body {
   .card-right-info { text-align: left; align-items: flex-start; border-top: 2px solid var(--clay-blue-100); padding-top: 0.75rem; margin-top: 0.5rem; }
 }
 
+/* ══════════════════════════════════════
+   CARPETAS DE TRABAJO (PENDIENTES vs FACTURADOS)
+   ══════════════════════════════════════ */
+.folder-tabs-wrapper {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+.folder-tabs-wrapper::-webkit-scrollbar { display: none; }
+
+.folder-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.2rem;
+  background: rgba(255, 255, 255, 0.85);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-lg);
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--clay-blue-800);
+  cursor: pointer;
+  box-shadow: var(--clay-shadow-white);
+  transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.folder-tab:hover {
+  transform: translateY(-2px);
+  background: #ffffff;
+  border-color: var(--clay-blue-200);
+}
+
+.folder-tab.active {
+  background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+  color: #ffffff;
+  border-color: #3B82F6;
+  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25), inset 0 2px 4px rgba(255, 255, 255, 0.2);
+}
+
+.folder-tab.active .folder-badge {
+  background: rgba(255, 255, 255, 0.25);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.folder-badge {
+  background: var(--clay-blue-100);
+  color: var(--clay-blue-700);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.15rem 0.55rem;
+  border-radius: var(--radius-full);
+  min-width: 20px;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+/* ── Estilos de Tarjeta Tachada / Facturada ── */
+.history-card.card-facturado {
+  background: rgba(240, 253, 244, 0.85);
+  border: 2px solid rgba(167, 243, 208, 0.9);
+}
+
+.history-card.card-facturado .card-title-row strong.tachado {
+  text-decoration: line-through;
+  opacity: 0.7;
+  color: #475569;
+}
+
+.history-card.card-facturado .meta-item.tachado {
+  text-decoration: line-through;
+  opacity: 0.75;
+}
+
+.badge-status-facturado {
+  background: #DCFCE7;
+  color: #15803D;
+  border: 1.5px solid #86EFAC;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.22rem 0.65rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.badge-status-pendiente {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1.5px solid #FCD34D;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.22rem 0.65rem;
+  border-radius: var(--radius-full);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-toggle-facturado {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-md);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap;
+}
+
+.btn-toggle-facturado.btn-marcar {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: #ffffff;
+  border: none;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.btn-toggle-facturado.btn-marcar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+
+.btn-toggle-facturado.btn-desmarcar {
+  background: #FFFFFF;
+  color: #64748B;
+  border: 1.5px solid #CBD5E1;
+}
+
+.btn-toggle-facturado.btn-desmarcar:hover {
+  background: #F8FAFC;
+  color: #334155;
+  border-color: #94A3B8;
+  transform: translateY(-2px);
+}
+
+
 
 
